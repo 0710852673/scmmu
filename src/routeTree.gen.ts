@@ -15,11 +15,20 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as DivisionsIndexRouteImport } from './routes/divisions.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
+import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
+import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
+import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
+import { Route as AuthenticatedPortalMediaflowRouteImport } from './routes/_authenticated/portal.mediaflow'
+import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
+import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
+import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
+import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
 
 const LeadershipRoute = LeadershipRouteImport.update({
   id: '/leadership',
@@ -51,6 +60,10 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -76,6 +89,54 @@ const DivisionsSlugRoute = DivisionsSlugRouteImport.update({
   path: '/divisions/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPortalIndexRoute =
+  AuthenticatedPortalIndexRouteImport.update({
+    id: '/portal/',
+    path: '/portal/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalRankingsRoute =
+  AuthenticatedPortalRankingsRouteImport.update({
+    id: '/portal/rankings',
+    path: '/portal/rankings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalProfileRoute =
+  AuthenticatedPortalProfileRouteImport.update({
+    id: '/portal/profile',
+    path: '/portal/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalMediaflowRoute =
+  AuthenticatedPortalMediaflowRouteImport.update({
+    id: '/portal/mediaflow',
+    path: '/portal/mediaflow',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalEventsRoute =
+  AuthenticatedPortalEventsRouteImport.update({
+    id: '/portal/events',
+    path: '/portal/events',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalContributionsRoute =
+  AuthenticatedPortalContributionsRouteImport.update({
+    id: '/portal/contributions',
+    path: '/portal/contributions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAttendanceRoute =
+  AuthenticatedPortalAttendanceRouteImport.update({
+    id: '/portal/attendance',
+    path: '/portal/attendance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAnnouncementsRoute =
+  AuthenticatedPortalAnnouncementsRouteImport.update({
+    id: '/portal/announcements',
+    path: '/portal/announcements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +150,14 @@ export interface FileRoutesByFullPath {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/divisions/': typeof DivisionsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
+  '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
+  '/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
+  '/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
+  '/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,10 +171,19 @@ export interface FileRoutesByTo {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/divisions': typeof DivisionsIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
+  '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
+  '/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
+  '/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
+  '/portal': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
@@ -116,6 +194,14 @@ export interface FileRoutesById {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/divisions/': typeof DivisionsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/_authenticated/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/_authenticated/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
+  '/_authenticated/portal/contributions': typeof AuthenticatedPortalContributionsRoute
+  '/_authenticated/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/_authenticated/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
+  '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
+  '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +217,14 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/divisions/'
     | '/projects/'
+    | '/portal/announcements'
+    | '/portal/attendance'
+    | '/portal/contributions'
+    | '/portal/events'
+    | '/portal/mediaflow'
+    | '/portal/profile'
+    | '/portal/rankings'
+    | '/portal/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,9 +238,18 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/divisions'
     | '/projects'
+    | '/portal/announcements'
+    | '/portal/attendance'
+    | '/portal/contributions'
+    | '/portal/events'
+    | '/portal/mediaflow'
+    | '/portal/profile'
+    | '/portal/rankings'
+    | '/portal'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/auth'
     | '/book'
@@ -157,10 +260,19 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/divisions/'
     | '/projects/'
+    | '/_authenticated/portal/announcements'
+    | '/_authenticated/portal/attendance'
+    | '/_authenticated/portal/contributions'
+    | '/_authenticated/portal/events'
+    | '/_authenticated/portal/mediaflow'
+    | '/_authenticated/portal/profile'
+    | '/_authenticated/portal/rankings'
+    | '/_authenticated/portal/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   BookRoute: typeof BookRoute
@@ -217,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -252,11 +371,93 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DivisionsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/portal/': {
+      id: '/_authenticated/portal/'
+      path: '/portal'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/rankings': {
+      id: '/_authenticated/portal/rankings'
+      path: '/portal/rankings'
+      fullPath: '/portal/rankings'
+      preLoaderRoute: typeof AuthenticatedPortalRankingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/profile': {
+      id: '/_authenticated/portal/profile'
+      path: '/portal/profile'
+      fullPath: '/portal/profile'
+      preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/mediaflow': {
+      id: '/_authenticated/portal/mediaflow'
+      path: '/portal/mediaflow'
+      fullPath: '/portal/mediaflow'
+      preLoaderRoute: typeof AuthenticatedPortalMediaflowRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/events': {
+      id: '/_authenticated/portal/events'
+      path: '/portal/events'
+      fullPath: '/portal/events'
+      preLoaderRoute: typeof AuthenticatedPortalEventsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/contributions': {
+      id: '/_authenticated/portal/contributions'
+      path: '/portal/contributions'
+      fullPath: '/portal/contributions'
+      preLoaderRoute: typeof AuthenticatedPortalContributionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/attendance': {
+      id: '/_authenticated/portal/attendance'
+      path: '/portal/attendance'
+      fullPath: '/portal/attendance'
+      preLoaderRoute: typeof AuthenticatedPortalAttendanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/announcements': {
+      id: '/_authenticated/portal/announcements'
+      path: '/portal/announcements'
+      fullPath: '/portal/announcements'
+      preLoaderRoute: typeof AuthenticatedPortalAnnouncementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPortalAnnouncementsRoute: typeof AuthenticatedPortalAnnouncementsRoute
+  AuthenticatedPortalAttendanceRoute: typeof AuthenticatedPortalAttendanceRoute
+  AuthenticatedPortalContributionsRoute: typeof AuthenticatedPortalContributionsRoute
+  AuthenticatedPortalEventsRoute: typeof AuthenticatedPortalEventsRoute
+  AuthenticatedPortalMediaflowRoute: typeof AuthenticatedPortalMediaflowRoute
+  AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
+  AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
+  AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPortalAnnouncementsRoute: AuthenticatedPortalAnnouncementsRoute,
+  AuthenticatedPortalAttendanceRoute: AuthenticatedPortalAttendanceRoute,
+  AuthenticatedPortalContributionsRoute: AuthenticatedPortalContributionsRoute,
+  AuthenticatedPortalEventsRoute: AuthenticatedPortalEventsRoute,
+  AuthenticatedPortalMediaflowRoute: AuthenticatedPortalMediaflowRoute,
+  AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
+  AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
+  AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   BookRoute: BookRoute,

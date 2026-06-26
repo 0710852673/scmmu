@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated")({
   component: PortalLayout,
 });
 
-const NAV = [
+const NAV: { to: string; label: string; exact?: boolean }[] = [
   { to: "/portal", label: "Dashboard", exact: true },
   { to: "/portal/profile", label: "Profile" },
   { to: "/portal/events", label: "Events" },
@@ -21,15 +21,15 @@ const NAV = [
   { to: "/portal/mediaflow", label: "MediaFlow" },
   { to: "/portal/rankings", label: "Rankings" },
   { to: "/portal/announcements", label: "Announcements" },
-] as const;
+];
 
-const ADMIN_NAV = [
+const ADMIN_NAV: { to: string; label: string }[] = [
   { to: "/portal/admin/members", label: "Members" },
   { to: "/portal/admin/bookings", label: "Bookings" },
   { to: "/portal/admin/events", label: "Events" },
   { to: "/portal/admin/projects", label: "Projects" },
   { to: "/portal/admin/messages", label: "Messages" },
-] as const;
+];
 
 function PortalLayout() {
   const { user } = Route.useRouteContext();
