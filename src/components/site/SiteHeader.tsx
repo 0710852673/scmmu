@@ -1,40 +1,98 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
+import { LogoWordmark } from "./Logo";
+import { ThemeToggle } from "@/lib/theme";
 
 const nav = [
   { to: "/about", label: "About" },
   { to: "/divisions", label: "Divisions" },
   { to: "/projects", label: "Projects" },
   { to: "/gallery", label: "Gallery" },
-  { to: "/leadership", label: "Leadership" },
+  { to: "/leadership", label: "Members" },
   { to: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-foreground/5 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link to="/" className="text-2xl font-bold tracking-tighter">
-          SCC<span className="text-accent">MU</span>
+    <header
+      className={`sticky top-0 z-50 w-full transition-all ${
+        scrolled
+          ? "border-b border-border bg-background/85 backdrop-blur-xl"
+          : "border-b border-transparent bg-background/50 backdrop-blur"
+      }`}
+    >
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8">
+        <Link to="/" className="flex items-center" aria-label="SCCMU home">
+          <LogoWordmark />
         </Link>
-        <div className="hidden space-x-8 text-xs font-semibold uppercase tracking-widest md:flex">
+
+        <nav className="hidden items-center gap-1 lg:flex">
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="hover:text-accent transition-colors"
-              activeProps={{ className: "text-accent" }}
+              className="rounded-full px-4 py-2 text-sm font-medium text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+              activeProps={{ className: "rounded-full px-4 py-2 text-sm font-semibold bg-muted text-foreground" }}
             >
               {n.label}
             </Link>
           ))}
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Link
+            to="/book"
+            className="hidden md:inline-flex items-center gap-2 rounded-full brand-gradient px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-brand/20 hover:opacity-95 transition-opacity"
+          >
+            Book Coverage
+          </Link>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Toggle navigation"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border lg:hidden"
+          >
+            {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
         </div>
-        <Link
-          to="/book"
-          className="bg-foreground px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-background hover:bg-accent transition-colors"
-        >
-          Book Coverage
-        </Link>
       </div>
-    </nav>
+
+      {open && (
+        <div className="border-t border-border bg-background lg:hidden">
+          <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4">
+            {nav.map((n) => (
+              <Link
+                key={n.to}
+                to={n.to}
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted"
+                activeProps={{ className: "rounded-lg px-3 py-2.5 text-sm font-semibold bg-muted text-foreground" }}
+              >
+                {n.label}
+              </Link>
+            ))}
+            <Link
+              to="/book"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex items-center justify-center rounded-full brand-gradient px-5 py-2.5 text-sm font-semibold text-white"
+            >
+              Book Coverage
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
   );
 }
