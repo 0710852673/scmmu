@@ -22,16 +22,16 @@ export function PageHeader({
   intro?: string;
 }) {
   return (
-    <section className="border-b border-foreground/10">
-      <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
+    <section className="relative overflow-hidden border-b border-border bg-surface">
+      <div className="absolute inset-0 hero-grid-bg opacity-50" />
+      <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-brand/15 blur-3xl" />
+      <div className="relative mx-auto max-w-7xl px-6 py-20 md:px-8 md:py-28">
         {eyebrow ? (
-          <span className="text-xs font-bold uppercase tracking-[0.3em] text-accent">
-            {eyebrow}
-          </span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">{eyebrow}</span>
         ) : null}
-        <h1 className="mt-4 font-serif text-5xl md:text-7xl leading-[1.05]">{title}</h1>
+        <h1 className="mt-4 text-5xl font-extrabold tracking-tight md:text-7xl">{title}</h1>
         {intro ? (
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70">{intro}</p>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">{intro}</p>
         ) : null}
       </div>
     </section>

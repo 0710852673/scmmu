@@ -42,19 +42,38 @@ export const getGallery = createServerFn({ method: "GET" }).handler(async () => 
   return { data: data ?? [], error: null as string | null };
 });
 
+export const getFeaturedMembers = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const { data, error } = await sb
+    .from("featured_members")
+    .select("id,full_name,role_title,division,rank,points,grade,photo_url,bio,display_order")
+    .order("rank", { ascending: true });
+  if (error) return { data: [], error: error.message };
+  return { data: data ?? [], error: null as string | null };
+});
+
+export const getUpcomingEvents = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const { data, error } = await sb
+    .from("events")
+    .select("id,name,event_date,location,description,category")
+    .order("event_date", { ascending: true });
+  if (error) return { data: [], error: error.message };
+  return { data: data ?? [], error: null as string | null };
+});
+
 export const getLiveStats = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const [{ count: members }, { count: events }, { count: media }] = await Promise.all([
-    sb.from("profiles").select("*", { count: "exact", head: true }),
+  const [{ count: members }, { count: events }, { count: projects }, { count: media }] = await Promise.all([
+    sb.from("featured_members").select("*", { count: "exact", head: true }),
     sb.from("events").select("*", { count: "exact", head: true }),
+    sb.from("projects").select("*", { count: "exact", head: true }).eq("published", true),
     sb.from("media_items").select("*", { count: "exact", head: true }),
   ]);
   return {
     members: members ?? 0,
     events: events ?? 0,
+    projects: projects ?? 0,
     productions: media ?? 0,
-    photos: 0,
-    videos: 0,
-    reach: 0,
   };
 });

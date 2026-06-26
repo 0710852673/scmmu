@@ -351,6 +351,51 @@ export type Database = {
         }
         Relationships: []
       }
+      featured_members: {
+        Row: {
+          bio: string | null
+          created_at: string
+          display_order: number
+          division: string
+          full_name: string
+          grade: string | null
+          id: string
+          photo_url: string | null
+          points: number
+          rank: number
+          role_title: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number
+          division: string
+          full_name: string
+          grade?: string | null
+          id?: string
+          photo_url?: string | null
+          points?: number
+          rank: number
+          role_title: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number
+          division?: string
+          full_name?: string
+          grade?: string | null
+          id?: string
+          photo_url?: string | null
+          points?: number
+          rank?: number
+          role_title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery_items: {
         Row: {
           category: Database["public"]["Enums"]["gallery_category"]
