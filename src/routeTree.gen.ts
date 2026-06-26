@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LeadershipRouteImport } from './routes/leadership'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -26,6 +29,21 @@ const LeadershipRoute = LeadershipRouteImport.update({
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -62,6 +80,9 @@ const DivisionsSlugRoute = DivisionsSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
@@ -72,6 +93,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
@@ -83,6 +107,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
@@ -95,6 +122,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/auth'
+    | '/book'
+    | '/contact'
     | '/gallery'
     | '/leadership'
     | '/divisions/$slug'
@@ -105,6 +135,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/auth'
+    | '/book'
+    | '/contact'
     | '/gallery'
     | '/leadership'
     | '/divisions/$slug'
@@ -115,6 +148,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/auth'
+    | '/book'
+    | '/contact'
     | '/gallery'
     | '/leadership'
     | '/divisions/$slug'
@@ -126,6 +162,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AuthRoute: typeof AuthRoute
+  BookRoute: typeof BookRoute
+  ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   LeadershipRoute: typeof LeadershipRoute
   DivisionsSlugRoute: typeof DivisionsSlugRoute
@@ -148,6 +187,27 @@ declare module '@tanstack/react-router' {
       path: '/gallery'
       fullPath: '/gallery'
       preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -198,6 +258,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AuthRoute: AuthRoute,
+  BookRoute: BookRoute,
+  ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   LeadershipRoute: LeadershipRoute,
   DivisionsSlugRoute: DivisionsSlugRoute,
