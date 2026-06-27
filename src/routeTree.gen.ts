@@ -24,7 +24,6 @@ import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
-import { Route as AuthenticatedPortalMediaflowRouteImport } from './routes/_authenticated/portal.mediaflow'
 import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
 import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
@@ -107,12 +106,6 @@ const AuthenticatedPortalProfileRoute =
     path: '/portal/profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalMediaflowRoute =
-  AuthenticatedPortalMediaflowRouteImport.update({
-    id: '/portal/mediaflow',
-    path: '/portal/mediaflow',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedPortalEventsRoute =
   AuthenticatedPortalEventsRouteImport.update({
     id: '/portal/events',
@@ -154,7 +147,6 @@ export interface FileRoutesByFullPath {
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/portal/events': typeof AuthenticatedPortalEventsRoute
-  '/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -175,7 +167,6 @@ export interface FileRoutesByTo {
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/portal/events': typeof AuthenticatedPortalEventsRoute
-  '/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -198,7 +189,6 @@ export interface FileRoutesById {
   '/_authenticated/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/_authenticated/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/_authenticated/portal/events': typeof AuthenticatedPortalEventsRoute
-  '/_authenticated/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -221,7 +211,6 @@ export interface FileRouteTypes {
     | '/portal/attendance'
     | '/portal/contributions'
     | '/portal/events'
-    | '/portal/mediaflow'
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal/'
@@ -242,7 +231,6 @@ export interface FileRouteTypes {
     | '/portal/attendance'
     | '/portal/contributions'
     | '/portal/events'
-    | '/portal/mediaflow'
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal'
@@ -264,7 +252,6 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/attendance'
     | '/_authenticated/portal/contributions'
     | '/_authenticated/portal/events'
-    | '/_authenticated/portal/mediaflow'
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
     | '/_authenticated/portal/'
@@ -392,13 +379,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/mediaflow': {
-      id: '/_authenticated/portal/mediaflow'
-      path: '/portal/mediaflow'
-      fullPath: '/portal/mediaflow'
-      preLoaderRoute: typeof AuthenticatedPortalMediaflowRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/portal/events': {
       id: '/_authenticated/portal/events'
       path: '/portal/events'
@@ -435,7 +415,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAttendanceRoute: typeof AuthenticatedPortalAttendanceRoute
   AuthenticatedPortalContributionsRoute: typeof AuthenticatedPortalContributionsRoute
   AuthenticatedPortalEventsRoute: typeof AuthenticatedPortalEventsRoute
-  AuthenticatedPortalMediaflowRoute: typeof AuthenticatedPortalMediaflowRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
@@ -446,7 +425,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAttendanceRoute: AuthenticatedPortalAttendanceRoute,
   AuthenticatedPortalContributionsRoute: AuthenticatedPortalContributionsRoute,
   AuthenticatedPortalEventsRoute: AuthenticatedPortalEventsRoute,
-  AuthenticatedPortalMediaflowRoute: AuthenticatedPortalMediaflowRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
@@ -472,13 +450,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

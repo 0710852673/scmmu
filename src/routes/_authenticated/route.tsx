@@ -1,6 +1,13 @@
-import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import {
+  LayoutDashboard, User, Calendar, ClipboardCheck, FileText, ExternalLink,
+  Trophy, Megaphone, Users, BookmarkCheck, FolderKanban, Mail, ImagePlus,
+  LogOut, Settings, Shield, ChevronRight,
+} from "lucide-react";
+import { ThemeToggle } from "@/lib/theme";
+import { getSiteSettings } from "@/lib/public-data.functions";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -12,39 +19,54 @@ export const Route = createFileRoute("/_authenticated")({
   component: PortalLayout,
 });
 
-const NAV: { to: string; label: string; exact?: boolean }[] = [
-  { to: "/portal", label: "Dashboard", exact: true },
-  { to: "/portal/profile", label: "Profile" },
-  { to: "/portal/events", label: "Events" },
-  { to: "/portal/attendance", label: "Attendance" },
-  { to: "/portal/contributions", label: "Contributions" },
-  { to: "/portal/mediaflow", label: "MediaFlow" },
-  { to: "/portal/rankings", label: "Rankings" },
-  { to: "/portal/announcements", label: "Announcements" },
+type NavItem = { to?: string; href?: string; external?: boolean; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+
+const MEMBER_NAV: NavItem[] = [
+  { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/portal/profile", label: "My Profile", icon: User },
+  { to: "/portal/events", label: "Events", icon: Calendar },
+  { to: "/portal/attendance", label: "Attendance", icon: ClipboardCheck },
+  { to: "/portal/contributions", label: "Contributions", icon: FileText },
+  { to: "/portal/rankings", label: "Rankings", icon: Trophy },
+  { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
 ];
 
-const ADMIN_NAV: { to: string; label: string }[] = [
-  { to: "/portal/admin/members", label: "Members" },
-  { to: "/portal/admin/bookings", label: "Bookings" },
-  { to: "/portal/admin/events", label: "Events" },
-  { to: "/portal/admin/projects", label: "Projects" },
-  { to: "/portal/admin/messages", label: "Messages" },
+const HEAD_NAV: NavItem[] = [
+  { to: "/portal/admin/members", label: "Section Members", icon: Users },
+  { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
+];
+
+const ADMIN_NAV: NavItem[] = [
+  { to: "/portal/admin/members", label: "All Members", icon: Users },
+  { to: "/portal/admin/board", label: "Board & Leadership", icon: Shield },
+  { to: "/portal/admin/projects", label: "Projects", icon: FolderKanban },
+  { to: "/portal/admin/events", label: "Events", icon: Calendar },
+  { to: "/portal/admin/gallery", label: "Gallery", icon: ImagePlus },
+  { to: "/portal/admin/bookings", label: "Bookings", icon: BookmarkCheck },
+  { to: "/portal/admin/messages", label: "Messages", icon: Mail },
+  { to: "/portal/admin/site", label: "Site Settings", icon: Settings },
 ];
 
 function PortalLayout() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
+  const loc = useLocation();
 
   const { data: roles } = useQuery({
     queryKey: ["my-roles", user.id],
     queryFn: async () => {
       const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-      return (data ?? []).map((r) => r.role);
+      return (data ?? []).map((r) => r.role as string);
     },
   });
+  const settings = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
 
-  const isStaff = roles?.some((r) => ["section_head", "executive_board", "tic", "administrator"].includes(r as string));
   const isAdmin = roles?.includes("administrator");
+  const isHead = roles?.some((r) => ["section_head", "executive_board", "tic"].includes(r));
+  const tier = isAdmin ? "Administrator" : isHead ? "Head / Board" : "Member";
+  const tierColor = isAdmin ? "from-brand to-amber" : isHead ? "from-blue-500 to-indigo-500" : "from-foreground/80 to-foreground";
+
+  const mediaflowUrl = settings.data?.mediaflow_url ?? "https://sccmu.cybertec.lk/";
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -52,52 +74,47 @@ function PortalLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-background grid md:grid-cols-[260px_1fr]">
-      <aside className="border-r border-foreground/10 bg-card flex flex-col">
-        <Link to="/" className="px-6 py-6 border-b border-foreground/10 text-xl font-bold tracking-tighter">
-          SCC<span className="text-accent">MU</span>
-          <div className="text-[10px] uppercase tracking-widest text-foreground/40 font-normal mt-1">Portal</div>
+    <div className="min-h-screen bg-muted/30 grid md:grid-cols-[280px_1fr]">
+      <aside className="border-r border-border bg-card flex flex-col sticky top-0 h-screen">
+        <Link to="/" className="px-6 py-5 border-b border-border flex items-center gap-2.5">
+          <div className="grid h-9 w-9 place-items-center rounded-lg brand-gradient text-white font-display font-extrabold text-sm">S</div>
+          <div>
+            <div className="font-display text-base font-extrabold tracking-tight leading-none">SCCMU Portal</div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">Media Unit</div>
+          </div>
         </Link>
 
-        <nav className="flex-1 p-4 space-y-1 text-sm">
-          {NAV.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              activeOptions={n.exact ? { exact: true } : undefined}
-              className="block px-3 py-2 rounded hover:bg-muted"
-              activeProps={{ className: "block px-3 py-2 rounded bg-foreground text-background" }}
-            >
-              {n.label}
-            </Link>
-          ))}
+        <nav className="flex-1 overflow-y-auto p-4 space-y-6 text-sm">
+          <NavGroup label="Member" items={MEMBER_NAV} currentPath={loc.pathname} />
 
-          {isAdmin && (
-            <>
-              <div className="mt-6 px-3 text-[10px] font-bold uppercase tracking-widest text-foreground/40">Admin</div>
-              {ADMIN_NAV.map((n) => (
-                <Link
-                  key={n.to}
-                  to={n.to}
-                  className="block px-3 py-2 rounded hover:bg-muted"
-                  activeProps={{ className: "block px-3 py-2 rounded bg-foreground text-background" }}
-                >
-                  {n.label}
-                </Link>
-              ))}
-            </>
-          )}
+          {(isHead && !isAdmin) && <NavGroup label="Section Head" items={HEAD_NAV} currentPath={loc.pathname} />}
+
+          {isAdmin && <NavGroup label="Administrator" items={ADMIN_NAV} currentPath={loc.pathname} accent />}
+
+          <div>
+            <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">External</div>
+            <a href={mediaflowUrl} target="_blank" rel="noopener noreferrer"
+               className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-muted transition-colors">
+              <span className="flex items-center gap-2.5"><ExternalLink className="h-4 w-4 text-brand" /> MediaFlow</span>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+            </a>
+          </div>
         </nav>
 
-        <div className="p-4 border-t border-foreground/10 text-sm">
-          <div className="text-xs text-foreground/60 mb-2 truncate">{user.email}</div>
-          {isStaff && (
-            <div className="text-[10px] uppercase tracking-widest text-accent mb-3">
-              {isAdmin ? "Administrator" : "Staff"}
+        <div className="p-4 border-t border-border space-y-3">
+          <div className="flex items-center gap-3 px-2">
+            <div className={`grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br ${tierColor} text-white text-xs font-bold`}>
+              {(user.email ?? "?")[0].toUpperCase()}
             </div>
-          )}
-          <button onClick={signOut} className="w-full border border-foreground/20 py-2 text-xs font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors">
-            Sign out
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-semibold truncate">{user.email}</div>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{tier}</div>
+            </div>
+            <ThemeToggle />
+          </div>
+          <button onClick={signOut}
+            className="w-full flex items-center justify-center gap-2 rounded-lg border border-border py-2 text-xs font-semibold hover:bg-foreground hover:text-background transition-colors">
+            <LogOut className="h-3.5 w-3.5" /> Sign out
           </button>
         </div>
       </aside>
@@ -105,6 +122,29 @@ function PortalLayout() {
       <main className="overflow-x-hidden">
         <Outlet />
       </main>
+    </div>
+  );
+}
+
+function NavGroup({ label, items, currentPath, accent }: { label: string; items: NavItem[]; currentPath: string; accent?: boolean }) {
+  return (
+    <div>
+      <div className={`px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] ${accent ? "text-brand" : "text-muted-foreground"}`}>{label}</div>
+      <div className="space-y-0.5">
+        {items.map((item) => {
+          if (!item.to) return null;
+          const active = item.exact ? currentPath === item.to : currentPath.startsWith(item.to);
+          return (
+            <Link key={item.to} to={item.to}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                active ? "bg-foreground text-background" : "hover:bg-muted text-foreground/80"
+              }`}>
+              <item.icon className="h-4 w-4" />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
