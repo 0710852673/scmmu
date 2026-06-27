@@ -353,7 +353,9 @@ export type Database = {
       }
       featured_members: {
         Row: {
+          active: boolean
           bio: string | null
+          board_category: string
           created_at: string
           display_order: number
           division: string
@@ -364,10 +366,13 @@ export type Database = {
           points: number
           rank: number
           role_title: string
+          section: string | null
           updated_at: string
         }
         Insert: {
+          active?: boolean
           bio?: string | null
+          board_category?: string
           created_at?: string
           display_order?: number
           division: string
@@ -378,10 +383,13 @@ export type Database = {
           points?: number
           rank: number
           role_title: string
+          section?: string | null
           updated_at?: string
         }
         Update: {
+          active?: boolean
           bio?: string | null
+          board_category?: string
           created_at?: string
           display_order?: number
           division?: string
@@ -392,6 +400,7 @@ export type Database = {
           points?: number
           rank?: number
           role_title?: string
+          section?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -711,6 +720,99 @@ export type Database = {
           summary?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          address_line: string
+          email_address: string
+          facebook_url: string
+          hero_cta_href: string
+          hero_cta_label: string
+          hero_eyebrow: string
+          hero_subtitle: string
+          hero_title: string
+          id: number
+          mediaflow_url: string
+          tiktok_url: string
+          updated_at: string
+          whatsapp_channel_url: string
+          whatsapp_number: string
+          whatsapp_url: string
+          youtube_url: string
+        }
+        Insert: {
+          address_line?: string
+          email_address?: string
+          facebook_url?: string
+          hero_cta_href?: string
+          hero_cta_label?: string
+          hero_eyebrow?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: number
+          mediaflow_url?: string
+          tiktok_url?: string
+          updated_at?: string
+          whatsapp_channel_url?: string
+          whatsapp_number?: string
+          whatsapp_url?: string
+          youtube_url?: string
+        }
+        Update: {
+          address_line?: string
+          email_address?: string
+          facebook_url?: string
+          hero_cta_href?: string
+          hero_cta_label?: string
+          hero_eyebrow?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: number
+          mediaflow_url?: string
+          tiktok_url?: string
+          updated_at?: string
+          whatsapp_channel_url?: string
+          whatsapp_number?: string
+          whatsapp_url?: string
+          youtube_url?: string
+        }
+        Relationships: []
+      }
+      site_stats: {
+        Row: {
+          active_members: number
+          events_covered: number
+          id: number
+          live_streams: number
+          photos_captured: number
+          projects_published: number
+          total_members: number
+          updated_at: string
+          videos_produced: number
+        }
+        Insert: {
+          active_members?: number
+          events_covered?: number
+          id?: number
+          live_streams?: number
+          photos_captured?: number
+          projects_published?: number
+          total_members?: number
+          updated_at?: string
+          videos_produced?: number
+        }
+        Update: {
+          active_members?: number
+          events_covered?: number
+          id?: number
+          live_streams?: number
+          photos_captured?: number
+          projects_published?: number
+          total_members?: number
+          updated_at?: string
+          videos_produced?: number
         }
         Relationships: []
       }
