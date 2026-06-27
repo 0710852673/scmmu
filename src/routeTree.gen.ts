@@ -22,6 +22,7 @@ import { Route as DivisionsIndexRouteImport } from './routes/divisions.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
+import { Route as ApiPublicBootstrapAccountsRouteImport } from './routes/api/public/bootstrap-accounts'
 import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
 import { Route as AuthenticatedPortalMediaflowRouteImport } from './routes/_authenticated/portal.mediaflow'
@@ -95,6 +96,12 @@ const AuthenticatedPortalIndexRoute =
     path: '/portal/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicBootstrapAccountsRoute =
+  ApiPublicBootstrapAccountsRouteImport.update({
+    id: '/api/public/bootstrap-accounts',
+    path: '/api/public/bootstrap-accounts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedPortalRankingsRoute =
   AuthenticatedPortalRankingsRouteImport.update({
     id: '/portal/rankings',
@@ -157,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
+  '/api/public/bootstrap-accounts': typeof ApiPublicBootstrapAccountsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesByTo {
@@ -178,6 +186,7 @@ export interface FileRoutesByTo {
   '/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
+  '/api/public/bootstrap-accounts': typeof ApiPublicBootstrapAccountsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesById {
@@ -201,6 +210,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/mediaflow': typeof AuthenticatedPortalMediaflowRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
+  '/api/public/bootstrap-accounts': typeof ApiPublicBootstrapAccountsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRouteTypes {
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/portal/mediaflow'
     | '/portal/profile'
     | '/portal/rankings'
+    | '/api/public/bootstrap-accounts'
     | '/portal/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/portal/mediaflow'
     | '/portal/profile'
     | '/portal/rankings'
+    | '/api/public/bootstrap-accounts'
     | '/portal'
   id:
     | '__root__'
@@ -267,6 +279,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/mediaflow'
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
+    | '/api/public/bootstrap-accounts'
     | '/_authenticated/portal/'
   fileRoutesById: FileRoutesById
 }
@@ -283,6 +296,7 @@ export interface RootRouteChildren {
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   DivisionsIndexRoute: typeof DivisionsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  ApiPublicBootstrapAccountsRoute: typeof ApiPublicBootstrapAccountsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -378,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/bootstrap-accounts': {
+      id: '/api/public/bootstrap-accounts'
+      path: '/api/public/bootstrap-accounts'
+      fullPath: '/api/public/bootstrap-accounts'
+      preLoaderRoute: typeof ApiPublicBootstrapAccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/portal/rankings': {
       id: '/_authenticated/portal/rankings'
       path: '/portal/rankings'
@@ -468,6 +489,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsSlugRoute: ProjectsSlugRoute,
   DivisionsIndexRoute: DivisionsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
+  ApiPublicBootstrapAccountsRoute: ApiPublicBootstrapAccountsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
