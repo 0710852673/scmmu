@@ -42,12 +42,18 @@ export const getGallery = createServerFn({ method: "GET" }).handler(async () => 
   return { data: data ?? [], error: null as string | null };
 });
 
-export const getFeaturedMembers = createServerFn({ method: "GET" }).handler(async () => {
+/**
+ * Returns only board members (TIC, Executive, Section Heads) for the public site.
+ * Member ranks & points are NEVER exposed publicly — they live only in the portal.
+ */
+export const getBoardMembers = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
   const { data, error } = await sb
     .from("featured_members")
-    .select("id,full_name,role_title,division,rank,points,grade,photo_url,bio,display_order")
-    .order("rank", { ascending: true });
+    .select("id,full_name,role_title,division,board_category,section,grade,photo_url,bio,display_order")
+    .in("board_category", ["tic", "executive", "section_head"])
+    .eq("active", true)
+    .order("display_order", { ascending: true });
   if (error) return { data: [], error: error.message };
   return { data: data ?? [], error: null as string | null };
 });
@@ -62,18 +68,17 @@ export const getUpcomingEvents = createServerFn({ method: "GET" }).handler(async
   return { data: data ?? [], error: null as string | null };
 });
 
-export const getLiveStats = createServerFn({ method: "GET" }).handler(async () => {
+export const getSiteStats = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const [{ count: members }, { count: events }, { count: projects }, { count: media }] = await Promise.all([
-    sb.from("featured_members").select("*", { count: "exact", head: true }),
-    sb.from("events").select("*", { count: "exact", head: true }),
-    sb.from("projects").select("*", { count: "exact", head: true }).eq("published", true),
-    sb.from("media_items").select("*", { count: "exact", head: true }),
-  ]);
-  return {
-    members: members ?? 0,
-    events: events ?? 0,
-    projects: projects ?? 0,
-    productions: media ?? 0,
+  const { data } = await sb.from("site_stats").select("*").eq("id", 1).maybeSingle();
+  return data ?? {
+    total_members: 68, active_members: 40, photos_captured: 3000,
+    videos_produced: 240, live_streams: 50, events_covered: 1000, projects_published: 18,
   };
+});
+
+export const getSiteSettings = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const { data } = await sb.from("site_settings").select("*").eq("id", 1).maybeSingle();
+  return data;
 });
