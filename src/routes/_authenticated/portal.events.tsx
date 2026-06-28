@@ -58,17 +58,17 @@ function EventsPage() {
     <PortalPage
       title="Events"
       action={
-        <button onClick={() => setShowMissing((v) => !v)} className="border border-foreground/20 px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-foreground hover:text-background">
+        <button onClick={() => setShowMissing((v) => !v)} className="border border-border px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-foreground hover:text-background">
           Missing event?
         </button>
       }
     >
       {showMissing && (
-        <form onSubmit={submitMissing} className="bg-card border border-foreground/10 p-6 mb-8 space-y-4 max-w-xl">
-          <h3 className="font-serif text-xl">Report missing event</h3>
-          <input name="name" required placeholder="Event name" className="w-full border border-foreground/20 p-3 text-sm" />
-          <input name="event_date" type="date" className="w-full border border-foreground/20 p-3 text-sm" />
-          <textarea name="description" placeholder="Description" rows={3} className="w-full border border-foreground/20 p-3 text-sm" />
+        <form onSubmit={submitMissing} className="bg-card border border-border p-6 mb-8 space-y-4 max-w-xl">
+          <h3 className="font-display text-xl">Report missing event</h3>
+          <input name="name" required placeholder="Event name" className="w-full border border-border p-3 text-sm" />
+          <input name="event_date" type="date" className="w-full border border-border p-3 text-sm" />
+          <textarea name="description" placeholder="Description" rows={3} className="w-full border border-border p-3 text-sm" />
           <button className="bg-foreground text-background px-6 py-3 text-xs font-bold uppercase tracking-widest">Submit</button>
         </form>
       )}
@@ -78,7 +78,7 @@ function EventsPage() {
           {events.map((e) => {
             const mine = myParts?.find((p) => p.event_id === e.id);
             return (
-              <li key={e.id} className="border border-foreground/10 p-5 bg-card flex justify-between items-center flex-wrap gap-4">
+              <li key={e.id} className="border border-border p-5 bg-card flex justify-between items-center flex-wrap gap-4">
                 <div>
                   <h3 className="font-bold">{e.name}</h3>
                   <div className="text-xs text-foreground/60 mt-1">
@@ -86,7 +86,7 @@ function EventsPage() {
                   </div>
                 </div>
                 {mine ? (
-                  <span className="text-[10px] uppercase tracking-widest font-bold px-3 py-1 border border-foreground/20">
+                  <span className="text-[10px] uppercase tracking-widest font-bold px-3 py-1 border border-border">
                     {mine.status}
                   </span>
                 ) : (

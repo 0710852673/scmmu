@@ -40,17 +40,17 @@ function ProfilePage() {
   return (
     <PortalPage eyebrow="Member" title="Profile">
       <div className="grid md:grid-cols-[200px_1fr] gap-10">
-        <div className="aspect-square bg-muted border border-foreground/10 grid place-items-center">
+        <div className="aspect-square bg-muted border border-border grid place-items-center">
           {profile?.photo_url ? (
             <img src={profile.photo_url} alt="" className="h-full w-full object-cover" />
           ) : (
-            <span className="font-serif italic text-foreground/30 text-4xl">
+            <span className="font-display italic text-foreground/30 text-4xl">
               {profile?.full_name?.[0] ?? "M"}
             </span>
           )}
         </div>
         <div>
-          <h2 className="font-serif text-3xl">{profile?.full_name || "Unnamed member"}</h2>
+          <h2 className="font-display text-3xl">{profile?.full_name || "Unnamed member"}</h2>
           <p className="text-foreground/60">{user.email}</p>
           <dl className="mt-6 grid sm:grid-cols-2 gap-4 text-sm">
             <Detail label="Admission #" value={profile?.admission_number} />
@@ -63,11 +63,11 @@ function ProfilePage() {
         </div>
       </div>
 
-      <h2 className="font-serif text-2xl mt-16 mb-4">Skill levels</h2>
+      <h2 className="font-display text-2xl mt-16 mb-4">Skill levels</h2>
       {skills && skills.length > 0 ? (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
           {skills.map((s) => (
-            <div key={s.division} className="border border-foreground/10 p-4 bg-card">
+            <div key={s.division} className="border border-border p-4 bg-card">
               <div className="text-[10px] uppercase tracking-widest text-foreground/40">{s.division}</div>
               <div className="font-bold capitalize mt-1">{s.tier}</div>
             </div>
@@ -77,13 +77,13 @@ function ProfilePage() {
         <Empty>No skill levels assigned yet.</Empty>
       )}
 
-      <h2 className="font-serif text-2xl mt-16 mb-4">Achievements</h2>
+      <h2 className="font-display text-2xl mt-16 mb-4">Achievements</h2>
       {achievements && achievements.length > 0 ? (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
           {achievements.map((a, i) => {
             const ach = a.achievements as { name?: string; description?: string } | null;
             return (
-              <div key={i} className="border border-foreground/10 p-4 bg-card">
+              <div key={i} className="border border-border p-4 bg-card">
                 <div className="font-bold">{ach?.name}</div>
                 <div className="text-xs text-foreground/60 mt-1">{ach?.description}</div>
               </div>
