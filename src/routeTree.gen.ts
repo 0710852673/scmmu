@@ -29,6 +29,7 @@ import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
 import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
+import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_authenticated/portal.admin.messages'
 import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
 import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
 
@@ -139,6 +140,12 @@ const AuthenticatedPortalAdminSiteRoute =
     path: '/portal/admin/site',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminMessagesRoute =
+  AuthenticatedPortalAdminMessagesRouteImport.update({
+    id: '/portal/admin/messages',
+    path: '/portal/admin/messages',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminMembersRoute =
   AuthenticatedPortalAdminMembersRouteImport.update({
     id: '/portal/admin/members',
@@ -173,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
+  '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
 export interface FileRoutesByTo {
@@ -196,6 +204,7 @@ export interface FileRoutesByTo {
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
+  '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
 export interface FileRoutesById {
@@ -221,6 +230,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/_authenticated/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
+  '/_authenticated/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
 export interface FileRouteTypes {
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/portal/'
     | '/portal/admin/bookings'
     | '/portal/admin/members'
+    | '/portal/admin/messages'
     | '/portal/admin/site'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/portal/admin/bookings'
     | '/portal/admin/members'
+    | '/portal/admin/messages'
     | '/portal/admin/site'
   id:
     | '__root__'
@@ -293,6 +305,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/'
     | '/_authenticated/portal/admin/bookings'
     | '/_authenticated/portal/admin/members'
+    | '/_authenticated/portal/admin/messages'
     | '/_authenticated/portal/admin/site'
   fileRoutesById: FileRoutesById
 }
@@ -453,6 +466,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminSiteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/messages': {
+      id: '/_authenticated/portal/admin/messages'
+      path: '/portal/admin/messages'
+      fullPath: '/portal/admin/messages'
+      preLoaderRoute: typeof AuthenticatedPortalAdminMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/members': {
       id: '/_authenticated/portal/admin/members'
       path: '/portal/admin/members'
@@ -480,6 +500,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
   AuthenticatedPortalAdminBookingsRoute: typeof AuthenticatedPortalAdminBookingsRoute
   AuthenticatedPortalAdminMembersRoute: typeof AuthenticatedPortalAdminMembersRoute
+  AuthenticatedPortalAdminMessagesRoute: typeof AuthenticatedPortalAdminMessagesRoute
   AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
 }
 
@@ -493,6 +514,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
   AuthenticatedPortalAdminBookingsRoute: AuthenticatedPortalAdminBookingsRoute,
   AuthenticatedPortalAdminMembersRoute: AuthenticatedPortalAdminMembersRoute,
+  AuthenticatedPortalAdminMessagesRoute: AuthenticatedPortalAdminMessagesRoute,
   AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
 }
 
