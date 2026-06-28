@@ -59,8 +59,8 @@ function Dashboard() {
     queryFn: async () => {
       const [members, bookings, msgs, events] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("bookings").select("*", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("contact_messages").select("*", { count: "exact", head: true }).eq("read", false),
+        supabase.from("bookings").select("*", { count: "exact", head: true }).eq("status", "new"),
+        supabase.from("contact_messages").select("*", { count: "exact", head: true }).eq("handled", false),
         supabase.from("events").select("*", { count: "exact", head: true }),
       ]);
       return {
