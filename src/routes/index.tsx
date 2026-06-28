@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Camera, Radio, Video, Calendar, MapPin, Image as ImageIcon, Tv, Users, Sparkles } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
-import { LogoMark } from "@/components/site/Logo";
+
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import {
   getProjects, getSiteStats, getBoardMembers, getUpcomingEvents, getSiteSettings,
