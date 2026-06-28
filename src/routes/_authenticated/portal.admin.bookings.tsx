@@ -39,8 +39,8 @@ function AdminBookings() {
                 <span className="text-[10px] font-bold uppercase tracking-widest rounded-full bg-muted px-2.5 py-1">{b.status}</span>
               </div>
               <h3 className="font-display font-bold text-lg">{b.event_name}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{b.requester_name} · {b.requester_email}</p>
-              <p className="text-sm mt-2">{b.event_date} · {b.location}</p>
+              <p className="text-xs text-muted-foreground mt-1">{b.contact_person} · {b.email}</p>
+              <p className="text-sm mt-2">{b.event_date} · {b.venue}</p>
               {b.notes && <p className="text-sm text-muted-foreground mt-3 line-clamp-3">{b.notes}</p>}
               <div className="mt-4 flex flex-wrap gap-2">
                 <button onClick={() => setStatus(b.id, "confirmed")}

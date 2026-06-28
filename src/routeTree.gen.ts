@@ -30,6 +30,7 @@ import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_aut
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
 import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
 import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
+import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
 
 const LeadershipRoute = LeadershipRouteImport.update({
   id: '/leadership',
@@ -144,6 +145,12 @@ const AuthenticatedPortalAdminMembersRoute =
     path: '/portal/admin/members',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminBookingsRoute =
+  AuthenticatedPortalAdminBookingsRouteImport.update({
+    id: '/portal/admin/bookings',
+    path: '/portal/admin/bookings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
@@ -186,6 +194,7 @@ export interface FileRoutesByTo {
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
@@ -210,6 +219,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/_authenticated/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal/'
+    | '/portal/admin/bookings'
     | '/portal/admin/members'
     | '/portal/admin/site'
   fileRoutesByTo: FileRoutesByTo
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal'
+    | '/portal/admin/bookings'
     | '/portal/admin/members'
     | '/portal/admin/site'
   id:
@@ -279,6 +291,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
     | '/_authenticated/portal/'
+    | '/_authenticated/portal/admin/bookings'
     | '/_authenticated/portal/admin/members'
     | '/_authenticated/portal/admin/site'
   fileRoutesById: FileRoutesById
@@ -447,6 +460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminMembersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/bookings': {
+      id: '/_authenticated/portal/admin/bookings'
+      path: '/portal/admin/bookings'
+      fullPath: '/portal/admin/bookings'
+      preLoaderRoute: typeof AuthenticatedPortalAdminBookingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -458,6 +478,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+  AuthenticatedPortalAdminBookingsRoute: typeof AuthenticatedPortalAdminBookingsRoute
   AuthenticatedPortalAdminMembersRoute: typeof AuthenticatedPortalAdminMembersRoute
   AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
 }
@@ -470,6 +491,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+  AuthenticatedPortalAdminBookingsRoute: AuthenticatedPortalAdminBookingsRoute,
   AuthenticatedPortalAdminMembersRoute: AuthenticatedPortalAdminMembersRoute,
   AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
 }
