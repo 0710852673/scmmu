@@ -53,6 +53,12 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Link
+            to="/auth"
+            className="hidden md:inline-flex items-center rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+          >
+            Member sign in
+          </Link>
+          <Link
             to="/book"
             className="hidden md:inline-flex items-center gap-2 rounded-full brand-gradient px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-brand/20 hover:opacity-95 transition-opacity"
           >
