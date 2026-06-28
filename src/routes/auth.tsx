@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { LogoMark } from "@/components/site/Logo";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -36,56 +38,49 @@ function Auth() {
   }
 
   return (
-    <div className="min-h-screen grid md:grid-cols-2">
-      <div className="hidden md:flex bg-foreground text-background p-12 flex-col justify-between">
-        <Link to="/" className="text-2xl font-bold tracking-tighter">
-          SCC<span className="text-accent">MU</span>
+    <div className="min-h-screen grid md:grid-cols-2 bg-background">
+      <div className="relative hidden md:flex flex-col justify-between p-12 overflow-hidden brand-gradient text-white">
+        <motion.div className="absolute -top-32 -right-32 h-[420px] w-[420px] rounded-full bg-white/10 blur-3xl"
+          animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 8, repeat: Infinity }} />
+        <Link to="/" className="relative flex items-center gap-2.5">
+          <LogoMark size={32} />
+          <span className="font-display text-xl font-extrabold tracking-tight">SCCMU</span>
         </Link>
-        <div>
-          <h1 className="font-serif text-6xl leading-tight">
-            Member <span className="italic text-accent">portal.</span>
-          </h1>
-          <p className="mt-6 text-background/60 max-w-md">
-            Track your attendance, contributions, skill levels and standings. Accounts are created by administrators.
+        <div className="relative">
+          <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            className="font-display text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">
+            Member portal.
+          </motion.h1>
+          <p className="mt-5 max-w-md text-white/85">
+            Sign in to track contributions, attendance and rankings. Accounts are issued by administrators.
           </p>
         </div>
-        <div className="text-[10px] uppercase tracking-widest text-background/40">sccmu.lk</div>
+        <div className="relative text-[10px] uppercase tracking-[0.22em] text-white/70">Sivali Central College Media Unit</div>
       </div>
 
       <div className="flex flex-col justify-center px-6 py-20 md:px-16">
-        <h2 className="font-serif text-4xl mb-2">Sign in</h2>
-        <p className="text-foreground/60 text-sm mb-10">No public registration. Contact an administrator if you need an account.</p>
+        <div className="md:hidden mb-10"><LogoMark size={36} /></div>
+        <h2 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Sign in</h2>
+        <p className="text-muted-foreground text-sm mb-10">No public registration. Ask an administrator for an account.</p>
 
         <form onSubmit={signIn} className="space-y-5 max-w-sm">
-          <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-foreground/60 mb-2">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-foreground/20 bg-background p-3 text-sm focus:outline-none focus:border-foreground"
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-foreground/60 mb-2">Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-foreground/20 bg-background p-3 text-sm focus:outline-none focus:border-foreground"
-            />
-          </div>
-          <button
-            disabled={loading}
-            className="w-full bg-foreground text-background py-4 text-xs font-bold uppercase tracking-widest hover:bg-accent transition-colors disabled:opacity-50"
-          >
+          <label className="block">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Email</span>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+          </label>
+          <label className="block">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Password</span>
+            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+          </label>
+          <button disabled={loading}
+            className="w-full rounded-full brand-gradient px-5 py-3.5 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-opacity disabled:opacity-50">
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        <Link to="/" className="mt-10 text-xs uppercase tracking-widest text-foreground/40 hover:text-foreground">
+        <Link to="/" className="mt-10 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground">
           ← Back to site
         </Link>
       </div>
