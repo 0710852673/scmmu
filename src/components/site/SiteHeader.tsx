@@ -90,9 +90,16 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link
+              to="/auth"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex items-center justify-center rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted"
+            >
+              Member sign in
+            </Link>
+            <Link
               to="/book"
               onClick={() => setOpen(false)}
-              className="mt-2 inline-flex items-center justify-center rounded-full brand-gradient px-5 py-2.5 text-sm font-semibold text-white"
+              className="inline-flex items-center justify-center rounded-full brand-gradient px-5 py-2.5 text-sm font-semibold text-white"
             >
               Book Coverage
             </Link>
