@@ -28,6 +28,7 @@ import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authent
 import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
+import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
 
 const LeadershipRoute = LeadershipRouteImport.update({
   id: '/leadership',
@@ -130,6 +131,12 @@ const AuthenticatedPortalAnnouncementsRoute =
     path: '/portal/announcements',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminSiteRoute =
+  AuthenticatedPortalAdminSiteRouteImport.update({
+    id: '/portal/admin/site',
+    path: '/portal/admin/site',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -170,6 +178,7 @@ export interface FileRoutesByTo {
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -192,6 +201,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal/'
+    | '/portal/admin/site'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal'
+    | '/portal/admin/site'
   id:
     | '__root__'
     | '/'
@@ -255,6 +267,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
     | '/_authenticated/portal/'
+    | '/_authenticated/portal/admin/site'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -407,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAnnouncementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/site': {
+      id: '/_authenticated/portal/admin/site'
+      path: '/portal/admin/site'
+      fullPath: '/portal/admin/site'
+      preLoaderRoute: typeof AuthenticatedPortalAdminSiteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -418,6 +438,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+  AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -428,6 +449,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+  AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
