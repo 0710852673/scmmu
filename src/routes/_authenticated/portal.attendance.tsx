@@ -33,11 +33,11 @@ function AttendancePage() {
         <Stat label="This year" value={thisYear} />
       </div>
 
-      <h2 className="font-serif text-2xl mb-4">Records</h2>
+      <h2 className="font-display text-2xl mb-4">Records</h2>
       {data && data.length > 0 ? (
         <ul className="space-y-2">
           {data.map((a) => (
-            <li key={a.id} className="border border-foreground/10 px-4 py-3 bg-card flex justify-between">
+            <li key={a.id} className="border border-border px-4 py-3 bg-card flex justify-between">
               <span>{a.attended_on}</span>
               <span className="text-foreground/60">{a.meeting_label || "Meeting"}</span>
             </li>

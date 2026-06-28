@@ -65,13 +65,13 @@ function ContributionsPage() {
       </p>
 
       {open && (
-        <form onSubmit={submit} className="bg-card border border-foreground/10 p-6 mb-8 space-y-4 max-w-xl">
-          <select name="kind" className="w-full border border-foreground/20 p-3 text-sm bg-background" required>
+        <form onSubmit={submit} className="bg-card border border-border p-6 mb-8 space-y-4 max-w-xl">
+          <select name="kind" className="w-full border border-border p-3 text-sm bg-background" required>
             {KINDS.map((k) => (
               <option key={k.v} value={k.v}>{k.l} (+{k.p} pts)</option>
             ))}
           </select>
-          <textarea name="note" placeholder="Details (event, what you did)" rows={3} className="w-full border border-foreground/20 p-3 text-sm" />
+          <textarea name="note" placeholder="Details (event, what you did)" rows={3} className="w-full border border-border p-3 text-sm" />
           <button className="bg-foreground text-background px-6 py-3 text-xs font-bold uppercase tracking-widest">Submit</button>
         </form>
       )}
@@ -79,15 +79,15 @@ function ContributionsPage() {
       {mine && mine.length > 0 ? (
         <ul className="space-y-2">
           {mine.map((c) => (
-            <li key={c.id} className="border border-foreground/10 p-4 bg-card flex justify-between items-center flex-wrap gap-3">
+            <li key={c.id} className="border border-border p-4 bg-card flex justify-between items-center flex-wrap gap-3">
               <div>
                 <div className="font-bold capitalize">{c.kind.replace(/_/g, " ")}</div>
                 <div className="text-xs text-foreground/60 mt-1">{c.note || "—"} · {new Date(c.created_at).toLocaleDateString()}</div>
               </div>
               <span className={`text-[10px] uppercase tracking-widest font-bold px-3 py-1 border ${
-                c.status === "approved" ? "border-accent text-accent" :
+                c.status === "approved" ? "border-brand text-brand" :
                 c.status === "rejected" ? "border-destructive text-destructive" :
-                "border-foreground/20"
+                "border-border"
               }`}>{c.status}</span>
             </li>
           ))}

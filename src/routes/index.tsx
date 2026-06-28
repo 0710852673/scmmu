@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Camera, Radio, Video, Calendar, MapPin, Image as ImageIcon, Tv, Users, Sparkles } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
-import { LogoMark } from "@/components/site/Logo";
+
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import {
   getProjects, getSiteStats, getBoardMembers, getUpcomingEvents, getSiteSettings,
@@ -104,11 +104,6 @@ function Home() {
               </Link>
             </motion.div>
 
-            <motion.div variants={fadeUp} transition={{ duration: 0.8 }} className="mt-16 flex items-center justify-center">
-              <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-                <LogoMark size={64} />
-              </motion.div>
-            </motion.div>
           </motion.div>
         </div>
       </section>

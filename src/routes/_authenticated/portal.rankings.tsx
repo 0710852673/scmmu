@@ -48,7 +48,7 @@ function Rankings() {
       ) : (
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="text-left text-[10px] uppercase tracking-widest text-foreground/40 border-b border-foreground/10">
+            <tr className="text-left text-[10px] uppercase tracking-widest text-foreground/40 border-b border-border">
               <th className="py-3">#</th>
               <th>Member</th>
               <th>Division</th>
@@ -59,7 +59,7 @@ function Rankings() {
           <tbody>
             {list.map((u, i) => (
               <tr key={u.id} className="border-b border-foreground/5 hover:bg-muted/40">
-                <td className="py-4 font-serif italic text-xl">{i + 1}</td>
+                <td className="py-4 font-display italic text-xl">{i + 1}</td>
                 <td className="font-bold">{u.full_name || "Unnamed"}</td>
                 <td className="text-foreground/60 capitalize">{u.primary_division?.replace("_", " ") || "—"}</td>
                 <td className="text-xs uppercase tracking-widest">{level(u.points)}</td>
