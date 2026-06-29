@@ -38,5 +38,15 @@ export function LogoWordmark({ className = "" }: { className?: string }) {
 }
 
 export function LogoFullWhite({ className = "", width = 180 }: { className?: string; width?: number }) {
-  return <img src={logoWhite.url} alt="SCCMU" width={width} className={className} />;
+  // Crop top/bottom whitespace from source PNG by wrapping in a fixed-aspect box with object-cover.
+  return (
+    <div className={`overflow-hidden ${className}`} style={{ width, height: Math.round(width * 0.34) }}>
+      <img
+        src={logoWhite.url}
+        alt="SCCMU"
+        className="w-full h-auto block"
+        style={{ marginTop: `-${Math.round(width * 0.18)}px` }}
+      />
+    </div>
+  );
 }
