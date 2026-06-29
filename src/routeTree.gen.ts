@@ -22,7 +22,6 @@ import { Route as DivisionsIndexRouteImport } from './routes/divisions.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
-import { Route as ApiPublicBootstrapTicRouteImport } from './routes/api/public/bootstrap-tic'
 import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
 import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
@@ -100,11 +99,6 @@ const AuthenticatedPortalIndexRoute =
     path: '/portal/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicBootstrapTicRoute = ApiPublicBootstrapTicRouteImport.update({
-  id: '/api/public/bootstrap-tic',
-  path: '/api/public/bootstrap-tic',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedPortalRankingsRoute =
   AuthenticatedPortalRankingsRouteImport.update({
     id: '/portal/rankings',
@@ -190,7 +184,6 @@ export interface FileRoutesByFullPath {
   '/portal/events': typeof AuthenticatedPortalEventsRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
-  '/api/public/bootstrap-tic': typeof ApiPublicBootstrapTicRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/$section': typeof AuthenticatedPortalAdminSectionRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
@@ -216,7 +209,6 @@ export interface FileRoutesByTo {
   '/portal/events': typeof AuthenticatedPortalEventsRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
-  '/api/public/bootstrap-tic': typeof ApiPublicBootstrapTicRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/$section': typeof AuthenticatedPortalAdminSectionRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
@@ -244,7 +236,6 @@ export interface FileRoutesById {
   '/_authenticated/portal/events': typeof AuthenticatedPortalEventsRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
-  '/api/public/bootstrap-tic': typeof ApiPublicBootstrapTicRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/admin/$section': typeof AuthenticatedPortalAdminSectionRoute
   '/_authenticated/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
@@ -272,7 +263,6 @@ export interface FileRouteTypes {
     | '/portal/events'
     | '/portal/profile'
     | '/portal/rankings'
-    | '/api/public/bootstrap-tic'
     | '/portal/'
     | '/portal/admin/$section'
     | '/portal/admin/bookings'
@@ -298,7 +288,6 @@ export interface FileRouteTypes {
     | '/portal/events'
     | '/portal/profile'
     | '/portal/rankings'
-    | '/api/public/bootstrap-tic'
     | '/portal'
     | '/portal/admin/$section'
     | '/portal/admin/bookings'
@@ -325,7 +314,6 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/events'
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
-    | '/api/public/bootstrap-tic'
     | '/_authenticated/portal/'
     | '/_authenticated/portal/admin/$section'
     | '/_authenticated/portal/admin/bookings'
@@ -347,7 +335,6 @@ export interface RootRouteChildren {
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   DivisionsIndexRoute: typeof DivisionsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
-  ApiPublicBootstrapTicRoute: typeof ApiPublicBootstrapTicRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -442,13 +429,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/'
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/api/public/bootstrap-tic': {
-      id: '/api/public/bootstrap-tic'
-      path: '/api/public/bootstrap-tic'
-      fullPath: '/api/public/bootstrap-tic'
-      preLoaderRoute: typeof ApiPublicBootstrapTicRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/portal/rankings': {
       id: '/_authenticated/portal/rankings'
@@ -576,7 +556,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsSlugRoute: ProjectsSlugRoute,
   DivisionsIndexRoute: DivisionsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
-  ApiPublicBootstrapTicRoute: ApiPublicBootstrapTicRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
