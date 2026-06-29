@@ -7,12 +7,12 @@ export function PortalPage({ title, eyebrow, action, children }: {
   return (
     <div className="min-h-screen">
       <header className="border-b border-border bg-card/60 backdrop-blur sticky top-0 z-10">
-        <div className="px-8 py-6 flex items-end justify-between gap-6 flex-wrap">
-          <div>
+        <div className="px-5 py-5 md:px-8 md:py-6 flex items-end justify-between gap-4 flex-wrap">
+          <div className="min-w-0">
             {eyebrow ? (
               <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand mb-2">{eyebrow}</div>
             ) : null}
-            <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">{title}</h1>
+            <h1 className="font-display text-2xl md:text-4xl font-extrabold tracking-tight break-words">{title}</h1>
           </div>
           {action}
         </div>
@@ -21,7 +21,7 @@ export function PortalPage({ title, eyebrow, action, children }: {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="p-6 md:p-8"
+        className="p-5 md:p-8"
       >
         {children}
       </motion.div>

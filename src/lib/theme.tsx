@@ -7,11 +7,11 @@ const ThemeCtx = createContext<{ theme: Theme; toggle: () => void }>({ theme: "l
 const STORAGE_KEY = "sccmu-theme";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
     const stored = (typeof window !== "undefined" && (localStorage.getItem(STORAGE_KEY) as Theme | null)) || null;
-    const initial: Theme = stored ?? "light";
+    const initial: Theme = stored ?? "dark";
     setTheme(initial);
     document.documentElement.classList.toggle("dark", initial === "dark");
   }, []);

@@ -78,9 +78,8 @@ function Home() {
         <div className="relative mx-auto max-w-7xl px-6 pt-20 pb-28 md:px-8 md:pt-28 md:pb-36">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="mx-auto max-w-4xl text-center">
             <motion.div variants={fadeUp} transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-1.5 text-xs font-medium text-foreground/70 backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand animate-pulse" />
-              Official media unit of Sivali Central College
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/70 backdrop-blur">
+              OFFICIAL SITE OF SIVALI CENTRAL COLLEGE MEDIA UNIT
             </motion.div>
 
             <motion.h1 variants={fadeUp} transition={{ duration: 0.7 }}
