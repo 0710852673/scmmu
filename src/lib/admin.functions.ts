@@ -89,7 +89,7 @@ export const adminUpdateMember = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (Object.keys(data.patch).length > 0) {
-      await supabaseAdmin.from("profiles").update(data.patch).eq("id", data.user_id);
+      await supabaseAdmin.from("profiles").update(data.patch as any).eq("id", data.user_id);
     }
     if (data.role) {
       await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
