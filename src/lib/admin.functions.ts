@@ -47,9 +47,9 @@ export const adminCreateMember = createServerFn({ method: "POST" })
       grade: data.grade ?? null,
       class: data.class ?? null,
       whatsapp: data.whatsapp ?? null,
-      primary_division: data.primary_division ?? null,
+      primary_division: (data.primary_division ?? null) as any,
       email: data.email,
-    }).eq("id", uid);
+    } as any).eq("id", uid);
 
     if (data.role !== "member") {
       await supabaseAdmin.from("user_roles").insert({ user_id: uid, role: data.role });
