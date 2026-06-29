@@ -1,10 +1,11 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard, User, Calendar, ClipboardCheck, FileText, ExternalLink,
   Trophy, Megaphone, Users, BookmarkCheck, FolderKanban, Mail, ImagePlus,
-  LogOut, Settings, Shield, ChevronRight,
+  LogOut, Settings, Shield, ChevronRight, Menu, X,
 } from "lucide-react";
 import { ThemeToggle } from "@/lib/theme";
 import { getSiteSettings } from "@/lib/public-data.functions";
