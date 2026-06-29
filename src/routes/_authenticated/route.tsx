@@ -74,53 +74,83 @@ function PortalLayout() {
     navigate({ to: "/auth", replace: true });
   }
 
+  const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => { setMobileOpen(false); }, [loc.pathname]);
+
+  const sidebar = (
+    <aside className="border-r border-border bg-card flex flex-col h-full w-[280px]">
+      <Link to="/" className="px-6 py-5 border-b border-border flex items-center gap-2.5">
+        <div className="grid h-9 w-9 place-items-center rounded-lg brand-gradient text-white font-display font-extrabold text-sm">S</div>
+        <div>
+          <div className="font-display text-base font-extrabold tracking-tight leading-none">SCCMU PORTAL</div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">Media Unit</div>
+        </div>
+      </Link>
+
+      <nav className="flex-1 overflow-y-auto p-4 space-y-6 text-sm">
+        <NavGroup label="MEMBER" items={MEMBER_NAV} currentPath={loc.pathname} />
+        {(isHead && !isAdmin) && <NavGroup label="HEAD / TIC" items={[...HEAD_NAV, { to: "/portal/admin/events", label: "Events", icon: Calendar }]} currentPath={loc.pathname} />}
+        {isAdmin && <NavGroup label="ADMINISTRATOR" items={ADMIN_NAV} currentPath={loc.pathname} accent />}
+
+        <div>
+          <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">EXTERNAL</div>
+          <a href={mediaflowUrl} target="_blank" rel="noopener noreferrer"
+             className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-muted transition-colors">
+            <span className="flex items-center gap-2.5"><ExternalLink className="h-4 w-4 text-brand" /> MediaFlow</span>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+          </a>
+        </div>
+      </nav>
+
+      <div className="p-4 border-t border-border space-y-3">
+        <div className="flex items-center gap-3 px-2">
+          <div className={`grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br ${tierColor} text-white text-xs font-bold shrink-0`}>
+            {(user.email ?? "?")[0].toUpperCase()}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-semibold truncate">{user.email}</div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{tier}</div>
+          </div>
+          <ThemeToggle />
+        </div>
+        <button onClick={signOut}
+          className="w-full flex items-center justify-center gap-2 rounded-lg border border-border py-2 text-xs font-semibold hover:bg-foreground hover:text-background transition-colors">
+          <LogOut className="h-3.5 w-3.5" /> Sign out
+        </button>
+      </div>
+    </aside>
+  );
+
   return (
-    <div className="min-h-screen bg-muted/30 grid md:grid-cols-[280px_1fr]">
-      <aside className="border-r border-border bg-card flex flex-col sticky top-0 h-screen">
-        <Link to="/" className="px-6 py-5 border-b border-border flex items-center gap-2.5">
-          <div className="grid h-9 w-9 place-items-center rounded-lg brand-gradient text-white font-display font-extrabold text-sm">S</div>
-          <div>
-            <div className="font-display text-base font-extrabold tracking-tight leading-none">SCCMU Portal</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">Media Unit</div>
-          </div>
+    <div className="min-h-screen bg-muted/30 md:grid md:grid-cols-[280px_1fr]">
+      {/* Mobile topbar */}
+      <header className="md:hidden sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="grid h-8 w-8 place-items-center rounded-lg brand-gradient text-white font-display font-extrabold text-sm">S</div>
+          <span className="font-display text-sm font-extrabold tracking-tight">SCCMU PORTAL</span>
         </Link>
+        <button onClick={() => setMobileOpen(true)} aria-label="Open menu"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border">
+          <Menu className="h-4 w-4" />
+        </button>
+      </header>
 
-        <nav className="flex-1 overflow-y-auto p-4 space-y-6 text-sm">
-          <NavGroup label="Member" items={MEMBER_NAV} currentPath={loc.pathname} />
+      {/* Desktop sidebar */}
+      <div className="hidden md:block sticky top-0 h-screen">{sidebar}</div>
 
-          {(isHead && !isAdmin) && <NavGroup label="Section Head" items={HEAD_NAV} currentPath={loc.pathname} />}
-
-          {isAdmin && <NavGroup label="Administrator" items={ADMIN_NAV} currentPath={loc.pathname} accent />}
-
-          <div>
-            <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">External</div>
-            <a href={mediaflowUrl} target="_blank" rel="noopener noreferrer"
-               className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-muted transition-colors">
-              <span className="flex items-center gap-2.5"><ExternalLink className="h-4 w-4 text-brand" /> MediaFlow</span>
-              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-            </a>
-          </div>
-        </nav>
-
-        <div className="p-4 border-t border-border space-y-3">
-          <div className="flex items-center gap-3 px-2">
-            <div className={`grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br ${tierColor} text-white text-xs font-bold`}>
-              {(user.email ?? "?")[0].toUpperCase()}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-xs font-semibold truncate">{user.email}</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{tier}</div>
-            </div>
-            <ThemeToggle />
-          </div>
-          <button onClick={signOut}
-            className="w-full flex items-center justify-center gap-2 rounded-lg border border-border py-2 text-xs font-semibold hover:bg-foreground hover:text-background transition-colors">
-            <LogOut className="h-3.5 w-3.5" /> Sign out
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
+          <div className="relative h-full">{sidebar}</div>
+          <button onClick={() => setMobileOpen(false)} aria-label="Close menu"
+            className="absolute top-3 right-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-card border border-border">
+            <X className="h-4 w-4" />
           </button>
         </div>
-      </aside>
+      )}
 
-      <main className="overflow-x-hidden">
+      <main className="overflow-x-hidden min-w-0">
         <Outlet />
       </main>
     </div>
