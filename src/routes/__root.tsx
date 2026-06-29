@@ -21,7 +21,7 @@ import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 
 // Apply theme before paint to avoid a flash on first load.
-const THEME_BOOTSTRAP = `(function(){try{var t=localStorage.getItem('sccmu-theme');if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
+const THEME_BOOTSTRAP = `(function(){try{var t=localStorage.getItem('sccmu-theme');if(t!=='light'){document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`;
 
 function NotFoundComponent() {
   return (
