@@ -207,25 +207,23 @@ function Dashboard() {
         )}
       </section>
 
-      {/* QUICK LINKS — members */}
-      <section>
-        <SectionTitle>Jump to</SectionTitle>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <QuickLink to="/portal/profile" icon={Award} label="My profile" sub="Skills & achievements" />
-          <QuickLink to="/portal/contributions" icon={ClipboardCheck} label="Log contribution" sub="Earn points" />
-          <QuickLink to="/portal/rankings" icon={Trophy} label="Rankings" sub="See where you stand" />
-          <a
-            href="https://sccmu.cybertec.lk/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group rounded-2xl border border-border bg-card p-5 hover:border-brand/40 hover:-translate-y-0.5 transition-all shadow-sm"
-          >
-            <ExternalLink className="h-5 w-5 text-brand mb-3" />
-            <div className="font-display font-bold">MediaFlow</div>
-            <div className="text-xs text-muted-foreground mt-0.5">Open production board</div>
-          </a>
-        </div>
-      </section>
+      {/* QUICK LINKS — hidden for TIC */}
+      {!isTic && (
+        <section>
+          <SectionTitle>Jump to</SectionTitle>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <QuickLink to="/portal/profile" icon={Award} label="My profile" sub="Skills & achievements" />
+            {!isAdmin && <QuickLink to="/portal/contributions" icon={ClipboardCheck} label="Send request" sub="Log contribution" />}
+            {!isAdmin && <QuickLink to="/portal/rankings" icon={Trophy} label="Rankings" sub="See where you stand" />}
+            <a href="https://sccmu.cybertec.lk/" target="_blank" rel="noopener noreferrer"
+              className="group rounded-2xl border border-border bg-card p-5 hover:border-brand/40 hover:-translate-y-0.5 transition-all shadow-sm">
+              <ExternalLink className="h-5 w-5 text-brand mb-3" />
+              <div className="font-display font-bold">MediaFlow</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Open production board</div>
+            </a>
+          </div>
+        </section>
+      )}
     </PortalPage>
   );
 }
