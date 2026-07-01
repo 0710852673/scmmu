@@ -31,11 +31,15 @@ function Dashboard() {
   });
 
   const isAdmin = roles?.includes("administrator");
-  const isHead = roles?.some((r) => ["section_head", "executive_board", "tic"].includes(r));
-  const tier: "Administrator" | "Head / Board" | "Member" = isAdmin ? "Administrator" : isHead ? "Head / Board" : "Member";
+  const isTic = !isAdmin && roles?.includes("tic");
+  const isHead = !isAdmin && !isTic && roles?.some((r) => ["section_head", "executive_board"].includes(r));
+  const isStaff = !!(isAdmin || isTic || isHead);
+  const tier: "Administrator" | "TIC" | "Head / Board" | "Member" =
+    isAdmin ? "Administrator" : isTic ? "TIC" : isHead ? "Head / Board" : "Member";
 
   const { data: stats } = useQuery({
     queryKey: ["dash-stats", user.id],
+    enabled: !isTic, // TIC doesn't compete with members
     queryFn: async () => {
       const [att, pts, events, ach] = await Promise.all([
         supabase.from("attendance").select("*", { count: "exact", head: true }).eq("user_id", user.id),
@@ -53,9 +57,9 @@ function Dashboard() {
     },
   });
 
-  const { data: adminStats } = useQuery({
-    queryKey: ["admin-stats"],
-    enabled: !!isAdmin,
+  const { data: staffStats } = useQuery({
+    queryKey: ["staff-stats"],
+    enabled: isStaff,
     queryFn: async () => {
       const [members, bookings, msgs, events] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
@@ -74,17 +78,27 @@ function Dashboard() {
 
   const { data: pendingContribs } = useQuery({
     queryKey: ["pending-contribs"],
-    enabled: !!(isAdmin || isHead),
+    enabled: isStaff,
     queryFn: async () => {
       const { data } = await supabase
         .from("contributions")
-        .select("id,kind,division,note,created_at,user_id")
+        .select("id,kind,division,note,created_at,user_id,status")
         .eq("status", "pending")
         .order("created_at", { ascending: false })
         .limit(8);
       return data ?? [];
     },
   });
+
+  async function approveContribution(id: string) {
+    await supabase.from("contributions").update({ status: "approved" }).eq("id", id);
+    // The DB trigger awards points automatically.
+    window.location.reload();
+  }
+  async function rejectContribution(id: string) {
+    await supabase.from("contributions").update({ status: "rejected" }).eq("id", id);
+    window.location.reload();
+  }
 
   const { data: announcements } = useQuery({
     queryKey: ["recent-announcements"],
