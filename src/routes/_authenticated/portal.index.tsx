@@ -121,37 +121,41 @@ function Dashboard() {
       title={`Welcome back, ${firstName}.`}
       action={<RoleBadge role={tier} />}
     >
-      {/* MEMBER STATS — everyone sees these */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <Stat label="Total points" value={stats?.points ?? "—"} icon={Trophy} tone="brand" />
-        <Stat label="Meetings attended" value={stats?.attendance ?? "—"} icon={ClipboardCheck} tone="info" />
-        <Stat label="Events" value={stats?.events ?? "—"} icon={Calendar} tone="success" />
-        <Stat label="Achievements" value={stats?.achievements ?? "—"} icon={Award} />
-      </div>
+      {/* MEMBER STATS — hidden for TIC (not competing) */}
+      {!isTic && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <Stat label="Total points" value={stats?.points ?? "—"} icon={Trophy} tone="brand" />
+          <Stat label="Meetings attended" value={stats?.attendance ?? "—"} icon={ClipboardCheck} tone="info" />
+          <Stat label="Events" value={stats?.events ?? "—"} icon={Calendar} tone="success" />
+          <Stat label="Achievements" value={stats?.achievements ?? "—"} icon={Award} />
+        </div>
+      )}
 
-      {/* ADMIN COMMAND CENTER */}
-      {isAdmin && adminStats && (
+      {/* STAFF COMMAND CENTER — Admin, TIC, Head */}
+      {isStaff && staffStats && (
         <section className="mb-10">
-          <SectionTitle sub="Live across the unit. Everything here is editable.">Administrator command center</SectionTitle>
+          <SectionTitle sub="Live across the unit.">
+            {isAdmin ? "Administrator command center" : isTic ? "TIC command center" : "Board command center"}
+          </SectionTitle>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-            <Stat label="Total members" value={adminStats.members} icon={Users} tone="brand" />
-            <Stat label="Pending bookings" value={adminStats.pendingBookings} icon={BookmarkCheck} tone="info" />
-            <Stat label="Unread messages" value={adminStats.unreadMessages} icon={Mail} />
-            <Stat label="Events in calendar" value={adminStats.events} icon={Calendar} tone="success" />
+            <Stat label="Total members" value={staffStats.members} icon={Users} tone="brand" />
+            <Stat label="Pending bookings" value={staffStats.pendingBookings} icon={BookmarkCheck} tone="info" />
+            <Stat label="Unread messages" value={staffStats.unreadMessages} icon={Mail} />
+            <Stat label="Events in calendar" value={staffStats.events} icon={Calendar} tone="success" />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <QuickLink to="/portal/admin/site" icon={Settings} label="Site settings" sub="Hero, stats, contact" />
-            <QuickLink to="/portal/admin/projects" icon={FolderKanban} label="Projects" sub="Publish & edit" />
-            <QuickLink to="/portal/admin/board" icon={Users} label="Board" sub="TIC, executive, heads" />
+            <QuickLink to="/portal/admin/members" icon={Users} label="Members" sub="View & manage" />
             <QuickLink to="/portal/admin/bookings" icon={BookmarkCheck} label="Bookings" sub="Approve coverage" />
+            <QuickLink to="/portal/admin/messages" icon={Mail} label="Messages" sub="Reply & clear" />
+            <QuickLink to="/portal/announcements" icon={Megaphone} label="Announcements" sub="Post updates" />
           </div>
         </section>
       )}
 
-      {/* HEAD / BOARD APPROVAL QUEUE */}
-      {(isHead || isAdmin) && (
+      {/* APPROVAL QUEUE — Admin, TIC, Head */}
+      {isStaff && (
         <section className="mb-10">
-          <SectionTitle sub="Approve member contributions to award points.">Approval queue</SectionTitle>
+          <SectionTitle sub="Approve member requests to award points.">Event & contribution requests</SectionTitle>
           {pendingContribs && pendingContribs.length > 0 ? (
             <Card className="p-0 overflow-hidden">
               <ul className="divide-y divide-border">
@@ -164,13 +168,19 @@ function Dashboard() {
                       </div>
                       <p className="text-sm mt-1 truncate">{c.note || "No note provided."}</p>
                     </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">{new Date(c.created_at).toLocaleDateString()}</span>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap hidden sm:inline">{new Date(c.created_at).toLocaleDateString()}</span>
+                    <div className="flex gap-1.5 shrink-0">
+                      <button onClick={() => approveContribution(c.id)}
+                        className="rounded-full bg-emerald-600 text-white px-3 py-1.5 text-xs font-semibold hover:bg-emerald-700">Approve</button>
+                      <button onClick={() => rejectContribution(c.id)}
+                        className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950">Reject</button>
+                    </div>
                   </li>
                 ))}
               </ul>
             </Card>
           ) : (
-            <Empty>Nothing waiting. Section is up to date.</Empty>
+            <Empty>Nothing waiting. All caught up.</Empty>
           )}
         </section>
       )}
