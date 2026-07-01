@@ -86,9 +86,12 @@ export function Empty({ children }: { children: ReactNode }) {
   );
 }
 
-export function RoleBadge({ role }: { role: "Administrator" | "Head / Board" | "Member" }) {
-  const styles: Record<string, string> = {
+export type PortalRole = "Administrator" | "TIC" | "Head / Board" | "Member";
+
+export function RoleBadge({ role }: { role: PortalRole }) {
+  const styles: Record<PortalRole, string> = {
     Administrator: "bg-gradient-to-r from-brand to-amber text-white",
+    TIC: "bg-gradient-to-r from-emerald-500 to-teal-600 text-white",
     "Head / Board": "bg-gradient-to-r from-blue-500 to-indigo-500 text-white",
     Member: "bg-muted text-foreground/80",
   };

@@ -5,10 +5,11 @@ import { useState, useEffect } from "react";
 import {
   LayoutDashboard, User, Calendar, ClipboardCheck, FileText, ExternalLink,
   Trophy, Megaphone, Users, BookmarkCheck, FolderKanban, Mail, ImagePlus,
-  LogOut, Settings, Shield, ChevronRight, Menu, X,
+  LogOut, Settings, Shield, ChevronRight, Menu, X, CheckSquare,
 } from "lucide-react";
 import { ThemeToggle } from "@/lib/theme";
 import { getSiteSettings } from "@/lib/public-data.functions";
+import { LogoMark } from "@/components/site/Logo";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -27,14 +28,27 @@ const MEMBER_NAV: NavItem[] = [
   { to: "/portal/profile", label: "My Profile", icon: User },
   { to: "/portal/events", label: "Events", icon: Calendar },
   { to: "/portal/attendance", label: "Attendance", icon: ClipboardCheck },
-  { to: "/portal/contributions", label: "Contributions", icon: FileText },
+  { to: "/portal/contributions", label: "Send Requests", icon: FileText },
   { to: "/portal/rankings", label: "Rankings", icon: Trophy },
+  { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
+];
+
+// TIC = Teacher In Charge. NO points, NO rankings, NO "send requests".
+const TIC_NAV: NavItem[] = [
+  { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/portal/profile", label: "My Profile", icon: User },
+  { to: "/portal/admin/members", label: "Members", icon: Users },
+  { to: "/portal/events", label: "Events", icon: Calendar },
+  { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
+  { to: "/portal/admin/messages", label: "Messages", icon: Mail },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
 ];
 
 const HEAD_NAV: NavItem[] = [
   { to: "/portal/admin/members", label: "Section Members", icon: Users },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
+  { to: "/portal/admin/messages", label: "Messages", icon: Mail },
+  { to: "/portal/events", label: "Events", icon: Calendar },
 ];
 
 const ADMIN_NAV: NavItem[] = [
@@ -63,9 +77,14 @@ function PortalLayout() {
   const settings = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
 
   const isAdmin = roles?.includes("administrator");
-  const isHead = roles?.some((r) => ["section_head", "executive_board", "tic"].includes(r));
-  const tier = isAdmin ? "Administrator" : isHead ? "Head / Board" : "Member";
-  const tierColor = isAdmin ? "from-brand to-amber" : isHead ? "from-blue-500 to-indigo-500" : "from-foreground/80 to-foreground";
+  const isTic = roles?.includes("tic") && !isAdmin;
+  const isHead = !isTic && !isAdmin && roles?.some((r) => ["section_head", "executive_board"].includes(r));
+  const tier = isAdmin ? "Administrator" : isTic ? "TIC" : isHead ? "Head / Board" : "Member";
+  const tierColor =
+    isAdmin ? "from-brand to-amber" :
+    isTic ? "from-emerald-500 to-teal-600" :
+    isHead ? "from-blue-500 to-indigo-500" :
+    "from-foreground/80 to-foreground";
 
   const mediaflowUrl = settings.data?.mediaflow_url ?? "https://sccmu.cybertec.lk/";
 
@@ -77,10 +96,23 @@ function PortalLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => { setMobileOpen(false); }, [loc.pathname]);
 
+  const groups: { label: string; items: NavItem[]; accent?: boolean }[] = [];
+  if (isAdmin) {
+    groups.push({ label: "MEMBER", items: MEMBER_NAV });
+    groups.push({ label: "ADMINISTRATOR", items: ADMIN_NAV, accent: true });
+  } else if (isTic) {
+    groups.push({ label: "TIC", items: TIC_NAV, accent: true });
+  } else if (isHead) {
+    groups.push({ label: "MEMBER", items: MEMBER_NAV });
+    groups.push({ label: "HEAD / BOARD", items: HEAD_NAV, accent: true });
+  } else {
+    groups.push({ label: "MEMBER", items: MEMBER_NAV });
+  }
+
   const sidebar = (
     <aside className="border-r border-border bg-card flex flex-col h-full w-[280px]">
       <Link to="/" className="px-6 py-5 border-b border-border flex items-center gap-2.5">
-        <div className="grid h-9 w-9 place-items-center rounded-lg brand-gradient text-white font-display font-extrabold text-sm">S</div>
+        <LogoMark size={28} />
         <div>
           <div className="font-display text-base font-extrabold tracking-tight leading-none">SCCMU PORTAL</div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">Media Unit</div>
@@ -88,9 +120,9 @@ function PortalLayout() {
       </Link>
 
       <nav className="flex-1 overflow-y-auto p-4 space-y-6 text-sm">
-        <NavGroup label="MEMBER" items={MEMBER_NAV} currentPath={loc.pathname} />
-        {(isHead && !isAdmin) && <NavGroup label="HEAD / TIC" items={[...HEAD_NAV, { to: "/portal/admin/events", label: "Events", icon: Calendar }]} currentPath={loc.pathname} />}
-        {isAdmin && <NavGroup label="ADMINISTRATOR" items={ADMIN_NAV} currentPath={loc.pathname} accent />}
+        {groups.map((g) => (
+          <NavGroup key={g.label} label={g.label} items={g.items} currentPath={loc.pathname} accent={g.accent} />
+        ))}
 
         <div>
           <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">EXTERNAL</div>
@@ -123,10 +155,9 @@ function PortalLayout() {
 
   return (
     <div className="min-h-screen bg-muted/30 md:grid md:grid-cols-[280px_1fr]">
-      {/* Mobile topbar */}
       <header className="md:hidden sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
         <Link to="/" className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-lg brand-gradient text-white font-display font-extrabold text-sm">S</div>
+          <LogoMark size={26} />
           <span className="font-display text-sm font-extrabold tracking-tight">SCCMU PORTAL</span>
         </Link>
         <button onClick={() => setMobileOpen(true)} aria-label="Open menu"
@@ -135,10 +166,8 @@ function PortalLayout() {
         </button>
       </header>
 
-      {/* Desktop sidebar */}
       <div className="hidden md:block sticky top-0 h-screen">{sidebar}</div>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
@@ -164,7 +193,7 @@ function NavGroup({ label, items, currentPath, accent }: { label: string; items:
       <div className="space-y-0.5">
         {items.map((item) => {
           if (!item.to) return null;
-          const active = item.exact ? currentPath === item.to : currentPath.startsWith(item.to);
+          const active = item.exact ? currentPath === item.to : currentPath.startsWith(item.to) && (item.to !== "/portal" || currentPath === "/portal");
           return (
             <Link key={item.to} to={item.to}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
