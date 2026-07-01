@@ -31,11 +31,15 @@ function Dashboard() {
   });
 
   const isAdmin = roles?.includes("administrator");
-  const isHead = roles?.some((r) => ["section_head", "executive_board", "tic"].includes(r));
-  const tier: "Administrator" | "Head / Board" | "Member" = isAdmin ? "Administrator" : isHead ? "Head / Board" : "Member";
+  const isTic = !isAdmin && roles?.includes("tic");
+  const isHead = !isAdmin && !isTic && roles?.some((r) => ["section_head", "executive_board"].includes(r));
+  const isStaff = !!(isAdmin || isTic || isHead);
+  const tier: "Administrator" | "TIC" | "Head / Board" | "Member" =
+    isAdmin ? "Administrator" : isTic ? "TIC" : isHead ? "Head / Board" : "Member";
 
   const { data: stats } = useQuery({
     queryKey: ["dash-stats", user.id],
+    enabled: !isTic, // TIC doesn't compete with members
     queryFn: async () => {
       const [att, pts, events, ach] = await Promise.all([
         supabase.from("attendance").select("*", { count: "exact", head: true }).eq("user_id", user.id),
@@ -53,9 +57,9 @@ function Dashboard() {
     },
   });
 
-  const { data: adminStats } = useQuery({
-    queryKey: ["admin-stats"],
-    enabled: !!isAdmin,
+  const { data: staffStats } = useQuery({
+    queryKey: ["staff-stats"],
+    enabled: isStaff,
     queryFn: async () => {
       const [members, bookings, msgs, events] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
@@ -74,17 +78,27 @@ function Dashboard() {
 
   const { data: pendingContribs } = useQuery({
     queryKey: ["pending-contribs"],
-    enabled: !!(isAdmin || isHead),
+    enabled: isStaff,
     queryFn: async () => {
       const { data } = await supabase
         .from("contributions")
-        .select("id,kind,division,note,created_at,user_id")
+        .select("id,kind,division,note,created_at,user_id,status")
         .eq("status", "pending")
         .order("created_at", { ascending: false })
         .limit(8);
       return data ?? [];
     },
   });
+
+  async function approveContribution(id: string) {
+    await supabase.from("contributions").update({ status: "approved" }).eq("id", id);
+    // The DB trigger awards points automatically.
+    window.location.reload();
+  }
+  async function rejectContribution(id: string) {
+    await supabase.from("contributions").update({ status: "rejected" }).eq("id", id);
+    window.location.reload();
+  }
 
   const { data: announcements } = useQuery({
     queryKey: ["recent-announcements"],
@@ -107,37 +121,41 @@ function Dashboard() {
       title={`Welcome back, ${firstName}.`}
       action={<RoleBadge role={tier} />}
     >
-      {/* MEMBER STATS — everyone sees these */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <Stat label="Total points" value={stats?.points ?? "—"} icon={Trophy} tone="brand" />
-        <Stat label="Meetings attended" value={stats?.attendance ?? "—"} icon={ClipboardCheck} tone="info" />
-        <Stat label="Events" value={stats?.events ?? "—"} icon={Calendar} tone="success" />
-        <Stat label="Achievements" value={stats?.achievements ?? "—"} icon={Award} />
-      </div>
+      {/* MEMBER STATS — hidden for TIC (not competing) */}
+      {!isTic && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <Stat label="Total points" value={stats?.points ?? "—"} icon={Trophy} tone="brand" />
+          <Stat label="Meetings attended" value={stats?.attendance ?? "—"} icon={ClipboardCheck} tone="info" />
+          <Stat label="Events" value={stats?.events ?? "—"} icon={Calendar} tone="success" />
+          <Stat label="Achievements" value={stats?.achievements ?? "—"} icon={Award} />
+        </div>
+      )}
 
-      {/* ADMIN COMMAND CENTER */}
-      {isAdmin && adminStats && (
+      {/* STAFF COMMAND CENTER — Admin, TIC, Head */}
+      {isStaff && staffStats && (
         <section className="mb-10">
-          <SectionTitle sub="Live across the unit. Everything here is editable.">Administrator command center</SectionTitle>
+          <SectionTitle sub="Live across the unit.">
+            {isAdmin ? "Administrator command center" : isTic ? "TIC command center" : "Board command center"}
+          </SectionTitle>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-            <Stat label="Total members" value={adminStats.members} icon={Users} tone="brand" />
-            <Stat label="Pending bookings" value={adminStats.pendingBookings} icon={BookmarkCheck} tone="info" />
-            <Stat label="Unread messages" value={adminStats.unreadMessages} icon={Mail} />
-            <Stat label="Events in calendar" value={adminStats.events} icon={Calendar} tone="success" />
+            <Stat label="Total members" value={staffStats.members} icon={Users} tone="brand" />
+            <Stat label="Pending bookings" value={staffStats.pendingBookings} icon={BookmarkCheck} tone="info" />
+            <Stat label="Unread messages" value={staffStats.unreadMessages} icon={Mail} />
+            <Stat label="Events in calendar" value={staffStats.events} icon={Calendar} tone="success" />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <QuickLink to="/portal/admin/site" icon={Settings} label="Site settings" sub="Hero, stats, contact" />
-            <QuickLink to="/portal/admin/projects" icon={FolderKanban} label="Projects" sub="Publish & edit" />
-            <QuickLink to="/portal/admin/board" icon={Users} label="Board" sub="TIC, executive, heads" />
+            <QuickLink to="/portal/admin/members" icon={Users} label="Members" sub="View & manage" />
             <QuickLink to="/portal/admin/bookings" icon={BookmarkCheck} label="Bookings" sub="Approve coverage" />
+            <QuickLink to="/portal/admin/messages" icon={Mail} label="Messages" sub="Reply & clear" />
+            <QuickLink to="/portal/announcements" icon={Megaphone} label="Announcements" sub="Post updates" />
           </div>
         </section>
       )}
 
-      {/* HEAD / BOARD APPROVAL QUEUE */}
-      {(isHead || isAdmin) && (
+      {/* APPROVAL QUEUE — Admin, TIC, Head */}
+      {isStaff && (
         <section className="mb-10">
-          <SectionTitle sub="Approve member contributions to award points.">Approval queue</SectionTitle>
+          <SectionTitle sub="Approve member requests to award points.">Event & contribution requests</SectionTitle>
           {pendingContribs && pendingContribs.length > 0 ? (
             <Card className="p-0 overflow-hidden">
               <ul className="divide-y divide-border">
@@ -150,13 +168,19 @@ function Dashboard() {
                       </div>
                       <p className="text-sm mt-1 truncate">{c.note || "No note provided."}</p>
                     </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">{new Date(c.created_at).toLocaleDateString()}</span>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap hidden sm:inline">{new Date(c.created_at).toLocaleDateString()}</span>
+                    <div className="flex gap-1.5 shrink-0">
+                      <button onClick={() => approveContribution(c.id)}
+                        className="rounded-full bg-emerald-600 text-white px-3 py-1.5 text-xs font-semibold hover:bg-emerald-700">Approve</button>
+                      <button onClick={() => rejectContribution(c.id)}
+                        className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950">Reject</button>
+                    </div>
                   </li>
                 ))}
               </ul>
             </Card>
           ) : (
-            <Empty>Nothing waiting. Section is up to date.</Empty>
+            <Empty>Nothing waiting. All caught up.</Empty>
           )}
         </section>
       )}
@@ -183,25 +207,23 @@ function Dashboard() {
         )}
       </section>
 
-      {/* QUICK LINKS — members */}
-      <section>
-        <SectionTitle>Jump to</SectionTitle>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <QuickLink to="/portal/profile" icon={Award} label="My profile" sub="Skills & achievements" />
-          <QuickLink to="/portal/contributions" icon={ClipboardCheck} label="Log contribution" sub="Earn points" />
-          <QuickLink to="/portal/rankings" icon={Trophy} label="Rankings" sub="See where you stand" />
-          <a
-            href="https://sccmu.cybertec.lk/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group rounded-2xl border border-border bg-card p-5 hover:border-brand/40 hover:-translate-y-0.5 transition-all shadow-sm"
-          >
-            <ExternalLink className="h-5 w-5 text-brand mb-3" />
-            <div className="font-display font-bold">MediaFlow</div>
-            <div className="text-xs text-muted-foreground mt-0.5">Open production board</div>
-          </a>
-        </div>
-      </section>
+      {/* QUICK LINKS — hidden for TIC */}
+      {!isTic && (
+        <section>
+          <SectionTitle>Jump to</SectionTitle>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <QuickLink to="/portal/profile" icon={Award} label="My profile" sub="Skills & achievements" />
+            {!isAdmin && <QuickLink to="/portal/contributions" icon={ClipboardCheck} label="Send request" sub="Log contribution" />}
+            {!isAdmin && <QuickLink to="/portal/rankings" icon={Trophy} label="Rankings" sub="See where you stand" />}
+            <a href="https://sccmu.cybertec.lk/" target="_blank" rel="noopener noreferrer"
+              className="group rounded-2xl border border-border bg-card p-5 hover:border-brand/40 hover:-translate-y-0.5 transition-all shadow-sm">
+              <ExternalLink className="h-5 w-5 text-brand mb-3" />
+              <div className="font-display font-bold">MediaFlow</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Open production board</div>
+            </a>
+          </div>
+        </section>
+      )}
     </PortalPage>
   );
 }

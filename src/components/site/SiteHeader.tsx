@@ -27,9 +27,7 @@ export function SiteHeader() {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all ${
-        scrolled
-          ? "border-b border-border bg-background/85 backdrop-blur-xl"
-          : "border-b border-transparent bg-background/50 backdrop-blur"
+        scrolled ? "border-b border-border bg-background/85 backdrop-blur-xl" : "border-b border-transparent bg-background/50 backdrop-blur"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8">
@@ -56,7 +54,7 @@ export function SiteHeader() {
             to="/auth"
             className="hidden md:inline-flex items-center rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
           >
-            Member sign in
+            Member Sign in
           </Link>
           <Link
             to="/book"
@@ -94,7 +92,7 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
               className="mt-2 inline-flex items-center justify-center rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted"
             >
-              Member sign in
+              Member Sign in
             </Link>
             <Link
               to="/book"

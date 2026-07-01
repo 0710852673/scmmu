@@ -78,19 +78,29 @@ function Home() {
         <div className="relative mx-auto max-w-7xl px-6 pt-20 pb-28 md:px-8 md:pt-28 md:pb-36">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="mx-auto max-w-4xl text-center">
             <motion.div variants={fadeUp} transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/70 backdrop-blur">
+              className="inline-flex items-center gap-2.5 rounded-full border border-border bg-card/70 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/70 backdrop-blur">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+              </span>
               OFFICIAL SITE OF SIVALI CENTRAL COLLEGE MEDIA UNIT
             </motion.div>
 
             <motion.h1 variants={fadeUp} transition={{ duration: 0.7 }}
-              className="mt-7 text-5xl font-extrabold leading-[1.04] tracking-tight md:text-7xl lg:text-[5.5rem]">
-              {heroTitle.split("—")[0]}
-              {heroTitle.includes("—") && <><br className="hidden sm:block" /><span className="brand-text">—{heroTitle.split("—")[1]}</span></>}
+              className="mt-7 text-5xl font-extrabold leading-[1.04] tracking-tight md:text-7xl lg:text-[5.5rem] min-h-[1.04em]">
+              {settings.isLoading ? (
+                <span className="opacity-0">.</span>
+              ) : (
+                <>
+                  {heroTitle.split("—")[0]}
+                  {heroTitle.includes("—") && <><br className="hidden sm:block" /><span className="brand-text">—{heroTitle.split("—")[1]}</span></>}
+                </>
+              )}
             </motion.h1>
 
             <motion.p variants={fadeUp} transition={{ duration: 0.7 }}
-              className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-foreground/70 md:text-lg">
-              {heroSub}
+              className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-foreground/70 md:text-lg min-h-[1.5em]">
+              {settings.isLoading ? "" : heroSub}
             </motion.p>
 
             <motion.div variants={fadeUp} transition={{ duration: 0.7 }}
@@ -220,7 +230,7 @@ function Home() {
           className="mb-12 flex flex-wrap items-end justify-between gap-4">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">School calendar</span>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">Coming up on campus.</h2>
+            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">Coming up next in school.</h2>
           </div>
           <Link to="/book" className="inline-flex items-center gap-1 text-sm font-semibold hover:text-brand transition-colors">
             Request coverage <ArrowUpRight className="h-4 w-4" />
