@@ -15,6 +15,7 @@ function EventsPage() {
   const { user } = Route.useRouteContext();
   const qc = useQueryClient();
   const [showMissing, setShowMissing] = useState(false);
+  const [showNew, setShowNew] = useState(false);
 
   const { data: roles } = useQuery({
     queryKey: ["my-roles", user.id],
@@ -42,22 +43,32 @@ function EventsPage() {
     },
   });
 
-  // STAFF: pending join requests to approve
+  // STAFF: pending join requests to approve — fetch profiles/events separately (no FK to public.profiles)
   const { data: pendingJoins } = useQuery({
     queryKey: ["pending-event-joins"],
     enabled: isStaff,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data: rows, error } = await supabase
         .from("event_participants")
-        .select("id,event_id,user_id,role,status,created_at,events(name,event_date),profiles(full_name,photo_url)")
+        .select("id,event_id,user_id,role,status,created_at")
         .eq("status", "pending")
         .order("created_at", { ascending: false });
-      return data ?? [];
+      if (error) { toast.error(error.message); return []; }
+      if (!rows || rows.length === 0) return [];
+      const userIds = [...new Set(rows.map((r) => r.user_id))];
+      const eventIds = [...new Set(rows.map((r) => r.event_id))];
+      const [profs, evs] = await Promise.all([
+        supabase.from("profiles").select("id,full_name,photo_url").in("id", userIds),
+        supabase.from("events").select("id,name,event_date").in("id", eventIds),
+      ]);
+      const pMap = new Map((profs.data ?? []).map((p) => [p.id, p]));
+      const eMap = new Map((evs.data ?? []).map((e) => [e.id, e]));
+      return rows.map((r) => ({ ...r, profile: pMap.get(r.user_id), event: eMap.get(r.event_id) }));
     },
   });
 
   async function decideJoin(id: string, approve: boolean) {
-    const { error } = await supabase.from("event_participants").update({ status: approve ? "approved" : "rejected" }).eq("id", id);
+    const { error } = await supabase.from("event_participants").update({ status: approve ? "approved" : "rejected", reviewed_by: user.id }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(approve ? "Approved" : "Rejected");
     qc.invalidateQueries({ queryKey: ["pending-event-joins"] });
@@ -68,6 +79,33 @@ function EventsPage() {
     if (error) return toast.error(error.message);
     toast.success("Requested — pending review");
     qc.invalidateQueries({ queryKey: ["my-parts", user.id] });
+  }
+
+  async function deleteEvent(id: string, name: string) {
+    if (!confirm(`Delete event "${name}"? This also removes all join requests.`)) return;
+    const { error } = await supabase.from("events").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Event deleted");
+    qc.invalidateQueries({ queryKey: ["portal-events"] });
+    qc.invalidateQueries({ queryKey: ["pending-event-joins"] });
+  }
+
+  async function createEvent(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const { error } = await supabase.from("events").insert({
+      name: String(fd.get("name")),
+      event_date: String(fd.get("event_date")) || null,
+      location: String(fd.get("location")) || null,
+      category: String(fd.get("category")) || null,
+      description: String(fd.get("description")) || null,
+      created_by: user.id,
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Event created");
+    (e.target as HTMLFormElement).reset();
+    setShowNew(false);
+    qc.invalidateQueries({ queryKey: ["portal-events"] });
   }
 
   async function submitMissing(e: React.FormEvent<HTMLFormElement>) {
@@ -84,6 +122,7 @@ function EventsPage() {
     (e.target as HTMLFormElement).reset();
     setShowMissing(false);
   }
+
 
   return (
     <PortalPage
