@@ -4,16 +4,18 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Empty, Card, SectionTitle } from "@/components/portal/PortalUI";
-import { Calendar, MapPin, CheckCircle2, XCircle } from "lucide-react";
+import { Calendar, MapPin, CheckCircle2, XCircle, Trash2, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/events")({
   component: EventsPage,
 });
 
+
 function EventsPage() {
   const { user } = Route.useRouteContext();
   const qc = useQueryClient();
   const [showMissing, setShowMissing] = useState(false);
+  const [showNew, setShowNew] = useState(false);
 
   const { data: roles } = useQuery({
     queryKey: ["my-roles", user.id],
@@ -41,22 +43,32 @@ function EventsPage() {
     },
   });
 
-  // STAFF: pending join requests to approve
+  // STAFF: pending join requests to approve — fetch profiles/events separately (no FK to public.profiles)
   const { data: pendingJoins } = useQuery({
     queryKey: ["pending-event-joins"],
     enabled: isStaff,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data: rows, error } = await supabase
         .from("event_participants")
-        .select("id,event_id,user_id,role,status,created_at,events(name,event_date),profiles(full_name,photo_url)")
+        .select("id,event_id,user_id,role,status,created_at")
         .eq("status", "pending")
         .order("created_at", { ascending: false });
-      return data ?? [];
+      if (error) { toast.error(error.message); return []; }
+      if (!rows || rows.length === 0) return [];
+      const userIds = [...new Set(rows.map((r) => r.user_id))];
+      const eventIds = [...new Set(rows.map((r) => r.event_id))];
+      const [profs, evs] = await Promise.all([
+        supabase.from("profiles").select("id,full_name,photo_url").in("id", userIds),
+        supabase.from("events").select("id,name,event_date").in("id", eventIds),
+      ]);
+      const pMap = new Map((profs.data ?? []).map((p) => [p.id, p]));
+      const eMap = new Map((evs.data ?? []).map((e) => [e.id, e]));
+      return rows.map((r) => ({ ...r, profile: pMap.get(r.user_id), event: eMap.get(r.event_id) }));
     },
   });
 
   async function decideJoin(id: string, approve: boolean) {
-    const { error } = await supabase.from("event_participants").update({ status: approve ? "approved" : "rejected" }).eq("id", id);
+    const { error } = await supabase.from("event_participants").update({ status: approve ? "approved" : "rejected", reviewed_by: user.id }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(approve ? "Approved" : "Rejected");
     qc.invalidateQueries({ queryKey: ["pending-event-joins"] });
@@ -67,6 +79,35 @@ function EventsPage() {
     if (error) return toast.error(error.message);
     toast.success("Requested — pending review");
     qc.invalidateQueries({ queryKey: ["my-parts", user.id] });
+  }
+
+  async function deleteEvent(id: string, name: string) {
+    if (!confirm(`Delete event "${name}"? This also removes all join requests.`)) return;
+    const { error } = await supabase.from("events").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Event deleted");
+    qc.invalidateQueries({ queryKey: ["portal-events"] });
+    qc.invalidateQueries({ queryKey: ["pending-event-joins"] });
+  }
+
+  async function createEvent(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const date = String(fd.get("event_date"));
+    if (!date) { toast.error("Event date is required"); return; }
+    const { error } = await supabase.from("events").insert({
+      name: String(fd.get("name")),
+      event_date: date,
+      location: String(fd.get("location")) || null,
+      category: String(fd.get("category")) || null,
+      description: String(fd.get("description")) || null,
+      created_by: user.id,
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Event created");
+    (e.target as HTMLFormElement).reset();
+    setShowNew(false);
+    qc.invalidateQueries({ queryKey: ["portal-events"] });
   }
 
   async function submitMissing(e: React.FormEvent<HTMLFormElement>) {
@@ -84,18 +125,36 @@ function EventsPage() {
     setShowMissing(false);
   }
 
+
   return (
     <PortalPage
       eyebrow="Schedule"
       title="Events"
       action={
-        !isStaff && (
+        isStaff ? (
+          <button onClick={() => setShowNew((v) => !v)} className="inline-flex items-center gap-1.5 rounded-full brand-gradient px-5 py-2 text-xs font-bold uppercase tracking-widest text-white">
+            <Plus className="h-3.5 w-3.5" /> New event
+          </button>
+        ) : (
           <button onClick={() => setShowMissing((v) => !v)} className="rounded-full border border-border px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors">
             Missing event?
           </button>
         )
       }
     >
+      {/* STAFF: create event */}
+      {showNew && isStaff && (
+        <form onSubmit={createEvent} className="bg-card border border-border rounded-2xl p-6 mb-8 space-y-4 max-w-xl">
+          <h3 className="font-display text-xl font-bold">New event</h3>
+          <input name="name" required placeholder="Event name" className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <input name="event_date" type="date" required className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <input name="location" placeholder="Location" className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <input name="category" placeholder="Category (e.g. Sports Meet)" className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <textarea name="description" placeholder="Description" rows={3} className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <button className="rounded-full brand-gradient px-6 py-3 text-xs font-bold uppercase tracking-widest text-white">Create</button>
+        </form>
+      )}
+
       {/* STAFF APPROVAL QUEUE */}
       {isStaff && (
         <section className="mb-10">
@@ -105,17 +164,17 @@ function EventsPage() {
               <ul className="divide-y divide-border">
                 {pendingJoins.map((r: any) => (
                   <li key={r.id} className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors">
-                    {r.profiles?.photo_url ? (
-                      <img src={r.profiles.photo_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+                    {r.profile?.photo_url ? (
+                      <img src={r.profile.photo_url} alt="" className="h-10 w-10 rounded-full object-cover" />
                     ) : (
                       <div className="h-10 w-10 rounded-full brand-gradient grid place-items-center text-white text-xs font-bold">
-                        {(r.profiles?.full_name ?? "?")[0]}
+                        {(r.profile?.full_name ?? "?")[0]}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm truncate">{r.profiles?.full_name ?? "Member"}</div>
+                      <div className="font-semibold text-sm truncate">{r.profile?.full_name ?? "Member"}</div>
                       <div className="text-xs text-muted-foreground truncate">
-                        {r.events?.name} · {r.events?.event_date} · Role: <span className="capitalize">{r.role}</span>
+                        {r.event?.name ?? "Event"} · {r.event?.event_date ?? ""} · Role: <span className="capitalize">{r.role}</span>
                       </div>
                     </div>
                     <div className="flex gap-1.5 shrink-0">
@@ -163,7 +222,18 @@ function EventsPage() {
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-base leading-tight">{e.name}</h3>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-base leading-tight">{e.name}</h3>
+                    {isStaff && (
+                      <button
+                        onClick={() => deleteEvent(e.id, e.name)}
+                        title="Delete event"
+                        className="shrink-0 rounded-full p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                     {e.location && <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" />{e.location}</span>}
                     {e.category && <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3" />{e.category}</span>}
@@ -199,3 +269,4 @@ function EventsPage() {
     </PortalPage>
   );
 }
+
