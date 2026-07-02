@@ -55,7 +55,15 @@ export const getBoardMembers = createServerFn({ method: "GET" }).handler(async (
     .eq("active", true)
     .order("display_order", { ascending: true });
   if (error) return { data: [], error: error.message };
-  return { data: data ?? [], error: null as string | null };
+  // Enforce canonical order: TIC → Executive Board → Section Heads.
+  const rank: Record<string, number> = { tic: 0, executive: 1, section_head: 2 };
+  const ordered = (data ?? []).slice().sort((a, b) => {
+    const ra = rank[a.board_category ?? ""] ?? 9;
+    const rb = rank[b.board_category ?? ""] ?? 9;
+    if (ra !== rb) return ra - rb;
+    return (a.display_order ?? 0) - (b.display_order ?? 0);
+  });
+  return { data: ordered, error: null as string | null };
 });
 
 export const getUpcomingEvents = createServerFn({ method: "GET" }).handler(async () => {
