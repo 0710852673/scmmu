@@ -32,7 +32,12 @@ function Auth() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      const msg = /invalid|credential|password/i.test(error.message)
+        ? "Email or password is incorrect. Please try again."
+        : error.message;
+      return toast.error(msg);
+    }
     toast.success("Signed in");
     navigate({ to: "/portal" });
   }
