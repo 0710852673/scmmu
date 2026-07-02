@@ -93,9 +93,11 @@ function EventsPage() {
   async function createEvent(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    const date = String(fd.get("event_date"));
+    if (!date) { toast.error("Event date is required"); return; }
     const { error } = await supabase.from("events").insert({
       name: String(fd.get("name")),
-      event_date: String(fd.get("event_date")) || null,
+      event_date: date,
       location: String(fd.get("location")) || null,
       category: String(fd.get("category")) || null,
       description: String(fd.get("description")) || null,
