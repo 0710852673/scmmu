@@ -38,17 +38,18 @@ const TIC_NAV: NavItem[] = [
   { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/portal/profile", label: "My Profile", icon: User },
   { to: "/portal/admin/members", label: "Members", icon: Users },
-  { to: "/portal/events", label: "Events", icon: Calendar },
+  { to: "/portal/events", label: "Events & Approvals", icon: Calendar },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
 ];
 
 const HEAD_NAV: NavItem[] = [
-  { to: "/portal/admin/members", label: "Section Members", icon: Users },
+  { to: "/portal/admin/members", label: "Members", icon: Users },
+  { to: "/portal/events", label: "Events & Approvals", icon: Calendar },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
-  { to: "/portal/events", label: "Events", icon: Calendar },
+  { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
 ];
 
 const ADMIN_NAV: NavItem[] = [
