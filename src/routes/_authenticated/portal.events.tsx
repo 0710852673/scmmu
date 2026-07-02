@@ -131,13 +131,30 @@ function EventsPage() {
       eyebrow="Schedule"
       title="Events"
       action={
-        !isStaff && (
+        isStaff ? (
+          <button onClick={() => setShowNew((v) => !v)} className="inline-flex items-center gap-1.5 rounded-full brand-gradient px-5 py-2 text-xs font-bold uppercase tracking-widest text-white">
+            <Plus className="h-3.5 w-3.5" /> New event
+          </button>
+        ) : (
           <button onClick={() => setShowMissing((v) => !v)} className="rounded-full border border-border px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors">
             Missing event?
           </button>
         )
       }
     >
+      {/* STAFF: create event */}
+      {showNew && isStaff && (
+        <form onSubmit={createEvent} className="bg-card border border-border rounded-2xl p-6 mb-8 space-y-4 max-w-xl">
+          <h3 className="font-display text-xl font-bold">New event</h3>
+          <input name="name" required placeholder="Event name" className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <input name="event_date" type="date" required className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <input name="location" placeholder="Location" className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <input name="category" placeholder="Category (e.g. Sports Meet)" className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <textarea name="description" placeholder="Description" rows={3} className="w-full rounded-lg border border-border bg-background p-3 text-sm" />
+          <button className="rounded-full brand-gradient px-6 py-3 text-xs font-bold uppercase tracking-widest text-white">Create</button>
+        </form>
+      )}
+
       {/* STAFF APPROVAL QUEUE */}
       {isStaff && (
         <section className="mb-10">
@@ -147,17 +164,17 @@ function EventsPage() {
               <ul className="divide-y divide-border">
                 {pendingJoins.map((r: any) => (
                   <li key={r.id} className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors">
-                    {r.profiles?.photo_url ? (
-                      <img src={r.profiles.photo_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+                    {r.profile?.photo_url ? (
+                      <img src={r.profile.photo_url} alt="" className="h-10 w-10 rounded-full object-cover" />
                     ) : (
                       <div className="h-10 w-10 rounded-full brand-gradient grid place-items-center text-white text-xs font-bold">
-                        {(r.profiles?.full_name ?? "?")[0]}
+                        {(r.profile?.full_name ?? "?")[0]}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm truncate">{r.profiles?.full_name ?? "Member"}</div>
+                      <div className="font-semibold text-sm truncate">{r.profile?.full_name ?? "Member"}</div>
                       <div className="text-xs text-muted-foreground truncate">
-                        {r.events?.name} · {r.events?.event_date} · Role: <span className="capitalize">{r.role}</span>
+                        {r.event?.name ?? "Event"} · {r.event?.event_date ?? ""} · Role: <span className="capitalize">{r.role}</span>
                       </div>
                     </div>
                     <div className="flex gap-1.5 shrink-0">
@@ -205,7 +222,18 @@ function EventsPage() {
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-base leading-tight">{e.name}</h3>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-base leading-tight">{e.name}</h3>
+                    {isStaff && (
+                      <button
+                        onClick={() => deleteEvent(e.id, e.name)}
+                        title="Delete event"
+                        className="shrink-0 rounded-full p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                     {e.location && <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" />{e.location}</span>}
                     {e.category && <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3" />{e.category}</span>}
@@ -241,3 +269,4 @@ function EventsPage() {
     </PortalPage>
   );
 }
+
