@@ -4,11 +4,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Empty, Card, SectionTitle } from "@/components/portal/PortalUI";
-import { Calendar, MapPin, CheckCircle2, XCircle } from "lucide-react";
+import { Calendar, MapPin, CheckCircle2, XCircle, Trash2, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/events")({
   component: EventsPage,
 });
+
 
 function EventsPage() {
   const { user } = Route.useRouteContext();
