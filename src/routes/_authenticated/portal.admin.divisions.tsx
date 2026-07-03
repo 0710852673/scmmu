@@ -48,7 +48,7 @@ function AdminDivisions() {
         onCreate={async () => ({ error: "Divisions cannot be created here — use a migration to add a new slug." })}
         onUpdate={async (id, patch) => {
           const { id: _id, slug: _slug, ...clean } = patch as any;
-          const { error } = await supabase.from("divisions").update(clean).eq("slug", id as string);
+          const { error } = await supabase.from("divisions").update(clean).eq("slug", id as any);
           return { error: error?.message ?? null };
         }}
         onDelete={async () => ({ error: "Divisions cannot be deleted — they are referenced by roles and events." })}
