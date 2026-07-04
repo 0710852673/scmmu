@@ -121,7 +121,7 @@ function Book() {
             : "For other schools and educational organisations."}
         </p>
 
-        <form onSubmit={onSubmit} className="bg-card border border-foreground/10 p-8 space-y-5">
+        <form ref={formRef} onSubmit={onSubmit} className="bg-card border border-foreground/10 p-8 space-y-5">
           <Field name="event_name" label="Event Name" required />
           <Field name="organization" label={kind === "internal" ? "Department / Club" : "School / Organisation"} required />
           <div className="grid sm:grid-cols-2 gap-5">
