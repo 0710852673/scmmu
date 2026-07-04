@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Mail, MapPin, Phone, Facebook, Youtube, MessageCircle } from "lucide-react";
+import { Mail, MapPin, Phone, Facebook, Youtube, MessageCircle, CheckCircle2 } from "lucide-react";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { getSiteSettings } from "@/lib/public-data.functions";
+import { notifyContactMessage } from "@/lib/email.functions";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -19,24 +20,35 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
   const settings = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
   const s = settings.data;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSending(true);
-    const fd = new FormData(e.currentTarget);
-    const { error } = await supabase.from("contact_messages").insert({
-      name: String(fd.get("name") ?? ""),
-      email: String(fd.get("email") ?? ""),
-      whatsapp: String(fd.get("whatsapp") ?? ""),
-      subject: String(fd.get("subject") ?? ""),
-      message: String(fd.get("message") ?? ""),
-    });
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const { data: inserted, error } = await supabase
+      .from("contact_messages")
+      .insert({
+        name: String(fd.get("name") ?? ""),
+        email: String(fd.get("email") ?? ""),
+        whatsapp: String(fd.get("whatsapp") ?? ""),
+        subject: String(fd.get("subject") ?? ""),
+        message: String(fd.get("message") ?? ""),
+      })
+      .select("id")
+      .single();
     setSending(false);
     if (error) return toast.error("Couldn't send. " + error.message);
+    if (inserted?.id) {
+      notifyContactMessage({ data: { messageId: inserted.id } }).catch(() => {});
+    }
     toast.success("Message sent. We'll be in touch soon.");
-    (e.currentTarget as HTMLFormElement).reset();
+    form.reset();
+    setSent(true);
+    setTimeout(() => setSent(false), 5000);
   }
 
   return (
@@ -90,6 +102,12 @@ function Contact() {
             className="w-full rounded-full brand-gradient py-3.5 text-sm font-semibold text-white hover:opacity-95 transition-opacity disabled:opacity-50">
             {sending ? "Sending…" : "Send message"}
           </button>
+          {sent && (
+            <div className="flex items-center justify-center gap-2 text-emerald-600 text-sm font-semibold">
+              <CheckCircle2 className="h-4 w-4" />
+              Message sent successfully — confirmation email on its way.
+            </div>
+          )}
         </form>
       </section>
     </SiteShell>

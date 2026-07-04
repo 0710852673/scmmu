@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Card, Empty } from "@/components/portal/PortalUI";
 import { Trash2 } from "lucide-react";
+import { notifyBookingStatus } from "@/lib/email.functions";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/bookings")({
   component: AdminBookings,
@@ -22,7 +23,8 @@ function AdminBookings() {
   async function setStatus(id: string, status: "confirmed" | "rejected" | "completed" | "contacted") {
     const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success(`Marked ${status}`);
+    toast.success(`Marked ${status} — emailing requester…`);
+    notifyBookingStatus({ data: { bookingId: id, status } }).catch(() => {});
     qc.invalidateQueries({ queryKey: ["admin-bookings"] });
   }
 

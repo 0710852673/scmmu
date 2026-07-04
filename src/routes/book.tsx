@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { CheckCircle2 } from "lucide-react";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyBookingSubmitted } from "@/lib/email.functions";
 
 const SERVICES = [
   "Photography",
@@ -31,6 +33,8 @@ function Book() {
   const [services, setServices] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [justSent, setJustSent] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   function toggleService(s: string) {
     setServices((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]));
@@ -39,26 +43,38 @@ function Book() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitting(true);
-    const fd = new FormData(e.currentTarget);
-    const { error } = await supabase.from("bookings").insert({
-      kind,
-      event_name: String(fd.get("event_name") ?? ""),
-      organization: String(fd.get("organization") ?? ""),
-      contact_person: String(fd.get("contact_person") ?? ""),
-      whatsapp: String(fd.get("whatsapp") ?? ""),
-      email: String(fd.get("email") ?? "") || null,
-      event_date: String(fd.get("event_date") ?? ""),
-      event_time: String(fd.get("event_time") ?? "") || null,
-      venue: String(fd.get("venue") ?? ""),
-      event_type: String(fd.get("event_type") ?? ""),
-      services,
-      audience_size: Number(fd.get("audience_size") ?? 0) || null,
-      notes: String(fd.get("notes") ?? "") || null,
-    });
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const { data: inserted, error } = await supabase
+      .from("bookings")
+      .insert({
+        kind,
+        event_name: String(fd.get("event_name") ?? ""),
+        organization: String(fd.get("organization") ?? ""),
+        contact_person: String(fd.get("contact_person") ?? ""),
+        whatsapp: String(fd.get("whatsapp") ?? ""),
+        email: String(fd.get("email") ?? "") || null,
+        event_date: String(fd.get("event_date") ?? ""),
+        event_time: String(fd.get("event_time") ?? "") || null,
+        venue: String(fd.get("venue") ?? ""),
+        event_type: String(fd.get("event_type") ?? ""),
+        services,
+        audience_size: Number(fd.get("audience_size") ?? 0) || null,
+        notes: String(fd.get("notes") ?? "") || null,
+      })
+      .select("id")
+      .single();
     setSubmitting(false);
     if (error) return toast.error("Submission failed: " + error.message);
-    setDone(true);
-    toast.success("Request received");
+    // fire-and-forget email
+    if (inserted?.id) {
+      notifyBookingSubmitted({ data: { bookingId: inserted.id } }).catch(() => {});
+    }
+    form.reset();
+    setServices([]);
+    setJustSent(true);
+    toast.success("Request sent successfully");
+    setTimeout(() => setDone(true), 900);
   }
 
   if (done) {
@@ -70,7 +86,7 @@ function Book() {
             Our team will contact you through WhatsApp shortly.
           </p>
           <button
-            onClick={() => { setDone(false); setServices([]); }}
+            onClick={() => { setDone(false); setJustSent(false); setServices([]); }}
             className="mt-10 border border-foreground px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors"
           >
             Submit another
@@ -105,7 +121,7 @@ function Book() {
             : "For other schools and educational organisations."}
         </p>
 
-        <form onSubmit={onSubmit} className="bg-card border border-foreground/10 p-8 space-y-5">
+        <form ref={formRef} onSubmit={onSubmit} className="bg-card border border-foreground/10 p-8 space-y-5">
           <Field name="event_name" label="Event Name" required />
           <Field name="organization" label={kind === "internal" ? "Department / Club" : "School / Organisation"} required />
           <div className="grid sm:grid-cols-2 gap-5">
@@ -155,6 +171,12 @@ function Book() {
           >
             {submitting ? "Submitting…" : "Submit Request"}
           </button>
+          {justSent && (
+            <div className="flex items-center justify-center gap-2 text-emerald-600 text-sm font-semibold">
+              <CheckCircle2 className="h-4 w-4" />
+              Request sent successfully — check your email for confirmation.
+            </div>
+          )}
         </form>
       </section>
     </SiteShell>
