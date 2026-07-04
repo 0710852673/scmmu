@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Mail, MapPin, Phone, Facebook, Youtube, MessageCircle } from "lucide-react";
+import { Mail, MapPin, Phone, Facebook, Youtube, MessageCircle, CheckCircle2 } from "lucide-react";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { getSiteSettings } from "@/lib/public-data.functions";
+import { notifyContactMessage } from "@/lib/email.functions";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
