@@ -102,6 +102,12 @@ function Contact() {
             className="w-full rounded-full brand-gradient py-3.5 text-sm font-semibold text-white hover:opacity-95 transition-opacity disabled:opacity-50">
             {sending ? "Sending…" : "Send message"}
           </button>
+          {sent && (
+            <div className="flex items-center justify-center gap-2 text-emerald-600 text-sm font-semibold">
+              <CheckCircle2 className="h-4 w-4" />
+              Message sent successfully — confirmation email on its way.
+            </div>
+          )}
         </form>
       </section>
     </SiteShell>
