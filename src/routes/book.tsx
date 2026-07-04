@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { CheckCircle2 } from "lucide-react";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyBookingSubmitted } from "@/lib/email.functions";
 
 const SERVICES = [
   "Photography",
