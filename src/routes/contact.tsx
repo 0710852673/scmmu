@@ -20,24 +20,35 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
   const settings = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
   const s = settings.data;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSending(true);
-    const fd = new FormData(e.currentTarget);
-    const { error } = await supabase.from("contact_messages").insert({
-      name: String(fd.get("name") ?? ""),
-      email: String(fd.get("email") ?? ""),
-      whatsapp: String(fd.get("whatsapp") ?? ""),
-      subject: String(fd.get("subject") ?? ""),
-      message: String(fd.get("message") ?? ""),
-    });
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const { data: inserted, error } = await supabase
+      .from("contact_messages")
+      .insert({
+        name: String(fd.get("name") ?? ""),
+        email: String(fd.get("email") ?? ""),
+        whatsapp: String(fd.get("whatsapp") ?? ""),
+        subject: String(fd.get("subject") ?? ""),
+        message: String(fd.get("message") ?? ""),
+      })
+      .select("id")
+      .single();
     setSending(false);
     if (error) return toast.error("Couldn't send. " + error.message);
+    if (inserted?.id) {
+      notifyContactMessage({ data: { messageId: inserted.id } }).catch(() => {});
+    }
     toast.success("Message sent. We'll be in touch soon.");
-    (e.currentTarget as HTMLFormElement).reset();
+    form.reset();
+    setSent(true);
+    setTimeout(() => setSent(false), 5000);
   }
 
   return (
