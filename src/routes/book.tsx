@@ -33,6 +33,8 @@ function Book() {
   const [services, setServices] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [justSent, setJustSent] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   function toggleService(s: string) {
     setServices((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]));
@@ -41,26 +43,38 @@ function Book() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitting(true);
-    const fd = new FormData(e.currentTarget);
-    const { error } = await supabase.from("bookings").insert({
-      kind,
-      event_name: String(fd.get("event_name") ?? ""),
-      organization: String(fd.get("organization") ?? ""),
-      contact_person: String(fd.get("contact_person") ?? ""),
-      whatsapp: String(fd.get("whatsapp") ?? ""),
-      email: String(fd.get("email") ?? "") || null,
-      event_date: String(fd.get("event_date") ?? ""),
-      event_time: String(fd.get("event_time") ?? "") || null,
-      venue: String(fd.get("venue") ?? ""),
-      event_type: String(fd.get("event_type") ?? ""),
-      services,
-      audience_size: Number(fd.get("audience_size") ?? 0) || null,
-      notes: String(fd.get("notes") ?? "") || null,
-    });
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const { data: inserted, error } = await supabase
+      .from("bookings")
+      .insert({
+        kind,
+        event_name: String(fd.get("event_name") ?? ""),
+        organization: String(fd.get("organization") ?? ""),
+        contact_person: String(fd.get("contact_person") ?? ""),
+        whatsapp: String(fd.get("whatsapp") ?? ""),
+        email: String(fd.get("email") ?? "") || null,
+        event_date: String(fd.get("event_date") ?? ""),
+        event_time: String(fd.get("event_time") ?? "") || null,
+        venue: String(fd.get("venue") ?? ""),
+        event_type: String(fd.get("event_type") ?? ""),
+        services,
+        audience_size: Number(fd.get("audience_size") ?? 0) || null,
+        notes: String(fd.get("notes") ?? "") || null,
+      })
+      .select("id")
+      .single();
     setSubmitting(false);
     if (error) return toast.error("Submission failed: " + error.message);
-    setDone(true);
-    toast.success("Request received");
+    // fire-and-forget email
+    if (inserted?.id) {
+      notifyBookingSubmitted({ data: { bookingId: inserted.id } }).catch(() => {});
+    }
+    form.reset();
+    setServices([]);
+    setJustSent(true);
+    toast.success("Request sent successfully");
+    setTimeout(() => setDone(true), 900);
   }
 
   if (done) {
