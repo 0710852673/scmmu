@@ -171,6 +171,12 @@ function Book() {
           >
             {submitting ? "Submitting…" : "Submit Request"}
           </button>
+          {justSent && (
+            <div className="flex items-center justify-center gap-2 text-emerald-600 text-sm font-semibold">
+              <CheckCircle2 className="h-4 w-4" />
+              Request sent successfully — check your email for confirmation.
+            </div>
+          )}
         </form>
       </section>
     </SiteShell>
