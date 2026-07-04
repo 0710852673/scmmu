@@ -86,7 +86,7 @@ function Book() {
             Our team will contact you through WhatsApp shortly.
           </p>
           <button
-            onClick={() => { setDone(false); setServices([]); }}
+            onClick={() => { setDone(false); setJustSent(false); setServices([]); }}
             className="mt-10 border border-foreground px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors"
           >
             Submit another
