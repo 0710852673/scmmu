@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Card, Empty } from "@/components/portal/PortalUI";
 import { Trash2 } from "lucide-react";
+import { notifyBookingStatus } from "@/lib/email.functions";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/bookings")({
   component: AdminBookings,
