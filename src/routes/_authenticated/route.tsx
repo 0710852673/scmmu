@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import {
   LayoutDashboard, User, Calendar, ClipboardCheck, FileText, ExternalLink,
   Trophy, Megaphone, Users, BookmarkCheck, FolderKanban, Mail, ImagePlus,
-  LogOut, Settings, Shield, ChevronRight, Menu, X, CheckSquare,
+  LogOut, Settings, Shield, ChevronRight, Menu, X, CheckSquare, MailPlus,
 } from "lucide-react";
 import { ThemeToggle } from "@/lib/theme";
 import { getSiteSettings } from "@/lib/public-data.functions";
