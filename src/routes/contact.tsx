@@ -21,12 +21,27 @@ export const Route = createFileRoute("/contact")({
 function Contact() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [lastMessageId, setLastMessageId] = useState<string | null>(null);
   const settings = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
   const s = settings.data;
+
+  async function retryEmail() {
+    if (!lastMessageId) return;
+    setEmailError(null);
+    try {
+      const res = await notifyContactMessage({ data: { messageId: lastMessageId } });
+      if (res?.ok === false) throw new Error("Send failed");
+      setSent(true);
+    } catch (e: any) {
+      setEmailError(e?.message || "Failed to send");
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSending(true);
+    setEmailError(null);
     const form = e.currentTarget;
     const fd = new FormData(form);
     const { data: inserted, error } = await supabase
@@ -40,15 +55,26 @@ function Contact() {
       })
       .select("id")
       .single();
-    setSending(false);
-    if (error) return toast.error("Couldn't send. " + error.message);
-    if (inserted?.id) {
-      notifyContactMessage({ data: { messageId: inserted.id } }).catch(() => {});
+    if (error) {
+      setSending(false);
+      return toast.error("Couldn't send. " + error.message);
     }
-    toast.success("Message sent. We'll be in touch soon.");
-    form.reset();
-    setSent(true);
-    setTimeout(() => setSent(false), 5000);
+    setLastMessageId(inserted?.id ?? null);
+    try {
+      if (inserted?.id) {
+        const res = await notifyContactMessage({ data: { messageId: inserted.id } });
+        if (res?.ok === false) throw new Error("Send failed");
+      }
+      setSending(false);
+      toast.success("Message sent. We'll be in touch soon.");
+      form.reset();
+      setSent(true);
+      setTimeout(() => setSent(false), 5000);
+    } catch (e: any) {
+      setSending(false);
+      setEmailError(e?.message || "Confirmation email failed");
+      toast.error("Message saved, but confirmation email failed. You can retry.");
+    }
   }
 
   return (
