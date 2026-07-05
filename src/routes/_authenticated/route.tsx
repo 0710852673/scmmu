@@ -61,6 +61,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/portal/admin/divisions", label: "Divisions", icon: FolderKanban },
   { to: "/portal/admin/bookings", label: "Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
+  { to: "/portal/admin/email-templates", label: "Email Templates", icon: MailPlus },
   { to: "/portal/admin/site", label: "Site Settings", icon: Settings },
 ];
 
