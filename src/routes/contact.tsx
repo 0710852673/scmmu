@@ -128,10 +128,17 @@ function Contact() {
             className="w-full rounded-full brand-gradient py-3.5 text-sm font-semibold text-white hover:opacity-95 transition-opacity disabled:opacity-50">
             {sending ? "Sending…" : "Send message"}
           </button>
-          {sent && (
+          {sent && !emailError && (
             <div className="flex items-center justify-center gap-2 text-emerald-600 text-sm font-semibold">
               <CheckCircle2 className="h-4 w-4" />
               Message sent successfully — confirmation email on its way.
+            </div>
+          )}
+          {emailError && (
+            <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+              <div className="font-semibold">Failed to send confirmation email.</div>
+              <div className="text-xs mt-1">Your message has been saved. {emailError}</div>
+              <button type="button" onClick={retryEmail} className="mt-2 text-xs font-bold underline">Retry</button>
             </div>
           )}
         </form>
