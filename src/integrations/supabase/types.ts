@@ -115,6 +115,7 @@ export type Database = {
           kind: Database["public"]["Enums"]["booking_kind"]
           notes: string | null
           organization: string
+          rejection_reason: string | null
           services: string[]
           status: Database["public"]["Enums"]["booking_status"]
           updated_at: string
@@ -134,6 +135,7 @@ export type Database = {
           kind: Database["public"]["Enums"]["booking_kind"]
           notes?: string | null
           organization: string
+          rejection_reason?: string | null
           services?: string[]
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
@@ -153,6 +155,7 @@ export type Database = {
           kind?: Database["public"]["Enums"]["booking_kind"]
           notes?: string | null
           organization?: string
+          rejection_reason?: string | null
           services?: string[]
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
@@ -268,6 +271,30 @@ export type Database = {
           name?: string
           responsibilities?: string | null
           slug?: Database["public"]["Enums"]["division_slug"]
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          body_html: string
+          key: string
+          label: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          body_html: string
+          key: string
+          label: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          body_html?: string
+          key?: string
+          label?: string
+          subject?: string
+          updated_at?: string
         }
         Relationships: []
       }

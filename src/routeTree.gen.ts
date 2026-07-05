@@ -34,6 +34,7 @@ import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_
 import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
 import { Route as AuthenticatedPortalAdminGalleryRouteImport } from './routes/_authenticated/portal.admin.gallery'
 import { Route as AuthenticatedPortalAdminEventsRouteImport } from './routes/_authenticated/portal.admin.events'
+import { Route as AuthenticatedPortalAdminEmailTemplatesRouteImport } from './routes/_authenticated/portal.admin.email-templates'
 import { Route as AuthenticatedPortalAdminDivisionsRouteImport } from './routes/_authenticated/portal.admin.divisions'
 import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
 import { Route as AuthenticatedPortalAdminBoardRouteImport } from './routes/_authenticated/portal.admin.board'
@@ -175,6 +176,12 @@ const AuthenticatedPortalAdminEventsRoute =
     path: '/portal/admin/events',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminEmailTemplatesRoute =
+  AuthenticatedPortalAdminEmailTemplatesRouteImport.update({
+    id: '/portal/admin/email-templates',
+    path: '/portal/admin/email-templates',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminDivisionsRoute =
   AuthenticatedPortalAdminDivisionsRouteImport.update({
     id: '/portal/admin/divisions',
@@ -216,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/portal/admin/divisions': typeof AuthenticatedPortalAdminDivisionsRoute
+  '/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
   '/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
@@ -245,6 +253,7 @@ export interface FileRoutesByTo {
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/portal/admin/divisions': typeof AuthenticatedPortalAdminDivisionsRoute
+  '/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
   '/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
@@ -276,6 +285,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/_authenticated/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/_authenticated/portal/admin/divisions': typeof AuthenticatedPortalAdminDivisionsRoute
+  '/_authenticated/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/_authenticated/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
   '/_authenticated/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/_authenticated/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
@@ -307,6 +317,7 @@ export interface FileRouteTypes {
     | '/portal/admin/board'
     | '/portal/admin/bookings'
     | '/portal/admin/divisions'
+    | '/portal/admin/email-templates'
     | '/portal/admin/events'
     | '/portal/admin/gallery'
     | '/portal/admin/members'
@@ -336,6 +347,7 @@ export interface FileRouteTypes {
     | '/portal/admin/board'
     | '/portal/admin/bookings'
     | '/portal/admin/divisions'
+    | '/portal/admin/email-templates'
     | '/portal/admin/events'
     | '/portal/admin/gallery'
     | '/portal/admin/members'
@@ -366,6 +378,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/board'
     | '/_authenticated/portal/admin/bookings'
     | '/_authenticated/portal/admin/divisions'
+    | '/_authenticated/portal/admin/email-templates'
     | '/_authenticated/portal/admin/events'
     | '/_authenticated/portal/admin/gallery'
     | '/_authenticated/portal/admin/members'
@@ -566,6 +579,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminEventsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/email-templates': {
+      id: '/_authenticated/portal/admin/email-templates'
+      path: '/portal/admin/email-templates'
+      fullPath: '/portal/admin/email-templates'
+      preLoaderRoute: typeof AuthenticatedPortalAdminEmailTemplatesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/divisions': {
       id: '/_authenticated/portal/admin/divisions'
       path: '/portal/admin/divisions'
@@ -601,6 +621,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminBoardRoute: typeof AuthenticatedPortalAdminBoardRoute
   AuthenticatedPortalAdminBookingsRoute: typeof AuthenticatedPortalAdminBookingsRoute
   AuthenticatedPortalAdminDivisionsRoute: typeof AuthenticatedPortalAdminDivisionsRoute
+  AuthenticatedPortalAdminEmailTemplatesRoute: typeof AuthenticatedPortalAdminEmailTemplatesRoute
   AuthenticatedPortalAdminEventsRoute: typeof AuthenticatedPortalAdminEventsRoute
   AuthenticatedPortalAdminGalleryRoute: typeof AuthenticatedPortalAdminGalleryRoute
   AuthenticatedPortalAdminMembersRoute: typeof AuthenticatedPortalAdminMembersRoute
@@ -621,6 +642,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAdminBookingsRoute: AuthenticatedPortalAdminBookingsRoute,
   AuthenticatedPortalAdminDivisionsRoute:
     AuthenticatedPortalAdminDivisionsRoute,
+  AuthenticatedPortalAdminEmailTemplatesRoute:
+    AuthenticatedPortalAdminEmailTemplatesRoute,
   AuthenticatedPortalAdminEventsRoute: AuthenticatedPortalAdminEventsRoute,
   AuthenticatedPortalAdminGalleryRoute: AuthenticatedPortalAdminGalleryRoute,
   AuthenticatedPortalAdminMembersRoute: AuthenticatedPortalAdminMembersRoute,

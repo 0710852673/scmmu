@@ -34,15 +34,31 @@ function Book() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [justSent, setJustSent] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [lastBookingId, setLastBookingId] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   function toggleService(s: string) {
     setServices((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]));
   }
 
+  async function retryEmail() {
+    if (!lastBookingId) return;
+    setEmailError(null);
+    try {
+      const res = await notifyBookingSubmitted({ data: { bookingId: lastBookingId } });
+      if (res?.ok === false) throw new Error("Send failed");
+      setJustSent(true);
+      setTimeout(() => setDone(true), 700);
+    } catch (e: any) {
+      setEmailError(e?.message || "Failed to send email");
+    }
+  }
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitting(true);
+    setEmailError(null);
     const form = e.currentTarget;
     const fd = new FormData(form);
     const { data: inserted, error } = await supabase
@@ -64,17 +80,28 @@ function Book() {
       })
       .select("id")
       .single();
-    setSubmitting(false);
-    if (error) return toast.error("Submission failed: " + error.message);
-    // fire-and-forget email
-    if (inserted?.id) {
-      notifyBookingSubmitted({ data: { bookingId: inserted.id } }).catch(() => {});
+    if (error) {
+      setSubmitting(false);
+      return toast.error("Submission failed: " + error.message);
     }
-    form.reset();
-    setServices([]);
-    setJustSent(true);
-    toast.success("Request sent successfully");
-    setTimeout(() => setDone(true), 900);
+    setLastBookingId(inserted?.id ?? null);
+    // Await email so we can show inline failure and preserve form data on error
+    try {
+      if (inserted?.id) {
+        const res = await notifyBookingSubmitted({ data: { bookingId: inserted.id } });
+        if (res?.ok === false) throw new Error("Send failed");
+      }
+      setSubmitting(false);
+      form.reset();
+      setServices([]);
+      setJustSent(true);
+      toast.success("Request sent successfully");
+      setTimeout(() => setDone(true), 900);
+    } catch (e: any) {
+      setSubmitting(false);
+      setEmailError(e?.message || "Confirmation email failed to send");
+      toast.error("Request saved, but email failed. You can retry below.");
+    }
   }
 
   if (done) {
@@ -171,10 +198,17 @@ function Book() {
           >
             {submitting ? "Submitting…" : "Submit Request"}
           </button>
-          {justSent && (
+          {justSent && !emailError && (
             <div className="flex items-center justify-center gap-2 text-emerald-600 text-sm font-semibold">
               <CheckCircle2 className="h-4 w-4" />
               Request sent successfully — check your email for confirmation.
+            </div>
+          )}
+          {emailError && (
+            <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+              <div className="font-semibold">Failed to send confirmation email.</div>
+              <div className="text-xs mt-1">Your request has been saved. {emailError}</div>
+              <button type="button" onClick={retryEmail} className="mt-2 text-xs font-bold underline">Retry sending email</button>
             </div>
           )}
         </form>

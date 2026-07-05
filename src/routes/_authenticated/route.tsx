@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import {
   LayoutDashboard, User, Calendar, ClipboardCheck, FileText, ExternalLink,
   Trophy, Megaphone, Users, BookmarkCheck, FolderKanban, Mail, ImagePlus,
-  LogOut, Settings, Shield, ChevronRight, Menu, X, CheckSquare,
+  LogOut, Settings, Shield, ChevronRight, Menu, X, CheckSquare, MailPlus,
 } from "lucide-react";
 import { ThemeToggle } from "@/lib/theme";
 import { getSiteSettings } from "@/lib/public-data.functions";
@@ -61,6 +61,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/portal/admin/divisions", label: "Divisions", icon: FolderKanban },
   { to: "/portal/admin/bookings", label: "Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
+  { to: "/portal/admin/email-templates", label: "Email Templates", icon: MailPlus },
   { to: "/portal/admin/site", label: "Site Settings", icon: Settings },
 ];
 
