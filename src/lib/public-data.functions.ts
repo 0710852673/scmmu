@@ -112,7 +112,7 @@ export const searchSite = createServerFn({ method: "GET" })
     const [g, p, a, e] = await Promise.all([
       sb.from("gallery_items").select("id,title,image_url,category,media_type").ilike("title", like).limit(20),
       sb.from("projects").select("id,slug,title,summary,cover_image").eq("published", true).or(`title.ilike.${like},summary.ilike.${like}`).limit(20),
-      sb.from("announcements").select("id,title,body,created_at").eq("is_published", true).or(`title.ilike.${like},body.ilike.${like}`).limit(20),
+      sb.from("announcements").select("id,title,body,created_at").or(`title.ilike.${like},body.ilike.${like}`).limit(20),
       sb.from("events").select("id,name,event_date,location").or(`name.ilike.${like},description.ilike.${like}`).limit(20),
     ]);
     return {
