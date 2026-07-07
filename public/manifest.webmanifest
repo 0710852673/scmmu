@@ -1,0 +1,13 @@
+{
+  "name": "Sivali Central College Media Unit",
+  "short_name": "SCCMU",
+  "description": "SCC Media Unit — photography, video and live broadcast portal.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#DC2626",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ]
+}

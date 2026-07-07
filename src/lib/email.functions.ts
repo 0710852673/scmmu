@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 
 const GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
-const FROM = "SCCMU Media Unit <mediaunit.scc@gmail.com>";
+// SCCMU = Sivali Central College Media Unit. Never write "SCCMU Media Unit" (redundant).
+const FROM = "SCC Media Unit <mediaunit.scc@gmail.com>";
 
 // ── low-level helpers ─────────────────────────────────────────────
 function toB64(s: string) {
@@ -95,32 +96,45 @@ type Settings = {
 function footer(s: Settings) {
   const email = s.email_address || "mediaunit.scc@gmail.com";
   const wa = s.whatsapp_number || "";
-  const waUrl = s.whatsapp_url || (wa ? `https://wa.me/${wa.replace(/[^0-9]/g, "")}` : "#");
-  const addr = s.address_line || "Media Unit, Sivali Central College, Ratnapura";
-  const socials: string[] = [];
-  if (s.facebook_url) socials.push(`<a href="${s.facebook_url}" style="color:#e11d48;text-decoration:none;margin:0 6px">Facebook</a>`);
-  if (s.youtube_url) socials.push(`<a href="${s.youtube_url}" style="color:#e11d48;text-decoration:none;margin:0 6px">YouTube</a>`);
-  if (s.tiktok_url) socials.push(`<a href="${s.tiktok_url}" style="color:#e11d48;text-decoration:none;margin:0 6px">TikTok</a>`);
-  if (s.whatsapp_channel_url) socials.push(`<a href="${s.whatsapp_channel_url}" style="color:#e11d48;text-decoration:none;margin:0 6px">WhatsApp Channel</a>`);
+  const waUrl = s.whatsapp_url || (wa ? `https://wa.me/${wa.replace(/[^0-9]/g, "")}` : "");
+  const addr = s.address_line || "Sivali Central College, Ratnapura, Sri Lanka";
+  const socials: Array<[string, string]> = [];
+  if (s.facebook_url) socials.push(["Facebook", s.facebook_url]);
+  if (s.youtube_url) socials.push(["YouTube", s.youtube_url]);
+  if (s.tiktok_url) socials.push(["TikTok", s.tiktok_url]);
+  if (s.whatsapp_channel_url) socials.push(["WhatsApp Channel", s.whatsapp_channel_url]);
+  const socialLinks = socials
+    .map(([l, u]) => `<a href="${u}" style="color:#dc2626;text-decoration:none;font-weight:600">${l}</a>`)
+    .join(' <span style="color:#d1d5db">•</span> ');
   return `
-  <div style="margin-top:26px;border-top:1px solid #eee;padding-top:14px;font-size:12px;color:#666;line-height:1.7">
-    <div style="font-weight:700;color:#111">Sivali Central College Media Unit</div>
-    <div>${escapeHtml(addr)}</div>
-    <div>Email: <a href="mailto:${email}" style="color:#e11d48;text-decoration:none">${email}</a>${wa ? ` &middot; WhatsApp: <a href="${waUrl}" style="color:#e11d48;text-decoration:none">${escapeHtml(wa)}</a>` : ""}</div>
-    ${socials.length ? `<div style="margin-top:6px">${socials.join(" &middot; ")}</div>` : ""}
-    <div style="margin-top:8px;color:#999">This is an automated message from SCCMU.</div>
-  </div>`;
+  <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #eef0f3;padding-top:18px;margin-top:8px;font-size:12px;color:#6b7280;line-height:1.6">
+    <tr>
+      <td style="vertical-align:top;width:60%;padding-right:12px">
+        <div style="font-weight:800;color:#111827;font-size:13px;margin-bottom:4px">SCC Media Unit</div>
+        <div>${escapeHtml(addr)}</div>
+        <div style="margin-top:6px"><a href="mailto:${email}" style="color:#dc2626;text-decoration:none">${email}</a></div>
+        ${wa ? `<div><a href="${waUrl}" style="color:#dc2626;text-decoration:none">${escapeHtml(wa)}</a> · WhatsApp</div>` : ""}
+      </td>
+      <td style="vertical-align:top;width:40%;text-align:right">
+        ${socialLinks ? `<div>${socialLinks}</div>` : ""}
+        <div style="margin-top:10px;color:#9ca3af;font-size:11px">Automated message · Please do not reply</div>
+      </td>
+    </tr>
+  </table>`;
 }
 
 function brandWrap(title: string, bodyHtml: string, s: Settings) {
-  return `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:600px;margin:0 auto;padding:28px;color:#111;background:#fff;border:1px solid #eee;border-radius:12px">
-    <div style="border-bottom:2px solid #e11d48;padding-bottom:10px;margin-bottom:18px">
-      <div style="font-size:11px;letter-spacing:.22em;font-weight:700;color:#e11d48">SCCMU &middot; MEDIA UNIT</div>
-      <h1 style="margin:6px 0 0;font-size:22px">${escapeHtml(title)}</h1>
-    </div>
-    <div style="font-size:15px;line-height:1.6">${bodyHtml}</div>
-    ${footer(s)}
-  </div>`;
+  return `<!doctype html><html><body style="margin:0;background:#f5f5f7;padding:24px 12px">
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:620px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(15,23,42,.08);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111">
+      <tr><td style="background:linear-gradient(135deg,#dc2626,#f59e0b);padding:26px 32px;color:#fff">
+        <div style="font-size:11px;letter-spacing:.28em;font-weight:800;opacity:.9">SCCMU</div>
+        <div style="font-size:22px;font-weight:800;margin-top:4px;line-height:1.25">${escapeHtml(title)}</div>
+        <div style="font-size:11px;letter-spacing:.14em;margin-top:6px;opacity:.85;text-transform:uppercase">Sivali Central College Media Unit</div>
+      </td></tr>
+      <tr><td style="padding:28px 32px;font-size:15px;line-height:1.65">${bodyHtml}</td></tr>
+      <tr><td style="padding:0 32px 28px">${footer(s)}</td></tr>
+    </table>
+  </body></html>`;
 }
 
 function render(tpl: string, vars: Record<string, string>) {
