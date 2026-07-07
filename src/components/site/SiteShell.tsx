@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
+import { LiveBadge } from "./LiveBadge";
 
 export function SiteShell({ children }: { children: ReactNode }) {
   return (
@@ -8,6 +9,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <SiteHeader />
       <main>{children}</main>
       <SiteFooter />
+      <LiveBadge />
     </div>
   );
 }

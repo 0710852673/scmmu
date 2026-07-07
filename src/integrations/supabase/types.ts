@@ -436,26 +436,38 @@ export type Database = {
         Row: {
           category: Database["public"]["Enums"]["gallery_category"]
           created_at: string
+          created_by: string | null
+          event_date: string | null
           id: string
           image_url: string
+          media_type: string
           project_id: string | null
           title: string | null
+          video_url: string | null
         }
         Insert: {
           category: Database["public"]["Enums"]["gallery_category"]
           created_at?: string
+          created_by?: string | null
+          event_date?: string | null
           id?: string
           image_url: string
+          media_type?: string
           project_id?: string | null
           title?: string | null
+          video_url?: string | null
         }
         Update: {
           category?: Database["public"]["Enums"]["gallery_category"]
           created_at?: string
+          created_by?: string | null
+          event_date?: string | null
           id?: string
           image_url?: string
+          media_type?: string
           project_id?: string | null
           title?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -622,6 +634,27 @@ export type Database = {
         }
         Relationships: []
       }
+      point_rules: {
+        Row: {
+          kind: string
+          label: string
+          points: number
+          updated_at: string
+        }
+        Insert: {
+          kind: string
+          label: string
+          points?: number
+          updated_at?: string
+        }
+        Update: {
+          kind?: string
+          label?: string
+          points?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       points_log: {
         Row: {
           contribution_id: string | null
@@ -761,6 +794,9 @@ export type Database = {
           hero_subtitle: string
           hero_title: string
           id: number
+          live_stream_active: boolean
+          live_stream_title: string | null
+          live_stream_url: string | null
           mediaflow_url: string
           tiktok_url: string
           updated_at: string
@@ -779,6 +815,9 @@ export type Database = {
           hero_subtitle?: string
           hero_title?: string
           id?: number
+          live_stream_active?: boolean
+          live_stream_title?: string | null
+          live_stream_url?: string | null
           mediaflow_url?: string
           tiktok_url?: string
           updated_at?: string
@@ -797,6 +836,9 @@ export type Database = {
           hero_subtitle?: string
           hero_title?: string
           id?: number
+          live_stream_active?: boolean
+          live_stream_title?: string | null
+          live_stream_url?: string | null
           mediaflow_url?: string
           tiktok_url?: string
           updated_at?: string

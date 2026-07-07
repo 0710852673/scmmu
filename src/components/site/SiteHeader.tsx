@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { LogoWordmark } from "./Logo";
 import { ThemeToggle } from "@/lib/theme";
 
@@ -49,6 +49,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Link to="/search" aria-label="Search" className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground/70 hover:bg-muted">
+            <Search className="h-4 w-4" />
+          </Link>
           <ThemeToggle />
           <Link
             to="/auth"
