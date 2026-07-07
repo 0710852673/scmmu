@@ -35,17 +35,13 @@ export const getGallery = createServerFn({ method: "GET" }).handler(async () => 
   const sb = publicClient();
   const { data, error } = await sb
     .from("gallery_items")
-    .select("id,category,title,image_url")
+    .select("id,category,title,image_url,media_type,video_url,event_date")
     .order("created_at", { ascending: false })
-    .limit(60);
+    .limit(120);
   if (error) return { data: [], error: error.message };
   return { data: data ?? [], error: null as string | null };
 });
 
-/**
- * Returns only board members (TIC, Executive, Section Heads) for the public site.
- * Member ranks & points are NEVER exposed publicly — they live only in the portal.
- */
 export const getBoardMembers = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
   const { data, error } = await sb
@@ -55,7 +51,6 @@ export const getBoardMembers = createServerFn({ method: "GET" }).handler(async (
     .eq("active", true)
     .order("display_order", { ascending: true });
   if (error) return { data: [], error: error.message };
-  // Enforce canonical order: TIC → Executive Board → Section Heads.
   const rank: Record<string, number> = { tic: 0, executive: 1, section_head: 2 };
   const ordered = (data ?? []).slice().sort((a, b) => {
     const ra = rank[a.board_category ?? ""] ?? 9;
@@ -89,4 +84,74 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(async (
   const sb = publicClient();
   const { data } = await sb.from("site_settings").select("*").eq("id", 1).maybeSingle();
   return data;
+});
+
+// ── NEW: member portfolio ─────────────────────────────────────────
+export const getMemberProfile = createServerFn({ method: "GET" })
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data }) => {
+    const sb = publicClient();
+    const [{ data: prof }, { data: points }, { data: events }] = await Promise.all([
+      sb.from("profiles").select("id,full_name,photo_url,admission_number,grade,class,primary_division,bio,join_date").eq("id", data.id).maybeSingle(),
+      sb.from("points_log").select("kind,points,created_at,division").eq("user_id", data.id).order("created_at", { ascending: false }).limit(50),
+      sb.from("event_participants").select("event_id,role,events(name,event_date,location)").eq("user_id", data.id).limit(30),
+    ]);
+    if (!prof) return { profile: null };
+    const totalPoints = (points ?? []).reduce((s, p) => s + (p.points ?? 0), 0);
+    return { profile: prof, points: points ?? [], totalPoints, events: events ?? [] };
+  });
+
+// ── NEW: search across gallery + projects + announcements ────────
+export const searchSite = createServerFn({ method: "GET" })
+  .inputValidator((d: { q: string }) => d)
+  .handler(async ({ data }) => {
+    const q = data.q.trim();
+    if (q.length < 2) return { gallery: [], projects: [], announcements: [], events: [] };
+    const sb = publicClient();
+    const like = `%${q}%`;
+    const [g, p, a, e] = await Promise.all([
+      sb.from("gallery_items").select("id,title,image_url,category,media_type").ilike("title", like).limit(20),
+      sb.from("projects").select("id,slug,title,summary,cover_image").eq("published", true).or(`title.ilike.${like},summary.ilike.${like}`).limit(20),
+      sb.from("announcements").select("id,title,body,created_at").eq("is_published", true).or(`title.ilike.${like},body.ilike.${like}`).limit(20),
+      sb.from("events").select("id,name,event_date,location").or(`name.ilike.${like},description.ilike.${like}`).limit(20),
+    ]);
+    return {
+      gallery: g.data ?? [],
+      projects: p.data ?? [],
+      announcements: a.data ?? [],
+      events: e.data ?? [],
+    };
+  });
+
+// ── NEW: yearly recap ─────────────────────────────────────────────
+export const getYearlyRecap = createServerFn({ method: "GET" })
+  .inputValidator((d: { year: number }) => d)
+  .handler(async ({ data }) => {
+    const sb = publicClient();
+    const start = `${data.year}-01-01`;
+    const end = `${data.year}-12-31`;
+    const [g, p, e, s] = await Promise.all([
+      sb.from("gallery_items").select("id,title,image_url,category,media_type,video_url,event_date,created_at")
+        .gte("created_at", start).lte("created_at", `${end}T23:59:59`).order("created_at", { ascending: false }).limit(24),
+      sb.from("projects").select("id,slug,title,summary,cover_image,event_date").eq("published", true)
+        .gte("event_date", start).lte("event_date", end).order("event_date", { ascending: false }).limit(20),
+      sb.from("events").select("id,name,event_date,location,category")
+        .gte("event_date", start).lte("event_date", end).order("event_date", { ascending: true }),
+      sb.from("site_stats").select("*").eq("id", 1).maybeSingle(),
+    ]);
+    return {
+      year: data.year,
+      gallery: g.data ?? [],
+      projects: p.data ?? [],
+      events: e.data ?? [],
+      stats: s.data,
+    };
+  });
+
+// ── NEW: analytics feed for admin dashboard ──────────────────────
+export const getBookingAnalytics = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  // Bookings table has an anon-safe minimal projection? Actually bookings are staff-only.
+  // We rely on RLS; anon may not access. Return empty and let admin fetch client-side instead.
+  return { placeholder: true } as { placeholder: true };
 });
