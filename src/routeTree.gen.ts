@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as LeadershipRouteImport } from './routes/leadership'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -19,7 +20,9 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as DivisionsIndexRouteImport } from './routes/divisions.index'
+import { Route as RecapYearRouteImport } from './routes/recap.$year'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as MembersIdRouteImport } from './routes/members.$id'
 import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
@@ -39,6 +42,11 @@ import { Route as AuthenticatedPortalAdminDivisionsRouteImport } from './routes/
 import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
 import { Route as AuthenticatedPortalAdminBoardRouteImport } from './routes/_authenticated/portal.admin.board'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeadershipRoute = LeadershipRouteImport.update({
   id: '/leadership',
   path: '/leadership',
@@ -88,9 +96,19 @@ const DivisionsIndexRoute = DivisionsIndexRouteImport.update({
   path: '/divisions/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecapYearRoute = RecapYearRouteImport.update({
+  id: '/recap/$year',
+  path: '/recap/$year',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   id: '/projects/$slug',
   path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembersIdRoute = MembersIdRouteImport.update({
+  id: '/members/$id',
+  path: '/members/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DivisionsSlugRoute = DivisionsSlugRouteImport.update({
@@ -209,8 +227,11 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
+  '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
+  '/members/$id': typeof MembersIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/recap/$year': typeof RecapYearRoute
   '/divisions/': typeof DivisionsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
@@ -239,8 +260,11 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
+  '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
+  '/members/$id': typeof MembersIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/recap/$year': typeof RecapYearRoute
   '/divisions': typeof DivisionsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
@@ -271,8 +295,11 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
+  '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
+  '/members/$id': typeof MembersIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/recap/$year': typeof RecapYearRoute
   '/divisions/': typeof DivisionsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/_authenticated/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
@@ -303,8 +330,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/leadership'
+    | '/search'
     | '/divisions/$slug'
+    | '/members/$id'
     | '/projects/$slug'
+    | '/recap/$year'
     | '/divisions/'
     | '/projects/'
     | '/portal/announcements'
@@ -333,8 +363,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/leadership'
+    | '/search'
     | '/divisions/$slug'
+    | '/members/$id'
     | '/projects/$slug'
+    | '/recap/$year'
     | '/divisions'
     | '/projects'
     | '/portal/announcements'
@@ -364,8 +397,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/leadership'
+    | '/search'
     | '/divisions/$slug'
+    | '/members/$id'
     | '/projects/$slug'
+    | '/recap/$year'
     | '/divisions/'
     | '/projects/'
     | '/_authenticated/portal/announcements'
@@ -396,14 +432,24 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   LeadershipRoute: typeof LeadershipRoute
+  SearchRoute: typeof SearchRoute
   DivisionsSlugRoute: typeof DivisionsSlugRoute
+  MembersIdRoute: typeof MembersIdRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
+  RecapYearRoute: typeof RecapYearRoute
   DivisionsIndexRoute: typeof DivisionsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leadership': {
       id: '/leadership'
       path: '/leadership'
@@ -474,11 +520,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DivisionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recap/$year': {
+      id: '/recap/$year'
+      path: '/recap/$year'
+      fullPath: '/recap/$year'
+      preLoaderRoute: typeof RecapYearRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/$slug': {
       id: '/projects/$slug'
       path: '/projects/$slug'
       fullPath: '/projects/$slug'
       preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/members/$id': {
+      id: '/members/$id'
+      path: '/members/$id'
+      fullPath: '/members/$id'
+      preLoaderRoute: typeof MembersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/divisions/$slug': {
@@ -664,8 +724,11 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   LeadershipRoute: LeadershipRoute,
+  SearchRoute: SearchRoute,
   DivisionsSlugRoute: DivisionsSlugRoute,
+  MembersIdRoute: MembersIdRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
+  RecapYearRoute: RecapYearRoute,
   DivisionsIndexRoute: DivisionsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
 }
