@@ -389,6 +389,7 @@ export type Database = {
           full_name: string
           grade: string | null
           id: string
+          member_user_id: string | null
           photo_url: string | null
           points: number
           rank: number
@@ -406,6 +407,7 @@ export type Database = {
           full_name: string
           grade?: string | null
           id?: string
+          member_user_id?: string | null
           photo_url?: string | null
           points?: number
           rank: number
@@ -423,6 +425,7 @@ export type Database = {
           full_name?: string
           grade?: string | null
           id?: string
+          member_user_id?: string | null
           photo_url?: string | null
           points?: number
           rank?: number
