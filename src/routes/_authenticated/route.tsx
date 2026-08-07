@@ -31,6 +31,7 @@ const MEMBER_NAV: NavItem[] = [
   { to: "/portal/contributions", label: "Send Requests", icon: FileText },
   { to: "/portal/rankings", label: "Rankings", icon: Trophy },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
+  { to: "/portal/password", label: "Password", icon: KeyRound },
 ];
 
 // TIC = Teacher In Charge. NO points, NO rankings, NO "send requests".
@@ -42,11 +43,13 @@ const TIC_NAV: NavItem[] = [
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
+  { to: "/portal/password", label: "Password", icon: KeyRound },
 ];
 
 const HEAD_NAV: NavItem[] = [
   { to: "/portal/admin/members", label: "Members", icon: Users },
   { to: "/portal/events", label: "Events & Approvals", icon: Calendar },
+  { to: "/portal/admin/gallery", label: "Gallery", icon: ImagePlus },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
@@ -61,6 +64,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/portal/admin/divisions", label: "Divisions", icon: FolderKanban },
   { to: "/portal/admin/bookings", label: "Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
+  { to: "/portal/admin/point-rules", label: "Point Rules", icon: CheckSquare },
   { to: "/portal/admin/email-templates", label: "Email Templates", icon: MailPlus },
   { to: "/portal/admin/site", label: "Site Settings", icon: Settings },
 ];
