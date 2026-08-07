@@ -7,7 +7,7 @@ import { GALLERY_CATEGORIES, prettyLabel } from "@/lib/site-content";
 export const Route = createFileRoute("/_authenticated/portal/admin/gallery")({
   beforeLoad: async ({ context }) => {
     const { data } = await supabase.from("user_roles").select("role").eq("user_id", context.user.id);
-    if (!(data ?? []).some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)))
+    if (!(data ?? []).some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r.role)))
       throw redirect({ to: "/portal" });
   },
   component: AdminGallery,
