@@ -33,7 +33,7 @@ function MemberPortfolio() {
     const kv: Array<[string, string | number | null | undefined]> = [
       ["Name", p.full_name],
       ["MU number", p.admission_number],
-      ["Grade / Class", [p.grade, p.class].filter(Boolean).join(" / ")],
+      ["Grade", p.grade],
       ["Division", p.primary_division],
       ["Joined", p.join_date],
       ["Total points", data?.totalPoints ?? 0],
