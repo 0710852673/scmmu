@@ -27,6 +27,7 @@ import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
+import { Route as AuthenticatedPortalPasswordRouteImport } from './routes/_authenticated/portal.password'
 import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
 import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
@@ -133,6 +134,12 @@ const AuthenticatedPortalProfileRoute =
   AuthenticatedPortalProfileRouteImport.update({
     id: '/portal/profile',
     path: '/portal/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalPasswordRoute =
+  AuthenticatedPortalPasswordRouteImport.update({
+    id: '/portal/password',
+    path: '/portal/password',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPortalEventsRoute =
@@ -245,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -279,6 +287,7 @@ export interface FileRoutesByTo {
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -315,6 +324,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/_authenticated/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/_authenticated/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/_authenticated/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/portal/attendance'
     | '/portal/contributions'
     | '/portal/events'
+    | '/portal/password'
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal/'
@@ -385,6 +396,7 @@ export interface FileRouteTypes {
     | '/portal/attendance'
     | '/portal/contributions'
     | '/portal/events'
+    | '/portal/password'
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal'
@@ -420,6 +432,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/attendance'
     | '/_authenticated/portal/contributions'
     | '/_authenticated/portal/events'
+    | '/_authenticated/portal/password'
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
     | '/_authenticated/portal/'
@@ -582,6 +595,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/password': {
+      id: '/_authenticated/portal/password'
+      path: '/portal/password'
+      fullPath: '/portal/password'
+      preLoaderRoute: typeof AuthenticatedPortalPasswordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/events': {
       id: '/_authenticated/portal/events'
       path: '/portal/events'
@@ -695,6 +715,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAttendanceRoute: typeof AuthenticatedPortalAttendanceRoute
   AuthenticatedPortalContributionsRoute: typeof AuthenticatedPortalContributionsRoute
   AuthenticatedPortalEventsRoute: typeof AuthenticatedPortalEventsRoute
+  AuthenticatedPortalPasswordRoute: typeof AuthenticatedPortalPasswordRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
@@ -716,6 +737,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAttendanceRoute: AuthenticatedPortalAttendanceRoute,
   AuthenticatedPortalContributionsRoute: AuthenticatedPortalContributionsRoute,
   AuthenticatedPortalEventsRoute: AuthenticatedPortalEventsRoute,
+  AuthenticatedPortalPasswordRoute: AuthenticatedPortalPasswordRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
