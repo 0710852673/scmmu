@@ -91,8 +91,11 @@ export const getMemberProfile = createServerFn({ method: "GET" })
   .inputValidator((d: { id: string }) => d)
   .handler(async ({ data }) => {
     const sb = publicClient();
+    // Profiles are no longer publicly readable; fetch only non-sensitive columns
+    // server-side (never email / whatsapp / class-level contact data).
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: prof }, { data: points }, { data: events }] = await Promise.all([
-      sb.from("profiles").select("id,full_name,photo_url,admission_number,grade,class,primary_division,bio,join_date").eq("id", data.id).maybeSingle(),
+      supabaseAdmin.from("profiles").select("id,full_name,photo_url,admission_number,grade,primary_division,bio,join_date").eq("id", data.id).maybeSingle(),
       sb.from("points_log").select("kind,points,created_at,division").eq("user_id", data.id).order("created_at", { ascending: false }).limit(50),
       sb.from("event_participants").select("event_id,role,events(name,event_date,location)").eq("user_id", data.id).limit(30),
     ]);
