@@ -90,7 +90,6 @@ export function MemberReportBuilder({
   const [landscape, setLandscape] = useState(!!preset.landscape);
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [divFilter, setDivFilter] = useState<string>("all");
-  const [onlySearch, setOnlySearch] = useState(false);
   const [notes, setNotes] = useState("");
   const [confidential, setConfidential] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -258,7 +257,7 @@ export function MemberReportBuilder({
 
           {searchTerm && (
             <p className="text-xs text-muted-foreground">
-              Tip: this builder uses filters above, not the search box{onlySearch ? "" : ""}.
+              Tip: this builder uses the filters above, not the search box.
             </p>
           )}
         </div>
