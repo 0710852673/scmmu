@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { getMemberRankings } from "@/lib/rankings.functions";
 import { PortalPage, Empty } from "@/components/portal/PortalUI";
 
 export const Route = createFileRoute("/_authenticated/portal/rankings")({
@@ -8,30 +9,12 @@ export const Route = createFileRoute("/_authenticated/portal/rankings")({
 });
 
 function Rankings() {
+  const fetchRankings = useServerFn(getMemberRankings);
   const { data } = useQuery({
     queryKey: ["rankings"],
-    queryFn: async () => {
-      const [profilesRes, pointsRes, rolesRes] = await Promise.all([
-        supabase.from("profiles").select("id,full_name,photo_url,primary_division"),
-        supabase.from("points_log").select("user_id,points,division"),
-        supabase.from("user_roles").select("user_id,role"),
-      ]);
-      // Exclude elite (TIC, admin, head, executive) — rankings are member-only.
-      const elite = new Set(
-        (rolesRes.data ?? [])
-          .filter((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r.role as string))
-          .map((r) => r.user_id),
-      );
-      const totals = new Map<string, number>();
-      for (const p of pointsRes.data ?? []) {
-        totals.set(p.user_id, (totals.get(p.user_id) ?? 0) + p.points);
-      }
-      return (profilesRes.data ?? [])
-        .filter((u) => !elite.has(u.id))
-        .map((u) => ({ ...u, points: totals.get(u.id) ?? 0 }))
-        .sort((a, b) => b.points - a.points);
-    },
+    queryFn: () => fetchRankings(),
   });
+
 
   function level(pts: number) {
     const monthly = pts / Math.max(1, new Date().getMonth() + 1);
