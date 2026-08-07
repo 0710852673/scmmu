@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
+import { getSiteSettings } from "@/lib/public-data.functions";
+import { BOARD_ORDER } from "@/lib/site-content";
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
@@ -39,12 +41,19 @@ const GROUPS = [
 
 function Leadership() {
   const members = useQuery({ queryKey: ["all-members-public"], queryFn: () => getAllMembers() });
-  const list = members.data ?? [];
+  const settings = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
+  // TIC -> Executive Board -> Section Heads -> Members, then by the order admins set.
+  const list = (members.data ?? []).slice().sort((a, b) => {
+    const ra = BOARD_ORDER[a.board_category ?? ""] ?? 9;
+    const rb = BOARD_ORDER[b.board_category ?? ""] ?? 9;
+    if (ra !== rb) return ra - rb;
+    return (a.display_order ?? 0) - (b.display_order ?? 0);
+  });
 
   return (
     <SiteShell>
       <PageHeader eyebrow="THE UNIT" title="MEMBERS."
-        intro="Teachers in charge, executive board, section heads, and every active member." />
+        intro={settings.data?.leadership_intro ?? "Teachers in charge, executive board, section heads, and every active member."} />
 
       <div className="mx-auto max-w-7xl px-6 pb-24 md:px-8 space-y-20">
         {GROUPS.map((group) => {
