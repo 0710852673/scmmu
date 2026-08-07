@@ -48,7 +48,7 @@ function MemberPortfolio() {
       new Date(pt.created_at).toLocaleDateString(),
       pt.kind, pt.division ?? "—", pt.points,
     ]);
-    exportSectionsPdf(
+    void exportSectionsPdf(
       `SCCMU-${p.admission_number || p.id}.pdf`,
       p.full_name ?? "Member portfolio",
       p.bio ?? undefined,
@@ -57,6 +57,15 @@ function MemberPortfolio() {
         { heading: "Events covered", table: { columns: ["Event", "Date", "Location", "Role"], rows: eventRows } },
         { heading: "Points history", table: { columns: ["Date", "Kind", "Division", "Points"], rows: pointRows } },
       ],
+      {
+        photoUrl: p.photo_url,
+        kicker: "Portfolio",
+        chips: [
+          { label: "Total points", value: data?.totalPoints ?? 0 },
+          { label: "Events covered", value: data?.events?.length ?? 0 },
+          { label: "Contributions", value: data?.points?.length ?? 0 },
+        ],
+      },
     );
   }
 

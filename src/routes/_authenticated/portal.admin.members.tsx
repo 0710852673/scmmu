@@ -10,7 +10,8 @@ import {
 } from "@/lib/admin.functions";
 import { ACCOUNT_ROLES, BOARD_CATEGORIES, DIVISIONS, DIVISION_LABEL, ROLE_ORDER, prettyLabel } from "@/lib/site-content";
 import { exportSectionsPdf } from "@/lib/pdf";
-import { Plus, Trash2, X, Pencil, Search, Download, Loader2 } from "lucide-react";
+import { MemberReportBuilder } from "@/components/portal/MemberReportBuilder";
+import { Plus, Trash2, X, Pencil, Search, Download, Loader2, FileDown } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/members")({
   beforeLoad: async ({ context }) => {
@@ -42,6 +43,7 @@ function AdminMembers() {
   const [newOpen, setNewOpen] = useState(false);
   const [editing, setEditing] = useState<Member | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const listFn = useServerFn(staffListMembers);
   const createFn = useServerFn(adminCreateMember);
@@ -84,12 +86,20 @@ function AdminMembers() {
     <PortalPage
       eyebrow={isAdmin ? "ADMINISTRATOR" : "STAFF"}
       title="MEMBERS"
-      action={isAdmin ? (
-        <button onClick={() => setNewOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full brand-gradient px-5 py-2.5 text-sm font-semibold text-white">
-          <Plus className="h-4 w-4" /> Add member
-        </button>
-      ) : null}
+      action={(
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => setReportOpen(true)}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold hover:bg-muted">
+            <FileDown className="h-4 w-4" /> Custom PDF
+          </button>
+          {isAdmin && (
+            <button onClick={() => setNewOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full brand-gradient px-5 py-2.5 text-sm font-semibold text-white">
+              <Plus className="h-4 w-4" /> Add member
+            </button>
+          )}
+        </div>
+      )}
     >
       <div className="mb-5 relative max-w-md">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -160,6 +170,7 @@ function AdminMembers() {
         )}
       </Card>
 
+      {reportOpen && <MemberReportBuilder members={(members ?? []) as any} searchTerm={q} onClose={() => setReportOpen(false)} />}
       {detailId && <MemberDetail userId={detailId} onClose={() => setDetailId(null)} />}
       {newOpen && <MemberModal mode="new" onClose={() => setNewOpen(false)} onSubmit={(d) => createMut.mutate(d)} pending={createMut.isPending} error={(createMut.error as any)?.message} />}
       {editing && (
@@ -194,7 +205,7 @@ function MemberDetail({ userId, onClose }: { userId: string; onClose: () => void
 
   function downloadPdf() {
     if (!p || !data) return;
-    exportSectionsPdf(
+    void exportSectionsPdf(
       `SCCMU-${p.admission_number || p.id}.pdf`,
       p.full_name ?? "Member record",
       p.bio ?? undefined,
@@ -231,6 +242,17 @@ function MemberDetail({ userId, onClose }: { userId: string; onClose: () => void
           },
         },
       ],
+      {
+        photoUrl: p.photo_url,
+        kicker: prettyLabel(data.role),
+        confidential: true,
+        chips: [
+          { label: "Total points", value: isRanked ? data.totalPoints : "—" },
+          { label: "Attendance", value: data.attendance.length },
+          { label: "Events", value: data.events.length },
+          { label: "Requests", value: data.contributions.length },
+        ],
+      },
     );
   }
 
