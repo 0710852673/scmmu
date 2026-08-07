@@ -209,7 +209,9 @@ function MemberDetail({ userId, onClose }: { userId: string; onClose: () => void
             ["Attendance", data.attendance.length],
           ] as Array<[string, any]>,
         },
-        ...(p.past_works ? [{ heading: "Past works (before this platform)", body: p.past_works as string }] : []),
+        ...(p.past_works
+          ? [{ heading: "Past works (before this platform)", kv: [["Summary", p.past_works]] as Array<[string, any]> }]
+          : []),
         {
           heading: "Events covered",
           table: {
