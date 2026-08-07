@@ -389,6 +389,7 @@ export type Database = {
           full_name: string
           grade: string | null
           id: string
+          member_user_id: string | null
           photo_url: string | null
           points: number
           rank: number
@@ -406,6 +407,7 @@ export type Database = {
           full_name: string
           grade?: string | null
           id?: string
+          member_user_id?: string | null
           photo_url?: string | null
           points?: number
           rank: number
@@ -423,6 +425,7 @@ export type Database = {
           full_name?: string
           grade?: string | null
           id?: string
+          member_user_id?: string | null
           photo_url?: string | null
           points?: number
           rank?: number
@@ -704,6 +707,7 @@ export type Database = {
           grade: string | null
           id: string
           join_date: string | null
+          past_works: string | null
           photo_url: string | null
           primary_division: Database["public"]["Enums"]["division_slug"] | null
           updated_at: string
@@ -719,6 +723,7 @@ export type Database = {
           grade?: string | null
           id: string
           join_date?: string | null
+          past_works?: string | null
           photo_url?: string | null
           primary_division?: Database["public"]["Enums"]["division_slug"] | null
           updated_at?: string
@@ -734,6 +739,7 @@ export type Database = {
           grade?: string | null
           id?: string
           join_date?: string | null
+          past_works?: string | null
           photo_url?: string | null
           primary_division?: Database["public"]["Enums"]["division_slug"] | null
           updated_at?: string
@@ -785,19 +791,32 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          about_eyebrow: string
+          about_history: string
+          about_intro: string
+          about_milestones: Json
+          about_timeline: Json
+          about_title: string
           address_line: string
+          contact_intro: string
+          divisions_intro: string
+          divisions_title: string
           email_address: string
           facebook_url: string
+          footer_note: string
+          gallery_intro: string
           hero_cta_href: string
           hero_cta_label: string
           hero_eyebrow: string
           hero_subtitle: string
           hero_title: string
           id: number
+          leadership_intro: string
           live_stream_active: boolean
           live_stream_title: string | null
           live_stream_url: string | null
           mediaflow_url: string
+          projects_intro: string
           tiktok_url: string
           updated_at: string
           whatsapp_channel_url: string
@@ -806,19 +825,32 @@ export type Database = {
           youtube_url: string
         }
         Insert: {
+          about_eyebrow?: string
+          about_history?: string
+          about_intro?: string
+          about_milestones?: Json
+          about_timeline?: Json
+          about_title?: string
           address_line?: string
+          contact_intro?: string
+          divisions_intro?: string
+          divisions_title?: string
           email_address?: string
           facebook_url?: string
+          footer_note?: string
+          gallery_intro?: string
           hero_cta_href?: string
           hero_cta_label?: string
           hero_eyebrow?: string
           hero_subtitle?: string
           hero_title?: string
           id?: number
+          leadership_intro?: string
           live_stream_active?: boolean
           live_stream_title?: string | null
           live_stream_url?: string | null
           mediaflow_url?: string
+          projects_intro?: string
           tiktok_url?: string
           updated_at?: string
           whatsapp_channel_url?: string
@@ -827,19 +859,32 @@ export type Database = {
           youtube_url?: string
         }
         Update: {
+          about_eyebrow?: string
+          about_history?: string
+          about_intro?: string
+          about_milestones?: Json
+          about_timeline?: Json
+          about_title?: string
           address_line?: string
+          contact_intro?: string
+          divisions_intro?: string
+          divisions_title?: string
           email_address?: string
           facebook_url?: string
+          footer_note?: string
+          gallery_intro?: string
           hero_cta_href?: string
           hero_cta_label?: string
           hero_eyebrow?: string
           hero_subtitle?: string
           hero_title?: string
           id?: number
+          leadership_intro?: string
           live_stream_active?: boolean
           live_stream_title?: string | null
           live_stream_url?: string | null
           mediaflow_url?: string
+          projects_intro?: string
           tiktok_url?: string
           updated_at?: string
           whatsapp_channel_url?: string
@@ -966,6 +1011,17 @@ export type Database = {
         | "videography"
         | "behind_the_scenes"
         | "live_productions"
+        | "photo_editing"
+        | "graphic_design"
+        | "live_streaming"
+        | "technical"
+        | "announcing"
+        | "social_media"
+        | "events"
+        | "sports"
+        | "cultural"
+        | "portraits"
+        | "custom"
       media_status:
         | "uploaded"
         | "editing"
@@ -1147,6 +1203,17 @@ export const Constants = {
         "videography",
         "behind_the_scenes",
         "live_productions",
+        "photo_editing",
+        "graphic_design",
+        "live_streaming",
+        "technical",
+        "announcing",
+        "social_media",
+        "events",
+        "sports",
+        "cultural",
+        "portraits",
+        "custom",
       ],
       media_status: [
         "uploaded",

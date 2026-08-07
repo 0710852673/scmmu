@@ -27,12 +27,14 @@ import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
+import { Route as AuthenticatedPortalPasswordRouteImport } from './routes/_authenticated/portal.password'
 import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
 import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
 import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
 import { Route as AuthenticatedPortalAdminProjectsRouteImport } from './routes/_authenticated/portal.admin.projects'
+import { Route as AuthenticatedPortalAdminPointRulesRouteImport } from './routes/_authenticated/portal.admin.point-rules'
 import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_authenticated/portal.admin.messages'
 import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
 import { Route as AuthenticatedPortalAdminGalleryRouteImport } from './routes/_authenticated/portal.admin.gallery'
@@ -134,6 +136,12 @@ const AuthenticatedPortalProfileRoute =
     path: '/portal/profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalPasswordRoute =
+  AuthenticatedPortalPasswordRouteImport.update({
+    id: '/portal/password',
+    path: '/portal/password',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalEventsRoute =
   AuthenticatedPortalEventsRouteImport.update({
     id: '/portal/events',
@@ -168,6 +176,12 @@ const AuthenticatedPortalAdminProjectsRoute =
   AuthenticatedPortalAdminProjectsRouteImport.update({
     id: '/portal/admin/projects',
     path: '/portal/admin/projects',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminPointRulesRoute =
+  AuthenticatedPortalAdminPointRulesRouteImport.update({
+    id: '/portal/admin/point-rules',
+    path: '/portal/admin/point-rules',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPortalAdminMessagesRoute =
@@ -238,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -249,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
+  '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
@@ -271,6 +287,7 @@ export interface FileRoutesByTo {
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -282,6 +299,7 @@ export interface FileRoutesByTo {
   '/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
+  '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
@@ -306,6 +324,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/_authenticated/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/_authenticated/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/_authenticated/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -317,6 +336,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/_authenticated/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/_authenticated/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
+  '/_authenticated/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/_authenticated/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
 }
@@ -341,6 +361,7 @@ export interface FileRouteTypes {
     | '/portal/attendance'
     | '/portal/contributions'
     | '/portal/events'
+    | '/portal/password'
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal/'
@@ -352,6 +373,7 @@ export interface FileRouteTypes {
     | '/portal/admin/gallery'
     | '/portal/admin/members'
     | '/portal/admin/messages'
+    | '/portal/admin/point-rules'
     | '/portal/admin/projects'
     | '/portal/admin/site'
   fileRoutesByTo: FileRoutesByTo
@@ -374,6 +396,7 @@ export interface FileRouteTypes {
     | '/portal/attendance'
     | '/portal/contributions'
     | '/portal/events'
+    | '/portal/password'
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal'
@@ -385,6 +408,7 @@ export interface FileRouteTypes {
     | '/portal/admin/gallery'
     | '/portal/admin/members'
     | '/portal/admin/messages'
+    | '/portal/admin/point-rules'
     | '/portal/admin/projects'
     | '/portal/admin/site'
   id:
@@ -408,6 +432,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/attendance'
     | '/_authenticated/portal/contributions'
     | '/_authenticated/portal/events'
+    | '/_authenticated/portal/password'
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
     | '/_authenticated/portal/'
@@ -419,6 +444,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/gallery'
     | '/_authenticated/portal/admin/members'
     | '/_authenticated/portal/admin/messages'
+    | '/_authenticated/portal/admin/point-rules'
     | '/_authenticated/portal/admin/projects'
     | '/_authenticated/portal/admin/site'
   fileRoutesById: FileRoutesById
@@ -569,6 +595,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/password': {
+      id: '/_authenticated/portal/password'
+      path: '/portal/password'
+      fullPath: '/portal/password'
+      preLoaderRoute: typeof AuthenticatedPortalPasswordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/events': {
       id: '/_authenticated/portal/events'
       path: '/portal/events'
@@ -609,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/portal/admin/projects'
       fullPath: '/portal/admin/projects'
       preLoaderRoute: typeof AuthenticatedPortalAdminProjectsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/point-rules': {
+      id: '/_authenticated/portal/admin/point-rules'
+      path: '/portal/admin/point-rules'
+      fullPath: '/portal/admin/point-rules'
+      preLoaderRoute: typeof AuthenticatedPortalAdminPointRulesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/portal/admin/messages': {
@@ -675,6 +715,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAttendanceRoute: typeof AuthenticatedPortalAttendanceRoute
   AuthenticatedPortalContributionsRoute: typeof AuthenticatedPortalContributionsRoute
   AuthenticatedPortalEventsRoute: typeof AuthenticatedPortalEventsRoute
+  AuthenticatedPortalPasswordRoute: typeof AuthenticatedPortalPasswordRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
@@ -686,6 +727,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminGalleryRoute: typeof AuthenticatedPortalAdminGalleryRoute
   AuthenticatedPortalAdminMembersRoute: typeof AuthenticatedPortalAdminMembersRoute
   AuthenticatedPortalAdminMessagesRoute: typeof AuthenticatedPortalAdminMessagesRoute
+  AuthenticatedPortalAdminPointRulesRoute: typeof AuthenticatedPortalAdminPointRulesRoute
   AuthenticatedPortalAdminProjectsRoute: typeof AuthenticatedPortalAdminProjectsRoute
   AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
 }
@@ -695,6 +737,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAttendanceRoute: AuthenticatedPortalAttendanceRoute,
   AuthenticatedPortalContributionsRoute: AuthenticatedPortalContributionsRoute,
   AuthenticatedPortalEventsRoute: AuthenticatedPortalEventsRoute,
+  AuthenticatedPortalPasswordRoute: AuthenticatedPortalPasswordRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
@@ -708,6 +751,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAdminGalleryRoute: AuthenticatedPortalAdminGalleryRoute,
   AuthenticatedPortalAdminMembersRoute: AuthenticatedPortalAdminMembersRoute,
   AuthenticatedPortalAdminMessagesRoute: AuthenticatedPortalAdminMessagesRoute,
+  AuthenticatedPortalAdminPointRulesRoute:
+    AuthenticatedPortalAdminPointRulesRoute,
   AuthenticatedPortalAdminProjectsRoute: AuthenticatedPortalAdminProjectsRoute,
   AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
 }
