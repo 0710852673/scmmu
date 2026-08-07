@@ -37,16 +37,16 @@ function AdminSite() {
 
   async function save() {
     setSaving(true);
-    const payload = { ...s, id: 1 };
+    const payload: Record<string, any> = { ...s, id: 1 };
     for (const key of ["about_timeline", "about_milestones"]) {
       if (typeof payload[key] === "string") {
-        try { payload[key] = JSON.parse(payload[key]); }
+        try { payload[key] = JSON.parse(payload[key] as string); }
         catch { setSaving(false); return toast.error(`${key.replace("_", " ")} is not valid JSON.`); }
       }
     }
     const [a, b] = await Promise.all([
-      supabase.from("site_settings").upsert(payload),
-      supabase.from("site_stats").upsert({ ...st, id: 1 }),
+      supabase.from("site_settings").upsert(payload as any),
+      supabase.from("site_stats").upsert({ ...st, id: 1 } as any),
     ]);
     setSaving(false);
     if (a.error || b.error) return toast.error((a.error ?? b.error)!.message);
