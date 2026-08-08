@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as LiveRouteImport } from './routes/live'
 import { Route as LeadershipRouteImport } from './routes/leadership'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -28,10 +29,13 @@ import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
 import { Route as AuthenticatedPortalPasswordRouteImport } from './routes/_authenticated/portal.password'
+import { Route as AuthenticatedPortalNotificationsRouteImport } from './routes/_authenticated/portal.notifications'
 import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
 import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
+import { Route as AuthenticatedPortalAssignmentsRouteImport } from './routes/_authenticated/portal.assignments'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
+import { Route as AuthenticatedPortalAdminStreamsRouteImport } from './routes/_authenticated/portal.admin.streams'
 import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
 import { Route as AuthenticatedPortalAdminProjectsRouteImport } from './routes/_authenticated/portal.admin.projects'
 import { Route as AuthenticatedPortalAdminPointRulesRouteImport } from './routes/_authenticated/portal.admin.point-rules'
@@ -41,12 +45,18 @@ import { Route as AuthenticatedPortalAdminGalleryRouteImport } from './routes/_a
 import { Route as AuthenticatedPortalAdminEventsRouteImport } from './routes/_authenticated/portal.admin.events'
 import { Route as AuthenticatedPortalAdminEmailTemplatesRouteImport } from './routes/_authenticated/portal.admin.email-templates'
 import { Route as AuthenticatedPortalAdminDivisionsRouteImport } from './routes/_authenticated/portal.admin.divisions'
+import { Route as AuthenticatedPortalAdminCoverageRouteImport } from './routes/_authenticated/portal.admin.coverage'
 import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
 import { Route as AuthenticatedPortalAdminBoardRouteImport } from './routes/_authenticated/portal.admin.board'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LiveRoute = LiveRouteImport.update({
+  id: '/live',
+  path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeadershipRoute = LeadershipRouteImport.update({
@@ -142,6 +152,12 @@ const AuthenticatedPortalPasswordRoute =
     path: '/portal/password',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalNotificationsRoute =
+  AuthenticatedPortalNotificationsRouteImport.update({
+    id: '/portal/notifications',
+    path: '/portal/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalEventsRoute =
   AuthenticatedPortalEventsRouteImport.update({
     id: '/portal/events',
@@ -160,10 +176,22 @@ const AuthenticatedPortalAttendanceRoute =
     path: '/portal/attendance',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAssignmentsRoute =
+  AuthenticatedPortalAssignmentsRouteImport.update({
+    id: '/portal/assignments',
+    path: '/portal/assignments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAnnouncementsRoute =
   AuthenticatedPortalAnnouncementsRouteImport.update({
     id: '/portal/announcements',
     path: '/portal/announcements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminStreamsRoute =
+  AuthenticatedPortalAdminStreamsRouteImport.update({
+    id: '/portal/admin/streams',
+    path: '/portal/admin/streams',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPortalAdminSiteRoute =
@@ -220,6 +248,12 @@ const AuthenticatedPortalAdminDivisionsRoute =
     path: '/portal/admin/divisions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminCoverageRoute =
+  AuthenticatedPortalAdminCoverageRouteImport.update({
+    id: '/portal/admin/coverage',
+    path: '/portal/admin/coverage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminBookingsRoute =
   AuthenticatedPortalAdminBookingsRouteImport.update({
     id: '/portal/admin/bookings',
@@ -241,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
+  '/live': typeof LiveRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
   '/members/$id': typeof MembersIdRoute
@@ -249,15 +284,18 @@ export interface FileRoutesByFullPath {
   '/divisions/': typeof DivisionsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/portal/assignments': typeof AuthenticatedPortalAssignmentsRoute
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
+  '/portal/admin/coverage': typeof AuthenticatedPortalAdminCoverageRoute
   '/portal/admin/divisions': typeof AuthenticatedPortalAdminDivisionsRoute
   '/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
@@ -267,6 +305,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
+  '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -276,6 +315,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
+  '/live': typeof LiveRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
   '/members/$id': typeof MembersIdRoute
@@ -284,15 +324,18 @@ export interface FileRoutesByTo {
   '/divisions': typeof DivisionsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/portal/assignments': typeof AuthenticatedPortalAssignmentsRoute
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
+  '/portal/admin/coverage': typeof AuthenticatedPortalAdminCoverageRoute
   '/portal/admin/divisions': typeof AuthenticatedPortalAdminDivisionsRoute
   '/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
@@ -302,6 +345,7 @@ export interface FileRoutesByTo {
   '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
+  '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -313,6 +357,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
+  '/live': typeof LiveRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
   '/members/$id': typeof MembersIdRoute
@@ -321,15 +366,18 @@ export interface FileRoutesById {
   '/divisions/': typeof DivisionsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/_authenticated/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/_authenticated/portal/assignments': typeof AuthenticatedPortalAssignmentsRoute
   '/_authenticated/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/_authenticated/portal/contributions': typeof AuthenticatedPortalContributionsRoute
   '/_authenticated/portal/events': typeof AuthenticatedPortalEventsRoute
+  '/_authenticated/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/_authenticated/portal/password': typeof AuthenticatedPortalPasswordRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/_authenticated/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
+  '/_authenticated/portal/admin/coverage': typeof AuthenticatedPortalAdminCoverageRoute
   '/_authenticated/portal/admin/divisions': typeof AuthenticatedPortalAdminDivisionsRoute
   '/_authenticated/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/_authenticated/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
@@ -339,6 +387,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/_authenticated/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
+  '/_authenticated/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -350,6 +399,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/leadership'
+    | '/live'
     | '/search'
     | '/divisions/$slug'
     | '/members/$id'
@@ -358,15 +408,18 @@ export interface FileRouteTypes {
     | '/divisions/'
     | '/projects/'
     | '/portal/announcements'
+    | '/portal/assignments'
     | '/portal/attendance'
     | '/portal/contributions'
     | '/portal/events'
+    | '/portal/notifications'
     | '/portal/password'
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal/'
     | '/portal/admin/board'
     | '/portal/admin/bookings'
+    | '/portal/admin/coverage'
     | '/portal/admin/divisions'
     | '/portal/admin/email-templates'
     | '/portal/admin/events'
@@ -376,6 +429,7 @@ export interface FileRouteTypes {
     | '/portal/admin/point-rules'
     | '/portal/admin/projects'
     | '/portal/admin/site'
+    | '/portal/admin/streams'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -385,6 +439,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/leadership'
+    | '/live'
     | '/search'
     | '/divisions/$slug'
     | '/members/$id'
@@ -393,15 +448,18 @@ export interface FileRouteTypes {
     | '/divisions'
     | '/projects'
     | '/portal/announcements'
+    | '/portal/assignments'
     | '/portal/attendance'
     | '/portal/contributions'
     | '/portal/events'
+    | '/portal/notifications'
     | '/portal/password'
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal'
     | '/portal/admin/board'
     | '/portal/admin/bookings'
+    | '/portal/admin/coverage'
     | '/portal/admin/divisions'
     | '/portal/admin/email-templates'
     | '/portal/admin/events'
@@ -411,6 +469,7 @@ export interface FileRouteTypes {
     | '/portal/admin/point-rules'
     | '/portal/admin/projects'
     | '/portal/admin/site'
+    | '/portal/admin/streams'
   id:
     | '__root__'
     | '/'
@@ -421,6 +480,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/leadership'
+    | '/live'
     | '/search'
     | '/divisions/$slug'
     | '/members/$id'
@@ -429,15 +489,18 @@ export interface FileRouteTypes {
     | '/divisions/'
     | '/projects/'
     | '/_authenticated/portal/announcements'
+    | '/_authenticated/portal/assignments'
     | '/_authenticated/portal/attendance'
     | '/_authenticated/portal/contributions'
     | '/_authenticated/portal/events'
+    | '/_authenticated/portal/notifications'
     | '/_authenticated/portal/password'
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
     | '/_authenticated/portal/'
     | '/_authenticated/portal/admin/board'
     | '/_authenticated/portal/admin/bookings'
+    | '/_authenticated/portal/admin/coverage'
     | '/_authenticated/portal/admin/divisions'
     | '/_authenticated/portal/admin/email-templates'
     | '/_authenticated/portal/admin/events'
@@ -447,6 +510,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/point-rules'
     | '/_authenticated/portal/admin/projects'
     | '/_authenticated/portal/admin/site'
+    | '/_authenticated/portal/admin/streams'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -458,6 +522,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   LeadershipRoute: typeof LeadershipRoute
+  LiveRoute: typeof LiveRoute
   SearchRoute: typeof SearchRoute
   DivisionsSlugRoute: typeof DivisionsSlugRoute
   MembersIdRoute: typeof MembersIdRoute
@@ -474,6 +539,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/live': {
+      id: '/live'
+      path: '/live'
+      fullPath: '/live'
+      preLoaderRoute: typeof LiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leadership': {
@@ -602,6 +674,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalPasswordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/notifications': {
+      id: '/_authenticated/portal/notifications'
+      path: '/portal/notifications'
+      fullPath: '/portal/notifications'
+      preLoaderRoute: typeof AuthenticatedPortalNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/events': {
       id: '/_authenticated/portal/events'
       path: '/portal/events'
@@ -623,11 +702,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAttendanceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/assignments': {
+      id: '/_authenticated/portal/assignments'
+      path: '/portal/assignments'
+      fullPath: '/portal/assignments'
+      preLoaderRoute: typeof AuthenticatedPortalAssignmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/announcements': {
       id: '/_authenticated/portal/announcements'
       path: '/portal/announcements'
       fullPath: '/portal/announcements'
       preLoaderRoute: typeof AuthenticatedPortalAnnouncementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/streams': {
+      id: '/_authenticated/portal/admin/streams'
+      path: '/portal/admin/streams'
+      fullPath: '/portal/admin/streams'
+      preLoaderRoute: typeof AuthenticatedPortalAdminStreamsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/portal/admin/site': {
@@ -693,6 +786,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminDivisionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/coverage': {
+      id: '/_authenticated/portal/admin/coverage'
+      path: '/portal/admin/coverage'
+      fullPath: '/portal/admin/coverage'
+      preLoaderRoute: typeof AuthenticatedPortalAdminCoverageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/bookings': {
       id: '/_authenticated/portal/admin/bookings'
       path: '/portal/admin/bookings'
@@ -712,15 +812,18 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAnnouncementsRoute: typeof AuthenticatedPortalAnnouncementsRoute
+  AuthenticatedPortalAssignmentsRoute: typeof AuthenticatedPortalAssignmentsRoute
   AuthenticatedPortalAttendanceRoute: typeof AuthenticatedPortalAttendanceRoute
   AuthenticatedPortalContributionsRoute: typeof AuthenticatedPortalContributionsRoute
   AuthenticatedPortalEventsRoute: typeof AuthenticatedPortalEventsRoute
+  AuthenticatedPortalNotificationsRoute: typeof AuthenticatedPortalNotificationsRoute
   AuthenticatedPortalPasswordRoute: typeof AuthenticatedPortalPasswordRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
   AuthenticatedPortalAdminBoardRoute: typeof AuthenticatedPortalAdminBoardRoute
   AuthenticatedPortalAdminBookingsRoute: typeof AuthenticatedPortalAdminBookingsRoute
+  AuthenticatedPortalAdminCoverageRoute: typeof AuthenticatedPortalAdminCoverageRoute
   AuthenticatedPortalAdminDivisionsRoute: typeof AuthenticatedPortalAdminDivisionsRoute
   AuthenticatedPortalAdminEmailTemplatesRoute: typeof AuthenticatedPortalAdminEmailTemplatesRoute
   AuthenticatedPortalAdminEventsRoute: typeof AuthenticatedPortalAdminEventsRoute
@@ -730,19 +833,23 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminPointRulesRoute: typeof AuthenticatedPortalAdminPointRulesRoute
   AuthenticatedPortalAdminProjectsRoute: typeof AuthenticatedPortalAdminProjectsRoute
   AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
+  AuthenticatedPortalAdminStreamsRoute: typeof AuthenticatedPortalAdminStreamsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAnnouncementsRoute: AuthenticatedPortalAnnouncementsRoute,
+  AuthenticatedPortalAssignmentsRoute: AuthenticatedPortalAssignmentsRoute,
   AuthenticatedPortalAttendanceRoute: AuthenticatedPortalAttendanceRoute,
   AuthenticatedPortalContributionsRoute: AuthenticatedPortalContributionsRoute,
   AuthenticatedPortalEventsRoute: AuthenticatedPortalEventsRoute,
+  AuthenticatedPortalNotificationsRoute: AuthenticatedPortalNotificationsRoute,
   AuthenticatedPortalPasswordRoute: AuthenticatedPortalPasswordRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
   AuthenticatedPortalAdminBoardRoute: AuthenticatedPortalAdminBoardRoute,
   AuthenticatedPortalAdminBookingsRoute: AuthenticatedPortalAdminBookingsRoute,
+  AuthenticatedPortalAdminCoverageRoute: AuthenticatedPortalAdminCoverageRoute,
   AuthenticatedPortalAdminDivisionsRoute:
     AuthenticatedPortalAdminDivisionsRoute,
   AuthenticatedPortalAdminEmailTemplatesRoute:
@@ -755,6 +862,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedPortalAdminPointRulesRoute,
   AuthenticatedPortalAdminProjectsRoute: AuthenticatedPortalAdminProjectsRoute,
   AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
+  AuthenticatedPortalAdminStreamsRoute: AuthenticatedPortalAdminStreamsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -769,6 +877,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   LeadershipRoute: LeadershipRoute,
+  LiveRoute: LiveRoute,
   SearchRoute: SearchRoute,
   DivisionsSlugRoute: DivisionsSlugRoute,
   MembersIdRoute: MembersIdRoute,

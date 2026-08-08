@@ -6,6 +6,7 @@ import {
   LayoutDashboard, User, Calendar, ClipboardCheck, FileText, ExternalLink,
   Trophy, Megaphone, Users, BookmarkCheck, FolderKanban, Mail, ImagePlus,
   LogOut, Settings, Shield, ChevronRight, Menu, X, CheckSquare, MailPlus, KeyRound,
+  Bell, Radio, Briefcase,
 } from "lucide-react";
 import { ThemeToggle } from "@/lib/theme";
 import { getSiteSettings } from "@/lib/public-data.functions";
@@ -26,6 +27,8 @@ type NavItem = { to?: string; href?: string; external?: boolean; label: string; 
 const MEMBER_NAV: NavItem[] = [
   { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/portal/profile", label: "My Profile", icon: User },
+  { to: "/portal/notifications", label: "Notifications", icon: Bell },
+  { to: "/portal/assignments", label: "My Assignments", icon: Briefcase },
   { to: "/portal/events", label: "Events", icon: Calendar },
   { to: "/portal/attendance", label: "Attendance", icon: ClipboardCheck },
   { to: "/portal/contributions", label: "Send Requests", icon: FileText },
@@ -38,7 +41,10 @@ const MEMBER_NAV: NavItem[] = [
 const TIC_NAV: NavItem[] = [
   { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/portal/profile", label: "My Profile", icon: User },
+  { to: "/portal/notifications", label: "Notifications", icon: Bell },
   { to: "/portal/admin/members", label: "Members", icon: Users },
+  { to: "/portal/admin/coverage", label: "Coverage Operations", icon: Briefcase },
+  { to: "/portal/admin/streams", label: "Live Streams", icon: Radio },
   { to: "/portal/events", label: "Events & Approvals", icon: Calendar },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
@@ -47,6 +53,8 @@ const TIC_NAV: NavItem[] = [
 ];
 
 const HEAD_NAV: NavItem[] = [
+  { to: "/portal/admin/coverage", label: "Coverage Operations", icon: Briefcase },
+  { to: "/portal/admin/streams", label: "Live Streams", icon: Radio },
   { to: "/portal/admin/members", label: "Members", icon: Users },
   { to: "/portal/events", label: "Events & Approvals", icon: Calendar },
   { to: "/portal/admin/gallery", label: "Gallery", icon: ImagePlus },
@@ -56,6 +64,8 @@ const HEAD_NAV: NavItem[] = [
 ];
 
 const ADMIN_NAV: NavItem[] = [
+  { to: "/portal/admin/coverage", label: "Coverage Operations", icon: Briefcase },
+  { to: "/portal/admin/streams", label: "Live Streams", icon: Radio },
   { to: "/portal/admin/members", label: "All Members", icon: Users },
   { to: "/portal/admin/board", label: "Board & Leadership", icon: Shield },
   { to: "/portal/admin/projects", label: "Projects", icon: FolderKanban },
@@ -82,6 +92,19 @@ function PortalLayout() {
     },
   });
   const settings = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
+
+  const unread = useQuery({
+    queryKey: ["notifications-unread", user.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .is("read_at", null);
+      return count ?? 0;
+    },
+    refetchInterval: 60_000,
+  });
 
   const isAdmin = roles?.includes("administrator");
   const isTic = roles?.includes("tic") && !isAdmin;
@@ -150,6 +173,12 @@ function PortalLayout() {
             <div className="text-xs font-semibold truncate">{user.email}</div>
             <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{tier}</div>
           </div>
+          <Link to="/portal/notifications" aria-label="Notifications" className="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-border">
+            <Bell className="h-3.5 w-3.5" />
+            {(unread.data ?? 0) > 0 && (
+              <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[9px] font-bold text-white">{unread.data}</span>
+            )}
+          </Link>
           <ThemeToggle />
         </div>
         <button onClick={signOut}
@@ -166,6 +195,12 @@ function PortalLayout() {
         <Link to="/" className="flex items-center gap-2">
           <LogoMark size={26} />
           <span className="font-display text-sm font-extrabold tracking-tight">SCCMU PORTAL</span>
+        </Link>
+        <Link to="/portal/notifications" aria-label="Notifications" className="relative ml-auto mr-1 inline-flex h-9 w-9 items-center justify-center rounded-full border border-border">
+          <Bell className="h-4 w-4" />
+          {(unread.data ?? 0) > 0 && (
+            <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[9px] font-bold text-white">{unread.data}</span>
+          )}
         </Link>
         <button onClick={() => setMobileOpen(true)} aria-label="Open menu"
           className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border">
