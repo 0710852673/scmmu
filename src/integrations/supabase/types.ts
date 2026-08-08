@@ -101,9 +101,49 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_status_history: {
+        Row: {
+          booking_id: string
+          changed_by: string | null
+          created_at: string
+          from_status: string | null
+          id: string
+          note: string | null
+          to_status: string
+        }
+        Insert: {
+          booking_id: string
+          changed_by?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_status: string
+        }
+        Update: {
+          booking_id?: string
+          changed_by?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_status_history_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
+          assigned_divisions: string[]
           audience_size: number | null
+          completion_note: string | null
           contact_person: string
           created_at: string
           email: string | null
@@ -113,8 +153,10 @@ export type Database = {
           event_type: string | null
           id: string
           kind: Database["public"]["Enums"]["booking_kind"]
+          media_links: Json
           notes: string | null
           organization: string
+          priority: string
           rejection_reason: string | null
           services: string[]
           status: Database["public"]["Enums"]["booking_status"]
@@ -123,7 +165,9 @@ export type Database = {
           whatsapp: string
         }
         Insert: {
+          assigned_divisions?: string[]
           audience_size?: number | null
+          completion_note?: string | null
           contact_person: string
           created_at?: string
           email?: string | null
@@ -133,8 +177,10 @@ export type Database = {
           event_type?: string | null
           id?: string
           kind: Database["public"]["Enums"]["booking_kind"]
+          media_links?: Json
           notes?: string | null
           organization: string
+          priority?: string
           rejection_reason?: string | null
           services?: string[]
           status?: Database["public"]["Enums"]["booking_status"]
@@ -143,7 +189,9 @@ export type Database = {
           whatsapp: string
         }
         Update: {
+          assigned_divisions?: string[]
           audience_size?: number | null
+          completion_note?: string | null
           contact_person?: string
           created_at?: string
           email?: string | null
@@ -153,8 +201,10 @@ export type Database = {
           event_type?: string | null
           id?: string
           kind?: Database["public"]["Enums"]["booking_kind"]
+          media_links?: Json
           notes?: string | null
           organization?: string
+          priority?: string
           rejection_reason?: string | null
           services?: string[]
           status?: Database["public"]["Enums"]["booking_status"]
@@ -240,6 +290,50 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coverage_assignments: {
+        Row: {
+          assigned_by: string | null
+          booking_id: string
+          created_at: string
+          division: Database["public"]["Enums"]["division_slug"] | null
+          id: string
+          note: string | null
+          service: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          booking_id: string
+          created_at?: string
+          division?: Database["public"]["Enums"]["division_slug"] | null
+          id?: string
+          note?: string | null
+          service?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          booking_id?: string
+          created_at?: string
+          division?: Database["public"]["Enums"]["division_slug"] | null
+          id?: string
+          note?: string | null
+          service?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coverage_assignments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
         ]
@@ -482,6 +576,54 @@ export type Database = {
           },
         ]
       }
+      live_streams: {
+        Row: {
+          created_at: string
+          credits: Json
+          description: string | null
+          display_order: number
+          facebook_url: string | null
+          id: string
+          published: boolean
+          scheduled_at: string | null
+          state: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          credits?: Json
+          description?: string | null
+          display_order?: number
+          facebook_url?: string | null
+          id?: string
+          published?: boolean
+          scheduled_at?: string | null
+          state?: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          credits?: Json
+          description?: string | null
+          display_order?: number
+          facebook_url?: string | null
+          id?: string
+          published?: boolean
+          scheduled_at?: string | null
+          state?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       media_items: {
         Row: {
           caption: string | null
@@ -634,6 +776,42 @@ export type Database = {
           requested_by?: string
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["event_participation_status"]
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          link: string | null
+          priority: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string | null
+          priority?: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string | null
+          priority?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -984,6 +1162,9 @@ export type Database = {
         | "confirmed"
         | "completed"
         | "rejected"
+        | "assigned"
+        | "in_progress"
+        | "media_published"
       contribution_kind:
         | "attend_meeting"
         | "participate_event"
@@ -1173,6 +1354,9 @@ export const Constants = {
         "confirmed",
         "completed",
         "rejected",
+        "assigned",
+        "in_progress",
+        "media_published",
       ],
       contribution_kind: [
         "attend_meeting",

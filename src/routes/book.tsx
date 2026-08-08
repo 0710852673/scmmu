@@ -5,16 +5,9 @@ import { CheckCircle2 } from "lucide-react";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyBookingSubmitted } from "@/lib/email.functions";
+import { COVERAGE_SERVICES } from "@/lib/coverage";
 
-const SERVICES = [
-  "Photography",
-  "Videography",
-  "Live Streaming",
-  "Announcing",
-  "LED Wall Control",
-  "Audio",
-  "Other",
-];
+const SERVICES = COVERAGE_SERVICES.map((s) => s.value);
 
 export const Route = createFileRoute("/book")({
   head: () => ({
