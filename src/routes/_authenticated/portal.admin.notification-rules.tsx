@@ -131,7 +131,7 @@ function RulesPage() {
                 onChange={(v) => setDraft({ ...draft, recipient_roles: v })} />
             </Field>
             <Field label="Limit to divisions (optional)">
-              <ChipPicker options={DIVISIONS.map((d) => ({ value: d.slug, label: d.name }))}
+              <ChipPicker options={DIVISIONS.map((d) => ({ value: d.value, label: d.label }))}
                 selected={draft.recipient_divisions ?? []}
                 onChange={(v) => setDraft({ ...draft, recipient_divisions: v })} />
             </Field>
