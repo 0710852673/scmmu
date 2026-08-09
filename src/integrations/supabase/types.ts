@@ -52,6 +52,11 @@ export type Database = {
           division: Database["public"]["Enums"]["division_slug"] | null
           id: string
           pinned: boolean
+          review_note: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          submitted_by: string | null
           title: string
         }
         Insert: {
@@ -61,6 +66,11 @@ export type Database = {
           division?: Database["public"]["Enums"]["division_slug"] | null
           id?: string
           pinned?: boolean
+          review_note?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submitted_by?: string | null
           title: string
         }
         Update: {
@@ -70,6 +80,11 @@ export type Database = {
           division?: Database["public"]["Enums"]["division_slug"] | null
           id?: string
           pinned?: boolean
+          review_note?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submitted_by?: string | null
           title?: string
         }
         Relationships: []
@@ -539,6 +554,11 @@ export type Database = {
           image_url: string
           media_type: string
           project_id: string | null
+          review_note: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          submitted_by: string | null
           title: string | null
           video_url: string | null
         }
@@ -551,6 +571,11 @@ export type Database = {
           image_url: string
           media_type?: string
           project_id?: string | null
+          review_note?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submitted_by?: string | null
           title?: string | null
           video_url?: string | null
         }
@@ -563,6 +588,11 @@ export type Database = {
           image_url?: string
           media_type?: string
           project_id?: string | null
+          review_note?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submitted_by?: string | null
           title?: string | null
           video_url?: string | null
         }
@@ -779,6 +809,54 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_rules: {
+        Row: {
+          active: boolean
+          conditions: Json
+          created_at: string
+          deliver_email: boolean
+          deliver_portal: boolean
+          id: string
+          name: string
+          priority: string
+          recipient_divisions: string[]
+          recipient_roles: string[]
+          recipient_user_ids: string[]
+          trigger_key: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          conditions?: Json
+          created_at?: string
+          deliver_email?: boolean
+          deliver_portal?: boolean
+          id?: string
+          name: string
+          priority?: string
+          recipient_divisions?: string[]
+          recipient_roles?: string[]
+          recipient_user_ids?: string[]
+          trigger_key: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          conditions?: Json
+          created_at?: string
+          deliver_email?: boolean
+          deliver_portal?: boolean
+          id?: string
+          name?: string
+          priority?: string
+          recipient_divisions?: string[]
+          recipient_roles?: string[]
+          recipient_user_ids?: string[]
+          trigger_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -812,6 +890,39 @@ export type Database = {
           read_at?: string | null
           title?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      permission_roles: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          name: string
+          permissions: string[]
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          name: string
+          permissions?: string[]
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          name?: string
+          permissions?: string[]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -934,7 +1045,12 @@ export type Database = {
           id: string
           is_featured: boolean
           published: boolean
+          review_note: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           slug: string
+          submitted_by: string | null
           summary: string | null
           title: string
           updated_at: string
@@ -947,7 +1063,12 @@ export type Database = {
           id?: string
           is_featured?: boolean
           published?: boolean
+          review_note?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           slug: string
+          submitted_by?: string | null
           summary?: string | null
           title: string
           updated_at?: string
@@ -960,7 +1081,12 @@ export type Database = {
           id?: string
           is_featured?: boolean
           published?: boolean
+          review_note?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           slug?: string
+          submitted_by?: string | null
           summary?: string | null
           title?: string
           updated_at?: string
@@ -1107,6 +1233,38 @@ export type Database = {
           videos_produced?: number
         }
         Relationships: []
+      }
+      user_permission_roles: {
+        Row: {
+          assigned_by: string | null
+          created_at: string
+          id: string
+          role_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          role_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          role_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_permission_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "permission_roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
