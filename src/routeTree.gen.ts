@@ -37,8 +37,11 @@ import { Route as AuthenticatedPortalAssignmentsRouteImport } from './routes/_au
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
 import { Route as AuthenticatedPortalAdminStreamsRouteImport } from './routes/_authenticated/portal.admin.streams'
 import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
+import { Route as AuthenticatedPortalAdminReviewQueueRouteImport } from './routes/_authenticated/portal.admin.review-queue'
 import { Route as AuthenticatedPortalAdminProjectsRouteImport } from './routes/_authenticated/portal.admin.projects'
 import { Route as AuthenticatedPortalAdminPointRulesRouteImport } from './routes/_authenticated/portal.admin.point-rules'
+import { Route as AuthenticatedPortalAdminPermissionsRouteImport } from './routes/_authenticated/portal.admin.permissions'
+import { Route as AuthenticatedPortalAdminNotificationRulesRouteImport } from './routes/_authenticated/portal.admin.notification-rules'
 import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_authenticated/portal.admin.messages'
 import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
 import { Route as AuthenticatedPortalAdminGalleryRouteImport } from './routes/_authenticated/portal.admin.gallery'
@@ -200,6 +203,12 @@ const AuthenticatedPortalAdminSiteRoute =
     path: '/portal/admin/site',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminReviewQueueRoute =
+  AuthenticatedPortalAdminReviewQueueRouteImport.update({
+    id: '/portal/admin/review-queue',
+    path: '/portal/admin/review-queue',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminProjectsRoute =
   AuthenticatedPortalAdminProjectsRouteImport.update({
     id: '/portal/admin/projects',
@@ -210,6 +219,18 @@ const AuthenticatedPortalAdminPointRulesRoute =
   AuthenticatedPortalAdminPointRulesRouteImport.update({
     id: '/portal/admin/point-rules',
     path: '/portal/admin/point-rules',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminPermissionsRoute =
+  AuthenticatedPortalAdminPermissionsRouteImport.update({
+    id: '/portal/admin/permissions',
+    path: '/portal/admin/permissions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminNotificationRulesRoute =
+  AuthenticatedPortalAdminNotificationRulesRouteImport.update({
+    id: '/portal/admin/notification-rules',
+    path: '/portal/admin/notification-rules',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPortalAdminMessagesRoute =
@@ -302,8 +323,11 @@ export interface FileRoutesByFullPath {
   '/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
+  '/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
+  '/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
 }
@@ -342,8 +366,11 @@ export interface FileRoutesByTo {
   '/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
+  '/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
+  '/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
 }
@@ -384,8 +411,11 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
   '/_authenticated/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/_authenticated/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
+  '/_authenticated/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/_authenticated/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/_authenticated/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/_authenticated/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
+  '/_authenticated/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/_authenticated/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
 }
@@ -426,8 +456,11 @@ export interface FileRouteTypes {
     | '/portal/admin/gallery'
     | '/portal/admin/members'
     | '/portal/admin/messages'
+    | '/portal/admin/notification-rules'
+    | '/portal/admin/permissions'
     | '/portal/admin/point-rules'
     | '/portal/admin/projects'
+    | '/portal/admin/review-queue'
     | '/portal/admin/site'
     | '/portal/admin/streams'
   fileRoutesByTo: FileRoutesByTo
@@ -466,8 +499,11 @@ export interface FileRouteTypes {
     | '/portal/admin/gallery'
     | '/portal/admin/members'
     | '/portal/admin/messages'
+    | '/portal/admin/notification-rules'
+    | '/portal/admin/permissions'
     | '/portal/admin/point-rules'
     | '/portal/admin/projects'
+    | '/portal/admin/review-queue'
     | '/portal/admin/site'
     | '/portal/admin/streams'
   id:
@@ -507,8 +543,11 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/gallery'
     | '/_authenticated/portal/admin/members'
     | '/_authenticated/portal/admin/messages'
+    | '/_authenticated/portal/admin/notification-rules'
+    | '/_authenticated/portal/admin/permissions'
     | '/_authenticated/portal/admin/point-rules'
     | '/_authenticated/portal/admin/projects'
+    | '/_authenticated/portal/admin/review-queue'
     | '/_authenticated/portal/admin/site'
     | '/_authenticated/portal/admin/streams'
   fileRoutesById: FileRoutesById
@@ -730,6 +769,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminSiteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/review-queue': {
+      id: '/_authenticated/portal/admin/review-queue'
+      path: '/portal/admin/review-queue'
+      fullPath: '/portal/admin/review-queue'
+      preLoaderRoute: typeof AuthenticatedPortalAdminReviewQueueRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/projects': {
       id: '/_authenticated/portal/admin/projects'
       path: '/portal/admin/projects'
@@ -742,6 +788,20 @@ declare module '@tanstack/react-router' {
       path: '/portal/admin/point-rules'
       fullPath: '/portal/admin/point-rules'
       preLoaderRoute: typeof AuthenticatedPortalAdminPointRulesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/permissions': {
+      id: '/_authenticated/portal/admin/permissions'
+      path: '/portal/admin/permissions'
+      fullPath: '/portal/admin/permissions'
+      preLoaderRoute: typeof AuthenticatedPortalAdminPermissionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/notification-rules': {
+      id: '/_authenticated/portal/admin/notification-rules'
+      path: '/portal/admin/notification-rules'
+      fullPath: '/portal/admin/notification-rules'
+      preLoaderRoute: typeof AuthenticatedPortalAdminNotificationRulesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/portal/admin/messages': {
@@ -830,8 +890,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminGalleryRoute: typeof AuthenticatedPortalAdminGalleryRoute
   AuthenticatedPortalAdminMembersRoute: typeof AuthenticatedPortalAdminMembersRoute
   AuthenticatedPortalAdminMessagesRoute: typeof AuthenticatedPortalAdminMessagesRoute
+  AuthenticatedPortalAdminNotificationRulesRoute: typeof AuthenticatedPortalAdminNotificationRulesRoute
+  AuthenticatedPortalAdminPermissionsRoute: typeof AuthenticatedPortalAdminPermissionsRoute
   AuthenticatedPortalAdminPointRulesRoute: typeof AuthenticatedPortalAdminPointRulesRoute
   AuthenticatedPortalAdminProjectsRoute: typeof AuthenticatedPortalAdminProjectsRoute
+  AuthenticatedPortalAdminReviewQueueRoute: typeof AuthenticatedPortalAdminReviewQueueRoute
   AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
   AuthenticatedPortalAdminStreamsRoute: typeof AuthenticatedPortalAdminStreamsRoute
 }
@@ -858,9 +921,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAdminGalleryRoute: AuthenticatedPortalAdminGalleryRoute,
   AuthenticatedPortalAdminMembersRoute: AuthenticatedPortalAdminMembersRoute,
   AuthenticatedPortalAdminMessagesRoute: AuthenticatedPortalAdminMessagesRoute,
+  AuthenticatedPortalAdminNotificationRulesRoute:
+    AuthenticatedPortalAdminNotificationRulesRoute,
+  AuthenticatedPortalAdminPermissionsRoute:
+    AuthenticatedPortalAdminPermissionsRoute,
   AuthenticatedPortalAdminPointRulesRoute:
     AuthenticatedPortalAdminPointRulesRoute,
   AuthenticatedPortalAdminProjectsRoute: AuthenticatedPortalAdminProjectsRoute,
+  AuthenticatedPortalAdminReviewQueueRoute:
+    AuthenticatedPortalAdminReviewQueueRoute,
   AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
   AuthenticatedPortalAdminStreamsRoute: AuthenticatedPortalAdminStreamsRoute,
 }
