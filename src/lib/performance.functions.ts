@@ -374,7 +374,9 @@ export const listContributionQueue = createServerFn({ method: "GET" })
       .select("*")
       .order("created_at", { ascending: false })
       .limit(300);
-    if (data.status && data.status !== "all") q = q.eq("status", data.status);
+    if (data.status && data.status !== "all") {
+      q = q.eq("status", data.status as "approved" | "pending" | "rejected");
+    }
     const [rows, profiles, rules] = await Promise.all([
       q,
       supabaseAdmin.from("profiles").select("id,full_name,photo_url,admission_number,primary_division"),
