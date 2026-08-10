@@ -53,6 +53,7 @@ import { Route as AuthenticatedPortalAdminDivisionsRouteImport } from './routes/
 import { Route as AuthenticatedPortalAdminCoverageRouteImport } from './routes/_authenticated/portal.admin.coverage'
 import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
 import { Route as AuthenticatedPortalAdminBoardRouteImport } from './routes/_authenticated/portal.admin.board'
+import { Route as AuthenticatedPortalAdminAwardsRouteImport } from './routes/_authenticated/portal.admin.awards'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -301,6 +302,12 @@ const AuthenticatedPortalAdminBoardRoute =
     path: '/portal/admin/board',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminAwardsRoute =
+  AuthenticatedPortalAdminAwardsRouteImport.update({
+    id: '/portal/admin/awards',
+    path: '/portal/admin/awards',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -329,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/portal/admin/coverage': typeof AuthenticatedPortalAdminCoverageRoute
@@ -374,6 +382,7 @@ export interface FileRoutesByTo {
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/portal/admin/coverage': typeof AuthenticatedPortalAdminCoverageRoute
@@ -421,6 +430,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/_authenticated/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/_authenticated/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
   '/_authenticated/portal/admin/coverage': typeof AuthenticatedPortalAdminCoverageRoute
@@ -468,6 +478,7 @@ export interface FileRouteTypes {
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal/'
+    | '/portal/admin/awards'
     | '/portal/admin/board'
     | '/portal/admin/bookings'
     | '/portal/admin/coverage'
@@ -513,6 +524,7 @@ export interface FileRouteTypes {
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal'
+    | '/portal/admin/awards'
     | '/portal/admin/board'
     | '/portal/admin/bookings'
     | '/portal/admin/coverage'
@@ -559,6 +571,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
     | '/_authenticated/portal/'
+    | '/_authenticated/portal/admin/awards'
     | '/_authenticated/portal/admin/board'
     | '/_authenticated/portal/admin/bookings'
     | '/_authenticated/portal/admin/coverage'
@@ -907,6 +920,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminBoardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/awards': {
+      id: '/_authenticated/portal/admin/awards'
+      path: '/portal/admin/awards'
+      fullPath: '/portal/admin/awards'
+      preLoaderRoute: typeof AuthenticatedPortalAdminAwardsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -922,6 +942,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+  AuthenticatedPortalAdminAwardsRoute: typeof AuthenticatedPortalAdminAwardsRoute
   AuthenticatedPortalAdminBoardRoute: typeof AuthenticatedPortalAdminBoardRoute
   AuthenticatedPortalAdminBookingsRoute: typeof AuthenticatedPortalAdminBookingsRoute
   AuthenticatedPortalAdminCoverageRoute: typeof AuthenticatedPortalAdminCoverageRoute
@@ -953,6 +974,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+  AuthenticatedPortalAdminAwardsRoute: AuthenticatedPortalAdminAwardsRoute,
   AuthenticatedPortalAdminBoardRoute: AuthenticatedPortalAdminBoardRoute,
   AuthenticatedPortalAdminBookingsRoute: AuthenticatedPortalAdminBookingsRoute,
   AuthenticatedPortalAdminCoverageRoute: AuthenticatedPortalAdminCoverageRoute,
