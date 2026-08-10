@@ -97,20 +97,33 @@ function Auth() {
         <h2 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Sign in</h2>
         <p className="text-muted-foreground text-sm mb-10">No public registration. Ask an administrator for an account.</p>
 
-        <form onSubmit={signIn} className="space-y-5 max-w-sm">
+        <form onSubmit={signIn} noValidate className="space-y-5 max-w-sm">
+          {error && (
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="rounded-lg border border-destructive/40 bg-destructive/10 px-3.5 py-3 text-sm font-medium text-destructive"
+            >
+              {error}
+            </div>
+          )}
           <label className="block">
             <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Email</span>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+            <input type="email" required autoComplete="email" value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(null); }}
+              aria-invalid={!!error}
+              className={`w-full rounded-lg border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? "border-destructive/60" : "border-border"}`} />
           </label>
           <label className="block">
             <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Password</span>
-            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+            <input type="password" required autoComplete="current-password" value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(null); }}
+              aria-invalid={!!error}
+              className={`w-full rounded-lg border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? "border-destructive/60" : "border-border"}`} />
           </label>
-          <button disabled={loading}
+          <button disabled={loading || checking}
             className="w-full rounded-full brand-gradient px-5 py-3.5 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-opacity disabled:opacity-50">
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "Signing in…" : checking ? "Checking session…" : "Sign in"}
           </button>
         </form>
 
