@@ -33,6 +33,7 @@ const MEMBER_NAV: NavItem[] = [
   { to: "/portal/attendance", label: "Attendance", icon: ClipboardCheck },
   { to: "/portal/contributions", label: "Send Requests", icon: FileText },
   { to: "/portal/rankings", label: "Rankings", icon: Trophy },
+  { to: "/portal/performance", label: "My Performance", icon: Trophy },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
   { to: "/portal/password", label: "Password", icon: KeyRound },
 ];
