@@ -2,6 +2,8 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage } from "@/components/portal/PortalUI";
 import { AdminEditor, useTable, type FieldDef } from "@/components/portal/AdminEditor";
+import { usePublishRights, reviewFields, notifySubmitted } from "@/lib/review";
+import { REVIEW_CLASS, REVIEW_LABEL } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/projects")({
   beforeLoad: async ({ context }) => {
@@ -15,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/portal/admin/projects")({
 type Row = {
   id: string; slug: string; title: string; summary: string | null;
   description: string | null; cover_image: string | null;
-  event_date: string | null; is_featured: boolean; published: boolean;
+  event_date: string | null; is_featured: boolean; published: boolean; review_status: string;
 };
 
 const fields: FieldDef[] = [
@@ -30,6 +32,8 @@ const fields: FieldDef[] = [
 ];
 
 function AdminProjects() {
+  const { user } = Route.useRouteContext();
+  const { canPublish } = usePublishRights(user.id);
   const { rows, refresh } = useTable<Row>(["admin-projects"], async () => {
     const { data } = await supabase.from("projects").select("*").order("event_date", { ascending: false, nullsFirst: false });
     return (data ?? []) as Row[];
@@ -44,11 +48,15 @@ function AdminProjects() {
         emptyRow={{ published: true, is_featured: false } as Partial<Row>}
         refresh={refresh}
         onCreate={async (row) => {
-          const { error } = await supabase.from("projects").insert(row as any);
+          const { error } = await supabase.from("projects")
+            .insert({ ...(row as any), published: canPublish ? (row as any).published ?? true : false, ...reviewFields(canPublish, user.id) } as any);
+          if (!error && !canPublish) await notifySubmitted("Project", (row as any).title || "Untitled project");
           return { error: error?.message ?? null };
         }}
         onUpdate={async (id, patch) => {
-          const { error } = await supabase.from("projects").update(patch as any).eq("id", id as string);
+          const { error } = await supabase.from("projects")
+            .update({ ...(patch as any), ...(canPublish ? {} : { published: false }), ...reviewFields(canPublish, user.id) } as any).eq("id", id as string);
+          if (!error && !canPublish) await notifySubmitted("Project", (patch as any).title || "Untitled project");
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {
@@ -62,7 +70,10 @@ function AdminProjects() {
               : <div className="h-14 w-20 rounded bg-muted" />}
             <div className="min-w-0">
               <div className="font-semibold truncate">{r.title}</div>
-              <div className="text-xs text-muted-foreground truncate">
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${REVIEW_CLASS[r.review_status] ?? ""}`}>
+                  {REVIEW_LABEL[r.review_status] ?? r.review_status}
+                </span>
                 /{r.slug} · {r.event_date ?? "no date"} · {r.published ? "Published" : "Draft"}
                 {r.is_featured && " · ★ Featured"}
               </div>

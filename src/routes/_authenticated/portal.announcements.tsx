@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Card, Empty } from "@/components/portal/PortalUI";
 import { Megaphone, Plus, Trash2, X, Pin } from "lucide-react";
+import { usePublishRights, reviewFields, notifySubmitted } from "@/lib/review";
+import { REVIEW_CLASS, REVIEW_LABEL } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_authenticated/portal/announcements")({
   component: Announcements,
@@ -15,14 +17,8 @@ function Announcements() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const { data: roles } = useQuery({
-    queryKey: ["my-roles", user.id],
-    queryFn: async () => {
-      const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-      return (data ?? []).map((r) => r.role as string);
-    },
-  });
-  const canPost = roles?.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r));
+  const { roles, canPublish } = usePublishRights(user.id);
+  const canPost = roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r));
 
   const { data } = useQuery({
     queryKey: ["all-announcements"],
@@ -64,6 +60,11 @@ function Announcements() {
                     </div>
                   )}
                   <h3 className="font-display text-xl font-bold">{a.title}</h3>
+                  {a.review_status !== "approved" && (
+                    <span className={`mt-2 inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${REVIEW_CLASS[a.review_status] ?? ""}`}>
+                      {REVIEW_LABEL[a.review_status] ?? a.review_status}
+                    </span>
+                  )}
                   <div className="text-xs text-muted-foreground mt-1">{new Date(a.created_at).toLocaleString()}</div>
                 </div>
                 {canPost && (
@@ -84,12 +85,12 @@ function Announcements() {
         </Empty>
       )}
 
-      {open && <NewModal onClose={() => setOpen(false)} authorId={user.id} />}
+      {open && <NewModal onClose={() => setOpen(false)} authorId={user.id} canPublish={canPublish} />}
     </PortalPage>
   );
 }
 
-function NewModal({ onClose, authorId }: { onClose: () => void; authorId: string }) {
+function NewModal({ onClose, authorId, canPublish }: { onClose: () => void; authorId: string; canPublish: boolean }) {
   const qc = useQueryClient();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -99,10 +100,13 @@ function NewModal({ onClose, authorId }: { onClose: () => void; authorId: string
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const { error } = await supabase.from("announcements").insert({ title, body, pinned, author_id: authorId });
+    const { error } = await supabase.from("announcements").insert({
+      title, body, pinned, author_id: authorId, ...reviewFields(canPublish, authorId),
+    });
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success("Announcement posted");
+    if (canPublish) toast.success("Announcement published");
+    else { toast.success("Sent for review"); await notifySubmitted("Announcement", title); }
     qc.invalidateQueries({ queryKey: ["all-announcements"] });
     qc.invalidateQueries({ queryKey: ["recent-announcements"] });
     onClose();
@@ -126,6 +130,11 @@ function NewModal({ onClose, authorId }: { onClose: () => void; authorId: string
             <textarea required rows={5} value={body} onChange={(e) => setBody(e.target.value)}
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
           </div>
+          {!canPublish && (
+            <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+              Your announcement goes to the review queue. It appears on the public site once an administrator approves it.
+            </p>
+          )}
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={pinned} onChange={(e) => setPinned(e.target.checked)} />
             Pin to top
@@ -133,7 +142,7 @@ function NewModal({ onClose, authorId }: { onClose: () => void; authorId: string
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold">Cancel</button>
             <button type="submit" disabled={saving} className="rounded-full brand-gradient px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
-              {saving ? "Posting…" : "Post"}
+              {saving ? "Saving…" : canPublish ? "Publish" : "Submit for review"}
             </button>
           </div>
         </form>

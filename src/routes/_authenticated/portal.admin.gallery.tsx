@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PortalPage } from "@/components/portal/PortalUI";
 import { AdminEditor, useTable, type FieldDef } from "@/components/portal/AdminEditor";
 import { GALLERY_CATEGORIES, prettyLabel } from "@/lib/site-content";
+import { usePublishRights, reviewFields, notifySubmitted } from "@/lib/review";
+import { REVIEW_CLASS, REVIEW_LABEL } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/gallery")({
   beforeLoad: async ({ context }) => {
@@ -21,6 +23,7 @@ type Row = {
   media_type: string;
   video_url: string | null;
   event_date: string | null;
+  review_status: string;
 };
 
 const fields: FieldDef[] = [
@@ -39,6 +42,8 @@ const fields: FieldDef[] = [
 ];
 
 function AdminGallery() {
+  const { user } = Route.useRouteContext();
+  const { canPublish } = usePublishRights(user.id);
   const { rows, refresh } = useTable<Row>(["admin-gallery"], async () => {
     const { data } = await supabase.from("gallery_items").select("*").order("created_at", { ascending: false });
     return (data ?? []) as Row[];
@@ -53,11 +58,15 @@ function AdminGallery() {
         emptyRow={{ category: "photography", media_type: "photo" } as Partial<Row>}
         refresh={refresh}
         onCreate={async (row) => {
-          const { error } = await supabase.from("gallery_items").insert(row as any);
+          const { error } = await supabase.from("gallery_items")
+            .insert({ ...(row as any), ...reviewFields(canPublish, user.id) } as any);
+          if (!error && !canPublish) await notifySubmitted("Gallery media", (row as any).title || "Untitled media");
           return { error: error?.message ?? null };
         }}
         onUpdate={async (id, patch) => {
-          const { error } = await supabase.from("gallery_items").update(patch as any).eq("id", id as string);
+          const { error } = await supabase.from("gallery_items")
+            .update({ ...(patch as any), ...reviewFields(canPublish, user.id) } as any).eq("id", id as string);
+          if (!error && !canPublish) await notifySubmitted("Gallery media", (patch as any).title || "Untitled media");
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {
@@ -69,7 +78,10 @@ function AdminGallery() {
             <img src={r.image_url} alt="" className="h-14 w-14 rounded object-cover" />
             <div className="min-w-0">
               <div className="truncate font-semibold">{r.title || "Untitled"}</div>
-              <div className="text-xs text-muted-foreground">
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${REVIEW_CLASS[r.review_status] ?? ""}`}>
+                  {REVIEW_LABEL[r.review_status] ?? r.review_status}
+                </span>
                 {prettyLabel(r.category)}{r.media_type === "video" ? " · Video" : ""}{r.event_date ? ` · ${r.event_date}` : ""}
               </div>
             </div>
