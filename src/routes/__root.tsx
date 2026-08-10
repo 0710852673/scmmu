@@ -136,6 +136,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Outlet />
+        <Toaster richColors closeButton position="top-center" />
       </ThemeProvider>
     </QueryClientProvider>
   );
