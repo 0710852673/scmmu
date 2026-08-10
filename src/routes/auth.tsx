@@ -15,28 +15,57 @@ export const Route = createFileRoute("/auth")({
   component: Auth,
 });
 
+function friendlyAuthError(message: string) {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials") || m.includes("invalid_credentials"))
+    return "Email or password is incorrect. Please check and try again.";
+  if (m.includes("email not confirmed")) return "This account hasn't been confirmed yet. Contact an administrator.";
+  if (m.includes("rate limit") || m.includes("too many"))
+    return "Too many attempts. Please wait a minute and try again.";
+  if (m.includes("failed to fetch") || m.includes("network"))
+    return "Can't reach the server. Check your internet connection and try again.";
+  return message || "Sign in failed. Please try again.";
+}
+
 function Auth() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/portal" });
-    });
+    let alive = true;
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!alive) return;
+        if (data.user) navigate({ to: "/portal" });
+        else setChecking(false);
+      })
+      .catch(() => alive && setChecking(false));
+    return () => { alive = false; };
   }, [navigate]);
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
+    if (!email.trim() || !password) {
+      setError("Enter both your email and password.");
+      return;
+    }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: err } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
     setLoading(false);
-    if (error) {
-      const msg = /invalid|credential|password/i.test(error.message)
-        ? "Email or password is incorrect. Please try again."
-        : error.message;
-      return toast.error(msg);
+    if (err || !data.session) {
+      const msg = friendlyAuthError(err?.message ?? "Sign in failed.");
+      setError(msg);
+      toast.error(msg);
+      return;
     }
     toast.success("Signed in");
     navigate({ to: "/portal" });
