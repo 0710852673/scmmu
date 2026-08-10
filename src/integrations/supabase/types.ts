@@ -18,29 +18,38 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          criteria: string | null
           description: string | null
           division: Database["public"]["Enums"]["division_slug"] | null
           icon: string | null
           id: string
           name: string
+          points_threshold: number | null
+          tier: string
         }
         Insert: {
           code: string
           created_at?: string
+          criteria?: string | null
           description?: string | null
           division?: Database["public"]["Enums"]["division_slug"] | null
           icon?: string | null
           id?: string
           name: string
+          points_threshold?: number | null
+          tier?: string
         }
         Update: {
           code?: string
           created_at?: string
+          criteria?: string | null
           description?: string | null
           division?: Database["public"]["Enums"]["division_slug"] | null
           icon?: string | null
           id?: string
           name?: string
+          points_threshold?: number | null
+          tier?: string
         }
         Relationships: []
       }
@@ -267,9 +276,11 @@ export type Database = {
           created_at: string
           division: Database["public"]["Enums"]["division_slug"] | null
           event_id: string | null
+          evidence_url: string | null
           id: string
           kind: Database["public"]["Enums"]["contribution_kind"]
           note: string | null
+          review_note: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           status: Database["public"]["Enums"]["contribution_status"]
@@ -279,9 +290,11 @@ export type Database = {
           created_at?: string
           division?: Database["public"]["Enums"]["division_slug"] | null
           event_id?: string | null
+          evidence_url?: string | null
           id?: string
           kind: Database["public"]["Enums"]["contribution_kind"]
           note?: string | null
+          review_note?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["contribution_status"]
@@ -291,9 +304,11 @@ export type Database = {
           created_at?: string
           division?: Database["public"]["Enums"]["division_slug"] | null
           event_id?: string | null
+          evidence_url?: string | null
           id?: string
           kind?: Database["public"]["Enums"]["contribution_kind"]
           note?: string | null
+          review_note?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["contribution_status"]
@@ -724,19 +739,28 @@ export type Database = {
         Row: {
           achievement_id: string
           awarded_at: string
+          awarded_by: string | null
           id: string
+          note: string | null
+          season: string | null
           user_id: string
         }
         Insert: {
           achievement_id: string
           awarded_at?: string
+          awarded_by?: string | null
           id?: string
+          note?: string | null
+          season?: string | null
           user_id: string
         }
         Update: {
           achievement_id?: string
           awarded_at?: string
+          awarded_by?: string | null
           id?: string
+          note?: string | null
+          season?: string | null
           user_id?: string
         }
         Relationships: [

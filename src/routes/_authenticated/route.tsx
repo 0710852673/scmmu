@@ -33,6 +33,7 @@ const MEMBER_NAV: NavItem[] = [
   { to: "/portal/attendance", label: "Attendance", icon: ClipboardCheck },
   { to: "/portal/contributions", label: "Send Requests", icon: FileText },
   { to: "/portal/rankings", label: "Rankings", icon: Trophy },
+  { to: "/portal/performance", label: "My Performance", icon: Trophy },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
   { to: "/portal/password", label: "Password", icon: KeyRound },
 ];
@@ -78,6 +79,8 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/portal/admin/notification-rules", label: "Notification Rules", icon: Bell },
   { to: "/portal/admin/permissions", label: "Roles & Permissions", icon: Shield },
   { to: "/portal/admin/point-rules", label: "Point Rules", icon: CheckSquare },
+  { to: "/portal/admin/performance", label: "Member Performance", icon: Trophy },
+  { to: "/portal/admin/awards", label: "Fair Awards", icon: Trophy },
   { to: "/portal/admin/email-templates", label: "Email Templates", icon: MailPlus },
   { to: "/portal/admin/site", label: "Site Settings", icon: Settings },
 ];

@@ -15,28 +15,57 @@ export const Route = createFileRoute("/auth")({
   component: Auth,
 });
 
+function friendlyAuthError(message: string) {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials") || m.includes("invalid_credentials"))
+    return "Email or password is incorrect. Please check and try again.";
+  if (m.includes("email not confirmed")) return "This account hasn't been confirmed yet. Contact an administrator.";
+  if (m.includes("rate limit") || m.includes("too many"))
+    return "Too many attempts. Please wait a minute and try again.";
+  if (m.includes("failed to fetch") || m.includes("network"))
+    return "Can't reach the server. Check your internet connection and try again.";
+  return message || "Sign in failed. Please try again.";
+}
+
 function Auth() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/portal" });
-    });
+    let alive = true;
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!alive) return;
+        if (data.user) navigate({ to: "/portal" });
+        else setChecking(false);
+      })
+      .catch(() => alive && setChecking(false));
+    return () => { alive = false; };
   }, [navigate]);
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
+    if (!email.trim() || !password) {
+      setError("Enter both your email and password.");
+      return;
+    }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: err } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
     setLoading(false);
-    if (error) {
-      const msg = /invalid|credential|password/i.test(error.message)
-        ? "Email or password is incorrect. Please try again."
-        : error.message;
-      return toast.error(msg);
+    if (err || !data.session) {
+      const msg = friendlyAuthError(err?.message ?? "Sign in failed.");
+      setError(msg);
+      toast.error(msg);
+      return;
     }
     toast.success("Signed in");
     navigate({ to: "/portal" });
@@ -68,20 +97,33 @@ function Auth() {
         <h2 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Sign in</h2>
         <p className="text-muted-foreground text-sm mb-10">No public registration. Ask an administrator for an account.</p>
 
-        <form onSubmit={signIn} className="space-y-5 max-w-sm">
+        <form onSubmit={signIn} noValidate className="space-y-5 max-w-sm">
+          {error && (
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="rounded-lg border border-destructive/40 bg-destructive/10 px-3.5 py-3 text-sm font-medium text-destructive"
+            >
+              {error}
+            </div>
+          )}
           <label className="block">
             <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Email</span>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+            <input type="email" required autoComplete="email" value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(null); }}
+              aria-invalid={!!error}
+              className={`w-full rounded-lg border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? "border-destructive/60" : "border-border"}`} />
           </label>
           <label className="block">
             <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Password</span>
-            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+            <input type="password" required autoComplete="current-password" value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(null); }}
+              aria-invalid={!!error}
+              className={`w-full rounded-lg border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? "border-destructive/60" : "border-border"}`} />
           </label>
-          <button disabled={loading}
+          <button disabled={loading || checking}
             className="w-full rounded-full brand-gradient px-5 py-3.5 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-opacity disabled:opacity-50">
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "Signing in…" : checking ? "Checking session…" : "Sign in"}
           </button>
         </form>
 

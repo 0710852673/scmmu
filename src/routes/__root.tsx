@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider } from "@/lib/theme";
+import { Toaster } from "@/components/ui/sonner";
 import "@fontsource/sora/600.css";
 import "@fontsource/sora/700.css";
 import "@fontsource/sora/800.css";
@@ -135,6 +136,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Outlet />
+        <Toaster richColors closeButton position="top-center" />
       </ThemeProvider>
     </QueryClientProvider>
   );
