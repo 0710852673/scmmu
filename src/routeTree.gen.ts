@@ -42,6 +42,7 @@ import { Route as AuthenticatedPortalAdminReviewQueueRouteImport } from './route
 import { Route as AuthenticatedPortalAdminProjectsRouteImport } from './routes/_authenticated/portal.admin.projects'
 import { Route as AuthenticatedPortalAdminPointRulesRouteImport } from './routes/_authenticated/portal.admin.point-rules'
 import { Route as AuthenticatedPortalAdminPermissionsRouteImport } from './routes/_authenticated/portal.admin.permissions'
+import { Route as AuthenticatedPortalAdminPerformanceRouteImport } from './routes/_authenticated/portal.admin.performance'
 import { Route as AuthenticatedPortalAdminNotificationRulesRouteImport } from './routes/_authenticated/portal.admin.notification-rules'
 import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_authenticated/portal.admin.messages'
 import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
@@ -234,6 +235,12 @@ const AuthenticatedPortalAdminPermissionsRoute =
     path: '/portal/admin/permissions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminPerformanceRoute =
+  AuthenticatedPortalAdminPerformanceRouteImport.update({
+    id: '/portal/admin/performance',
+    path: '/portal/admin/performance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminNotificationRulesRoute =
   AuthenticatedPortalAdminNotificationRulesRouteImport.update({
     id: '/portal/admin/notification-rules',
@@ -332,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/portal/admin/performance': typeof AuthenticatedPortalAdminPerformanceRoute
   '/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
@@ -376,6 +384,7 @@ export interface FileRoutesByTo {
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/portal/admin/performance': typeof AuthenticatedPortalAdminPerformanceRoute
   '/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
@@ -422,6 +431,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/_authenticated/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/_authenticated/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/_authenticated/portal/admin/performance': typeof AuthenticatedPortalAdminPerformanceRoute
   '/_authenticated/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/_authenticated/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
   '/_authenticated/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
@@ -468,6 +478,7 @@ export interface FileRouteTypes {
     | '/portal/admin/members'
     | '/portal/admin/messages'
     | '/portal/admin/notification-rules'
+    | '/portal/admin/performance'
     | '/portal/admin/permissions'
     | '/portal/admin/point-rules'
     | '/portal/admin/projects'
@@ -512,6 +523,7 @@ export interface FileRouteTypes {
     | '/portal/admin/members'
     | '/portal/admin/messages'
     | '/portal/admin/notification-rules'
+    | '/portal/admin/performance'
     | '/portal/admin/permissions'
     | '/portal/admin/point-rules'
     | '/portal/admin/projects'
@@ -557,6 +569,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/members'
     | '/_authenticated/portal/admin/messages'
     | '/_authenticated/portal/admin/notification-rules'
+    | '/_authenticated/portal/admin/performance'
     | '/_authenticated/portal/admin/permissions'
     | '/_authenticated/portal/admin/point-rules'
     | '/_authenticated/portal/admin/projects'
@@ -817,6 +830,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminPermissionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/performance': {
+      id: '/_authenticated/portal/admin/performance'
+      path: '/portal/admin/performance'
+      fullPath: '/portal/admin/performance'
+      preLoaderRoute: typeof AuthenticatedPortalAdminPerformanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/notification-rules': {
       id: '/_authenticated/portal/admin/notification-rules'
       path: '/portal/admin/notification-rules'
@@ -912,6 +932,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminMembersRoute: typeof AuthenticatedPortalAdminMembersRoute
   AuthenticatedPortalAdminMessagesRoute: typeof AuthenticatedPortalAdminMessagesRoute
   AuthenticatedPortalAdminNotificationRulesRoute: typeof AuthenticatedPortalAdminNotificationRulesRoute
+  AuthenticatedPortalAdminPerformanceRoute: typeof AuthenticatedPortalAdminPerformanceRoute
   AuthenticatedPortalAdminPermissionsRoute: typeof AuthenticatedPortalAdminPermissionsRoute
   AuthenticatedPortalAdminPointRulesRoute: typeof AuthenticatedPortalAdminPointRulesRoute
   AuthenticatedPortalAdminProjectsRoute: typeof AuthenticatedPortalAdminProjectsRoute
@@ -945,6 +966,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAdminMessagesRoute: AuthenticatedPortalAdminMessagesRoute,
   AuthenticatedPortalAdminNotificationRulesRoute:
     AuthenticatedPortalAdminNotificationRulesRoute,
+  AuthenticatedPortalAdminPerformanceRoute:
+    AuthenticatedPortalAdminPerformanceRoute,
   AuthenticatedPortalAdminPermissionsRoute:
     AuthenticatedPortalAdminPermissionsRoute,
   AuthenticatedPortalAdminPointRulesRoute:
