@@ -44,7 +44,8 @@ const fields: FieldDef[] = [
 
 function AdminGallery() {
   const { user } = Route.useRouteContext();
-  const { canPublish } = usePublishRights(user.id);
+  const { roles, permissions, canPublish } = usePublishRights(user.id, "gallery.publish");
+  const isStaff = roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role));
   const { rows, refresh } = useTable<Row>(["admin-gallery"], async () => {
     const { data } = await supabase.from("gallery_items").select("*").order("created_at", { ascending: false });
     return (data ?? []) as Row[];
@@ -58,6 +59,9 @@ function AdminGallery() {
         fields={fields}
         emptyRow={{ category: "photography", media_type: "photo" } as Partial<Row>}
         refresh={refresh}
+        canCreate={isStaff || permissions.includes("gallery.create")}
+        canEdit={isStaff || permissions.includes("gallery.edit")}
+        canDelete={isStaff || permissions.includes("gallery.delete")}
         onCreate={async (row) => {
           const { error } = await supabase.from("gallery_items")
             .insert({ ...(row as any), ...reviewFields(canPublish, user.id) } as any);

@@ -34,7 +34,8 @@ const fields: FieldDef[] = [
 
 function AdminProjects() {
   const { user } = Route.useRouteContext();
-  const { canPublish } = usePublishRights(user.id);
+  const { roles, permissions, canPublish } = usePublishRights(user.id, "projects.publish");
+  const isStaff = roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role));
   const { rows, refresh } = useTable<Row>(["admin-projects"], async () => {
     const { data } = await supabase.from("projects").select("*").order("event_date", { ascending: false, nullsFirst: false });
     return (data ?? []) as Row[];
@@ -48,6 +49,9 @@ function AdminProjects() {
         fields={fields}
         emptyRow={{ published: true, is_featured: false } as Partial<Row>}
         refresh={refresh}
+        canCreate={isStaff || permissions.includes("projects.create")}
+        canEdit={isStaff || permissions.includes("projects.edit")}
+        canDelete={isStaff || permissions.includes("projects.delete")}
         onCreate={async (row) => {
           const { error } = await supabase.from("projects")
             .insert({ ...(row as any), published: canPublish ? (row as any).published ?? true : false, ...reviewFields(canPublish, user.id) } as any);

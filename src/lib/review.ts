@@ -6,7 +6,7 @@ import { getPortalAccess } from "@/lib/access";
 /** Roles allowed to publish straight to the public site without review. */
 export const PUBLISHER_ROLES = ["administrator", "tic", "executive_board"];
 
-export function usePublishRights(userId: string) {
+export function usePublishRights(userId: string, publishPermission?: string) {
   const q = useQuery({
     queryKey: ["my-roles", userId],
     queryFn: async () => {
@@ -18,7 +18,7 @@ export function usePublishRights(userId: string) {
     roles,
     permissions: q.data?.permissions ?? [],
     loading: q.isLoading,
-    canPublish: roles.some((r) => PUBLISHER_ROLES.includes(r)) || (q.data?.permissions ?? []).some((permission) => permission.endsWith(".publish")),
+    canPublish: roles.some((r) => PUBLISHER_ROLES.includes(r)) || (!!publishPermission && (q.data?.permissions ?? []).includes(publishPermission)),
   };
 }
 
