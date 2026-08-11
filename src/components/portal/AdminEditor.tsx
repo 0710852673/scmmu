@@ -23,6 +23,9 @@ export function AdminEditor<T extends { id: string | number }>({
   onDelete,
   renderRow,
   refresh,
+  canCreate = true,
+  canEdit = true,
+  canDelete = true,
 }: {
   title: string;
   rows: T[];
@@ -33,6 +36,9 @@ export function AdminEditor<T extends { id: string | number }>({
   onDelete: (id: T["id"]) => Promise<{ error?: string | null } | void>;
   renderRow: (row: T) => ReactNode;
   refresh: () => void;
+  canCreate?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }) {
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState<T["id"] | null>(null);
@@ -81,7 +87,7 @@ export function AdminEditor<T extends { id: string | number }>({
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">{rows.length} {title.toLowerCase()}</div>
-        {!showForm && (
+        {!showForm && canCreate && (
           <button onClick={startCreate}
             className="inline-flex items-center gap-2 rounded-full brand-gradient px-4 py-2 text-sm font-semibold text-white shadow-sm">
             <Plus className="h-4 w-4" /> New
@@ -116,14 +122,14 @@ export function AdminEditor<T extends { id: string | number }>({
             className="rounded-2xl border border-border bg-card p-4 flex items-center gap-4">
             <div className="flex-1 min-w-0">{renderRow(r)}</div>
             <div className="flex gap-1.5 shrink-0">
-              <button onClick={() => startEdit(r)}
+              {canEdit && <button onClick={() => startEdit(r)}
                 className="rounded-full border border-border p-2 hover:bg-muted" title="Edit">
                 <Pencil className="h-3.5 w-3.5" />
-              </button>
-              <button onClick={() => del(r.id)}
+              </button>}
+              {canDelete && <button onClick={() => del(r.id)}
                 className="rounded-full border border-border p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950" title="Delete">
                 <Trash2 className="h-3.5 w-3.5" />
-              </button>
+              </button>}
             </div>
           </div>
         ))}

@@ -4,11 +4,12 @@ import { PortalPage } from "@/components/portal/PortalUI";
 import { AdminEditor, useTable, type FieldDef } from "@/components/portal/AdminEditor";
 import { usePublishRights, reviewFields, notifySubmitted } from "@/lib/review";
 import { REVIEW_CLASS, REVIEW_LABEL } from "@/lib/permissions";
+import { getPortalAccess, hasAnyPermission } from "@/lib/access";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/projects")({
   beforeLoad: async ({ context }) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", context.user.id);
-    if (!(data ?? []).some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r.role)))
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role)) && !hasAnyPermission(access, ["projects.create", "projects.edit", "projects.publish", "projects.delete"]))
       throw redirect({ to: "/portal" });
   },
   component: AdminProjects,
@@ -33,7 +34,8 @@ const fields: FieldDef[] = [
 
 function AdminProjects() {
   const { user } = Route.useRouteContext();
-  const { canPublish } = usePublishRights(user.id);
+  const { roles, permissions, canPublish } = usePublishRights(user.id, "projects.publish");
+  const isStaff = roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role));
   const { rows, refresh } = useTable<Row>(["admin-projects"], async () => {
     const { data } = await supabase.from("projects").select("*").order("event_date", { ascending: false, nullsFirst: false });
     return (data ?? []) as Row[];
@@ -47,6 +49,9 @@ function AdminProjects() {
         fields={fields}
         emptyRow={{ published: true, is_featured: false } as Partial<Row>}
         refresh={refresh}
+        canCreate={isStaff || permissions.includes("projects.create")}
+        canEdit={isStaff || permissions.includes("projects.edit")}
+        canDelete={isStaff || permissions.includes("projects.delete")}
         onCreate={async (row) => {
           const { error } = await supabase.from("projects")
             .insert({ ...(row as any), published: canPublish ? (row as any).published ?? true : false, ...reviewFields(canPublish, user.id) } as any);

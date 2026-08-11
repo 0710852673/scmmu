@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as LeadershipRouteImport } from './routes/leadership'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -36,6 +37,7 @@ import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
 import { Route as AuthenticatedPortalAssignmentsRouteImport } from './routes/_authenticated/portal.assignments'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
+import { Route as AuthenticatedPortalAdminVerificationRouteImport } from './routes/_authenticated/portal.admin.verification'
 import { Route as AuthenticatedPortalAdminStreamsRouteImport } from './routes/_authenticated/portal.admin.streams'
 import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
 import { Route as AuthenticatedPortalAdminReviewQueueRouteImport } from './routes/_authenticated/portal.admin.review-queue'
@@ -58,6 +60,11 @@ import { Route as AuthenticatedPortalAdminAwardsRouteImport } from './routes/_au
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LiveRoute = LiveRouteImport.update({
@@ -200,6 +207,12 @@ const AuthenticatedPortalAnnouncementsRoute =
     path: '/portal/announcements',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminVerificationRoute =
+  AuthenticatedPortalAdminVerificationRouteImport.update({
+    id: '/portal/admin/verification',
+    path: '/portal/admin/verification',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminStreamsRoute =
   AuthenticatedPortalAdminStreamsRouteImport.update({
     id: '/portal/admin/streams',
@@ -318,6 +331,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/live': typeof LiveRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
   '/members/$id': typeof MembersIdRoute
@@ -354,6 +368,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
+  '/portal/admin/verification': typeof AuthenticatedPortalAdminVerificationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -364,6 +379,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/live': typeof LiveRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
   '/members/$id': typeof MembersIdRoute
@@ -400,6 +416,7 @@ export interface FileRoutesByTo {
   '/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
+  '/portal/admin/verification': typeof AuthenticatedPortalAdminVerificationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -412,6 +429,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/live': typeof LiveRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
   '/members/$id': typeof MembersIdRoute
@@ -448,6 +466,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/_authenticated/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
+  '/_authenticated/portal/admin/verification': typeof AuthenticatedPortalAdminVerificationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -460,6 +479,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/leadership'
     | '/live'
+    | '/reset-password'
     | '/search'
     | '/divisions/$slug'
     | '/members/$id'
@@ -496,6 +516,7 @@ export interface FileRouteTypes {
     | '/portal/admin/review-queue'
     | '/portal/admin/site'
     | '/portal/admin/streams'
+    | '/portal/admin/verification'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -506,6 +527,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/leadership'
     | '/live'
+    | '/reset-password'
     | '/search'
     | '/divisions/$slug'
     | '/members/$id'
@@ -542,6 +564,7 @@ export interface FileRouteTypes {
     | '/portal/admin/review-queue'
     | '/portal/admin/site'
     | '/portal/admin/streams'
+    | '/portal/admin/verification'
   id:
     | '__root__'
     | '/'
@@ -553,6 +576,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/leadership'
     | '/live'
+    | '/reset-password'
     | '/search'
     | '/divisions/$slug'
     | '/members/$id'
@@ -589,6 +613,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/review-queue'
     | '/_authenticated/portal/admin/site'
     | '/_authenticated/portal/admin/streams'
+    | '/_authenticated/portal/admin/verification'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -601,6 +626,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   LeadershipRoute: typeof LeadershipRoute
   LiveRoute: typeof LiveRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SearchRoute: typeof SearchRoute
   DivisionsSlugRoute: typeof DivisionsSlugRoute
   MembersIdRoute: typeof MembersIdRoute
@@ -617,6 +643,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/live': {
@@ -801,6 +834,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAnnouncementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/verification': {
+      id: '/_authenticated/portal/admin/verification'
+      path: '/portal/admin/verification'
+      fullPath: '/portal/admin/verification'
+      preLoaderRoute: typeof AuthenticatedPortalAdminVerificationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/streams': {
       id: '/_authenticated/portal/admin/streams'
       path: '/portal/admin/streams'
@@ -960,6 +1000,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminReviewQueueRoute: typeof AuthenticatedPortalAdminReviewQueueRoute
   AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
   AuthenticatedPortalAdminStreamsRoute: typeof AuthenticatedPortalAdminStreamsRoute
+  AuthenticatedPortalAdminVerificationRoute: typeof AuthenticatedPortalAdminVerificationRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -999,6 +1040,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedPortalAdminReviewQueueRoute,
   AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
   AuthenticatedPortalAdminStreamsRoute: AuthenticatedPortalAdminStreamsRoute,
+  AuthenticatedPortalAdminVerificationRoute:
+    AuthenticatedPortalAdminVerificationRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -1014,6 +1057,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   LeadershipRoute: LeadershipRoute,
   LiveRoute: LiveRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SearchRoute: SearchRoute,
   DivisionsSlugRoute: DivisionsSlugRoute,
   MembersIdRoute: MembersIdRoute,

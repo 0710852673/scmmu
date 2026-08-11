@@ -1,23 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { dispatchNotification } from "@/lib/notify.functions";
+import { getPortalAccess } from "@/lib/access";
 
 /** Roles allowed to publish straight to the public site without review. */
 export const PUBLISHER_ROLES = ["administrator", "tic", "executive_board"];
 
-export function usePublishRights(userId: string) {
+export function usePublishRights(userId: string, publishPermission?: string) {
   const q = useQuery({
     queryKey: ["my-roles", userId],
     queryFn: async () => {
-      const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-      return (data ?? []).map((r) => r.role as string);
+      return getPortalAccess(userId);
     },
   });
-  const roles = q.data ?? [];
+  const roles = q.data?.roles ?? [];
   return {
     roles,
+    permissions: q.data?.permissions ?? [],
     loading: q.isLoading,
-    canPublish: roles.some((r) => PUBLISHER_ROLES.includes(r)),
+    canPublish: roles.some((r) => PUBLISHER_ROLES.includes(r)) || (!!publishPermission && (q.data?.permissions ?? []).includes(publishPermission)),
   };
 }
 

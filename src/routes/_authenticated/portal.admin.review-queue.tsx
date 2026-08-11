@@ -6,11 +6,12 @@ import { PortalPage } from "@/components/portal/PortalUI";
 import { REVIEW_CLASS, REVIEW_LABEL, REVIEWABLE_TABLES } from "@/lib/permissions";
 import { dispatchNotification } from "@/lib/notify.functions";
 import { Check, X, MessageSquare, Inbox } from "lucide-react";
+import { getPortalAccess } from "@/lib/access";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/review-queue")({
   beforeLoad: async ({ context }) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", context.user.id);
-    if (!(data ?? []).some((r) => ["administrator", "tic", "executive_board"].includes(r.role)))
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((role) => ["administrator", "tic", "executive_board"].includes(role)) && !access.permissions.includes("content.review"))
       throw redirect({ to: "/portal" });
   },
   component: ReviewQueue,

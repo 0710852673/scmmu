@@ -1,0 +1,1 @@
+ALTER FUNCTION public.has_permission(uuid, text) SECURITY INVOKER;

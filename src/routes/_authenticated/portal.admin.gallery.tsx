@@ -5,11 +5,12 @@ import { AdminEditor, useTable, type FieldDef } from "@/components/portal/AdminE
 import { GALLERY_CATEGORIES, prettyLabel } from "@/lib/site-content";
 import { usePublishRights, reviewFields, notifySubmitted } from "@/lib/review";
 import { REVIEW_CLASS, REVIEW_LABEL } from "@/lib/permissions";
+import { getPortalAccess, hasAnyPermission } from "@/lib/access";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/gallery")({
   beforeLoad: async ({ context }) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", context.user.id);
-    if (!(data ?? []).some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r.role)))
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role)) && !hasAnyPermission(access, ["gallery.create", "gallery.edit", "gallery.publish", "gallery.delete"]))
       throw redirect({ to: "/portal" });
   },
   component: AdminGallery,
@@ -43,7 +44,8 @@ const fields: FieldDef[] = [
 
 function AdminGallery() {
   const { user } = Route.useRouteContext();
-  const { canPublish } = usePublishRights(user.id);
+  const { roles, permissions, canPublish } = usePublishRights(user.id, "gallery.publish");
+  const isStaff = roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role));
   const { rows, refresh } = useTable<Row>(["admin-gallery"], async () => {
     const { data } = await supabase.from("gallery_items").select("*").order("created_at", { ascending: false });
     return (data ?? []) as Row[];
@@ -57,6 +59,9 @@ function AdminGallery() {
         fields={fields}
         emptyRow={{ category: "photography", media_type: "photo" } as Partial<Row>}
         refresh={refresh}
+        canCreate={isStaff || permissions.includes("gallery.create")}
+        canEdit={isStaff || permissions.includes("gallery.edit")}
+        canDelete={isStaff || permissions.includes("gallery.delete")}
         onCreate={async (row) => {
           const { error } = await supabase.from("gallery_items")
             .insert({ ...(row as any), ...reviewFields(canPublish, user.id) } as any);

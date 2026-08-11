@@ -1,16 +1,17 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import {
   LayoutDashboard, User, Calendar, ClipboardCheck, FileText, ExternalLink,
   Trophy, Megaphone, Users, BookmarkCheck, FolderKanban, Mail, ImagePlus,
   LogOut, Settings, Shield, ChevronRight, Menu, X, CheckSquare, MailPlus, KeyRound,
-  Bell, Radio, Briefcase,
+  Bell, Radio, Briefcase, BadgeCheck,
 } from "lucide-react";
 import { ThemeToggle } from "@/lib/theme";
 import { getSiteSettings } from "@/lib/public-data.functions";
 import { LogoMark } from "@/components/site/Logo";
+import { getPortalAccess, hasAnyPermission } from "@/lib/access";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -47,6 +48,7 @@ const TIC_NAV: NavItem[] = [
   { to: "/portal/admin/coverage", label: "Coverage Operations", icon: Briefcase },
   { to: "/portal/admin/streams", label: "Live Streams", icon: Radio },
   { to: "/portal/events", label: "Events & Approvals", icon: Calendar },
+  { to: "/portal/admin/verification", label: "Verify Contributions", icon: BadgeCheck },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
@@ -58,6 +60,7 @@ const HEAD_NAV: NavItem[] = [
   { to: "/portal/admin/streams", label: "Live Streams", icon: Radio },
   { to: "/portal/admin/members", label: "Members", icon: Users },
   { to: "/portal/events", label: "Events & Approvals", icon: Calendar },
+  { to: "/portal/admin/verification", label: "Verify Contributions", icon: BadgeCheck },
   { to: "/portal/admin/gallery", label: "Gallery", icon: ImagePlus },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
@@ -81,6 +84,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/portal/admin/point-rules", label: "Point Rules", icon: CheckSquare },
   { to: "/portal/admin/performance", label: "Member Performance", icon: Trophy },
   { to: "/portal/admin/awards", label: "Fair Awards", icon: Trophy },
+  { to: "/portal/admin/verification", label: "Verify Contributions", icon: BadgeCheck },
   { to: "/portal/admin/email-templates", label: "Email Templates", icon: MailPlus },
   { to: "/portal/admin/site", label: "Site Settings", icon: Settings },
 ];
@@ -89,6 +93,7 @@ function PortalLayout() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const loc = useLocation();
+  const queryClient = useQueryClient();
 
   const { data: roles } = useQuery({
     queryKey: ["my-roles", user.id],
@@ -97,6 +102,7 @@ function PortalLayout() {
       return (data ?? []).map((r) => r.role as string);
     },
   });
+  const access = useQuery({ queryKey: ["portal-access", user.id], queryFn: () => getPortalAccess(user.id) });
   const settings = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
 
   const unread = useQuery({
@@ -125,6 +131,8 @@ function PortalLayout() {
   const mediaflowUrl = settings.data?.mediaflow_url ?? "https://sccmu.cybertec.lk/";
 
   async function signOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
@@ -144,6 +152,12 @@ function PortalLayout() {
   } else {
     groups.push({ label: "MEMBER", items: MEMBER_NAV });
   }
+  const customItems: NavItem[] = [];
+  if (hasAnyPermission(access.data ?? { roles: [], permissions: [] }, ["gallery.create", "gallery.edit", "gallery.publish", "gallery.delete"])) customItems.push({ to: "/portal/admin/gallery", label: "Gallery workspace", icon: ImagePlus });
+  if (hasAnyPermission(access.data ?? { roles: [], permissions: [] }, ["projects.create", "projects.edit", "projects.publish", "projects.delete"])) customItems.push({ to: "/portal/admin/projects", label: "Projects workspace", icon: FolderKanban });
+  if (hasAnyPermission(access.data ?? { roles: [], permissions: [] }, ["announcements.create", "announcements.publish"])) customItems.push({ to: "/portal/announcements", label: "Announcements workspace", icon: Megaphone });
+  if (hasAnyPermission(access.data ?? { roles: [], permissions: [] }, ["content.review"])) customItems.push({ to: "/portal/admin/review-queue", label: "Review queue", icon: CheckSquare });
+  if (customItems.length) groups.push({ label: "MY WORKSPACE", items: customItems, accent: true });
 
   const sidebar = (
     <aside className="border-r border-border bg-card flex flex-col h-full w-[280px]">

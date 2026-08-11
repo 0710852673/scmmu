@@ -401,7 +401,12 @@ export const reviewContribution = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("contributions")
-      .update({ status: data.status, review_note: data.review_note || null })
+      .update({
+        status: data.status,
+        review_note: data.review_note || null,
+        reviewed_by: context.userId,
+        reviewed_at: new Date().toISOString(),
+      })
       .eq("id", data.id)
       .select("user_id,kind")
       .maybeSingle();
