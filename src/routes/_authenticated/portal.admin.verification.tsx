@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -7,8 +7,13 @@ import { toast } from "sonner";
 import { listContributionQueue, reviewContribution } from "@/lib/performance.functions";
 import { PortalPage, Empty } from "@/components/portal/PortalUI";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/verification")({
+  beforeLoad: async ({ context }) => {
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", context.user.id);
+    if (!(data ?? []).some((row) => ["administrator", "tic", "section_head", "executive_board"].includes(row.role))) throw redirect({ to: "/portal" });
+  },
   head: () => ({
     meta: [
       { title: "Contribution Verification — SCCMU" },

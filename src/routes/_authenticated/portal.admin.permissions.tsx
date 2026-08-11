@@ -75,7 +75,7 @@ function PermissionsPage() {
   async function assign() {
     if (!assignRole || !assignUser) { setMsg("Pick a member and a role."); return; }
     const { error } = await supabase.from("user_permission_roles")
-      .insert({ user_id: assignUser, role_id: assignRole } as never);
+      .insert({ user_id: assignUser, role_id: assignRole, assigned_by: (await supabase.auth.getUser()).data.user?.id ?? null } as never);
     setMsg(error ? error.message : "Role assigned.");
     if (!error) { setAssignUser(""); assignQ.refetch(); }
   }

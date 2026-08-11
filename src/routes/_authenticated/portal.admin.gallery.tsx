@@ -5,11 +5,12 @@ import { AdminEditor, useTable, type FieldDef } from "@/components/portal/AdminE
 import { GALLERY_CATEGORIES, prettyLabel } from "@/lib/site-content";
 import { usePublishRights, reviewFields, notifySubmitted } from "@/lib/review";
 import { REVIEW_CLASS, REVIEW_LABEL } from "@/lib/permissions";
+import { getPortalAccess, hasAnyPermission } from "@/lib/access";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/gallery")({
   beforeLoad: async ({ context }) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", context.user.id);
-    if (!(data ?? []).some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r.role)))
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role)) && !hasAnyPermission(access, ["gallery.create", "gallery.edit", "gallery.publish", "gallery.delete"]))
       throw redirect({ to: "/portal" });
   },
   component: AdminGallery,

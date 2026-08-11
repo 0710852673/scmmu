@@ -4,11 +4,12 @@ import { PortalPage } from "@/components/portal/PortalUI";
 import { AdminEditor, useTable, type FieldDef } from "@/components/portal/AdminEditor";
 import { usePublishRights, reviewFields, notifySubmitted } from "@/lib/review";
 import { REVIEW_CLASS, REVIEW_LABEL } from "@/lib/permissions";
+import { getPortalAccess, hasAnyPermission } from "@/lib/access";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/projects")({
   beforeLoad: async ({ context }) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", context.user.id);
-    if (!(data ?? []).some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r.role)))
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role)) && !hasAnyPermission(access, ["projects.create", "projects.edit", "projects.publish", "projects.delete"]))
       throw redirect({ to: "/portal" });
   },
   component: AdminProjects,

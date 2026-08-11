@@ -17,8 +17,8 @@ function Announcements() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const { roles, canPublish } = usePublishRights(user.id);
-  const canPost = roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r));
+  const { roles, permissions, canPublish } = usePublishRights(user.id);
+  const canPost = roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)) || permissions.includes("announcements.create");
 
   const { data } = useQuery({
     queryKey: ["all-announcements"],
