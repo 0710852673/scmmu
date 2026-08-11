@@ -39,7 +39,9 @@ function Auth() {
         if (!alive) return;
         if (data.user) navigate({ to: "/portal" });
         else {
-          if (sessionError) setNotice("Your session expired. Sign in again to continue.");
+          if (sessionError && (sessionError.message.toLowerCase().includes("refresh") || sessionError.message.toLowerCase().includes("session"))) {
+            setNotice("Your session expired. Sign in again to continue.");
+          }
           setChecking(false);
         }
       })

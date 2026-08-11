@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import {
   LayoutDashboard, User, Calendar, ClipboardCheck, FileText, ExternalLink,
@@ -12,7 +12,6 @@ import { ThemeToggle } from "@/lib/theme";
 import { getSiteSettings } from "@/lib/public-data.functions";
 import { LogoMark } from "@/components/site/Logo";
 import { getPortalAccess, hasAnyPermission } from "@/lib/access";
-import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
