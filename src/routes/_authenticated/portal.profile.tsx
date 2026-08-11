@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Empty, Card } from "@/components/portal/PortalUI";
-import { Mail, Phone, GraduationCap, Users, Calendar, IdCard } from "lucide-react";
+import { Mail, Phone, GraduationCap, Users, Calendar, IdCard, FileDown } from "lucide-react";
+import { exportSectionsPdf } from "@/lib/pdf";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/portal/profile")({
   component: ProfilePage,
@@ -54,8 +56,24 @@ function ProfilePage() {
   const initials = (profile?.full_name || user.email || "?")
     .split(" ").map((s: string) => s[0]).join("").slice(0, 2).toUpperCase();
 
+  async function exportProfile() {
+    if (!profile) return;
+    await exportSectionsPdf(
+      `${profile.admission_number ?? "sccmu"}-member-profile.pdf`,
+      profile.full_name || "SCCMU Member",
+      profile.admission_number ?? "Member profile",
+      [
+        { heading: "Member details", kv: [["Email", user.email ?? "—"], ["WhatsApp", profile.whatsapp], ["Grade", profile.grade], ["Class", profile.class], ["Primary division", profile.primary_division?.replace(/_/g, " ")], ["Join date", profile.join_date]] },
+        { heading: "Profile", text: profile.bio || "No biography added." },
+        { heading: "Skills", table: { columns: ["Division", "Level"], rows: (skills ?? []).map((skill) => [skill.division.replace(/_/g, " "), skill.tier]) } },
+        { heading: "Achievements", table: { columns: ["Achievement", "Awarded"], rows: (achievements ?? []).map((item) => { const achievement = item.achievements as { name?: string } | null; return [achievement?.name ?? "Achievement", new Date(item.awarded_at).toLocaleDateString()]; }) } },
+      ],
+      { kicker: "SCCMU MEMBER RECORD", photoUrl: profile.photo_url, confidential: true },
+    );
+  }
+
   return (
-    <PortalPage eyebrow={isTic ? "Teacher In Charge" : isAdmin ? "Administrator" : isElite ? "Elite Board" : "Member"} title="My Profile">
+    <PortalPage eyebrow={isTic ? "Teacher In Charge" : isAdmin ? "Administrator" : isElite ? "Elite Board" : "Member"} title="My Profile" action={<Button type="button" onClick={exportProfile} disabled={!profile}><FileDown /> Export profile PDF</Button>}>
       <div className="grid lg:grid-cols-[320px_1fr] gap-8">
         {/* IDENTITY CARD */}
         <Card className="p-0 overflow-hidden">

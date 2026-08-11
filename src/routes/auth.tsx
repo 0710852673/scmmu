@@ -4,28 +4,22 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { LogoMark } from "@/components/site/Logo";
+import { friendlyAuthError } from "@/lib/auth-errors";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Member Sign In — SCCMU" },
       { name: "description", content: "SCCMU member portal sign-in." },
+      { property: "og:title", content: "Member Sign In — SCCMU" },
+      { property: "og:description", content: "SCCMU member portal sign-in." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Auth,
 });
-
-function friendlyAuthError(message: string) {
-  const m = message.toLowerCase();
-  if (m.includes("invalid login credentials") || m.includes("invalid_credentials"))
-    return "Email or password is incorrect. Please check and try again.";
-  if (m.includes("email not confirmed")) return "This account hasn't been confirmed yet. Contact an administrator.";
-  if (m.includes("rate limit") || m.includes("too many"))
-    return "Too many attempts. Please wait a minute and try again.";
-  if (m.includes("failed to fetch") || m.includes("network"))
-    return "Can't reach the server. Check your internet connection and try again.";
-  return message || "Sign in failed. Please try again.";
-}
 
 function Auth() {
   const navigate = useNavigate();
@@ -34,15 +28,20 @@ function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     let alive = true;
     supabase.auth
       .getUser()
-      .then(({ data }) => {
+      .then(({ data, error: sessionError }) => {
         if (!alive) return;
         if (data.user) navigate({ to: "/portal" });
-        else setChecking(false);
+        else {
+          if (sessionError) setNotice("Your session expired. Sign in again to continue.");
+          setChecking(false);
+        }
       })
       .catch(() => alive && setChecking(false));
     return () => { alive = false; };
@@ -62,13 +61,37 @@ function Auth() {
     });
     setLoading(false);
     if (err || !data.session) {
-      const msg = friendlyAuthError(err?.message ?? "Sign in failed.");
+      const msg = friendlyAuthError(err);
       setError(msg);
       toast.error(msg);
       return;
     }
     toast.success("Signed in");
     navigate({ to: "/portal" });
+  }
+
+  async function forgotPassword() {
+    setError(null);
+    setNotice(null);
+    const address = email.trim().toLowerCase();
+    if (!address || !/^\S+@\S+\.\S+$/.test(address)) {
+      setError("Enter your account email first, then choose Forgot password.");
+      return;
+    }
+    setResetting(true);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(address, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setResetting(false);
+    if (resetError) {
+      const message = friendlyAuthError(resetError);
+      setError(message);
+      toast.error(message);
+      return;
+    }
+    const message = "If an account exists for this email, a password reset link is on its way. Check your inbox and spam folder.";
+    setNotice(message);
+    toast.success("Password reset email requested.");
   }
 
   return (
@@ -107,6 +130,11 @@ function Auth() {
               {error}
             </div>
           )}
+          {notice && (
+            <div role="status" aria-live="polite" className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-3 text-sm font-medium text-emerald-600">
+              {notice}
+            </div>
+          )}
           <label className="block">
             <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Email</span>
             <input type="email" required autoComplete="email" value={email}
@@ -115,16 +143,20 @@ function Auth() {
               className={`w-full rounded-lg border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? "border-destructive/60" : "border-border"}`} />
           </label>
           <label className="block">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Password</span>
+            <span className="mb-1.5 flex items-center justify-between gap-3">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Password</span>
+              <button type="button" onClick={forgotPassword} disabled={resetting || loading} className="text-xs font-semibold text-brand hover:underline disabled:opacity-50">
+                {resetting ? "Sending…" : "Forgot password?"}
+              </button>
+            </span>
             <input type="password" required autoComplete="current-password" value={password}
               onChange={(e) => { setPassword(e.target.value); setError(null); }}
               aria-invalid={!!error}
               className={`w-full rounded-lg border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? "border-destructive/60" : "border-border"}`} />
           </label>
-          <button disabled={loading || checking}
-            className="w-full rounded-full brand-gradient px-5 py-3.5 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-opacity disabled:opacity-50">
+          <Button type="submit" disabled={loading || checking} className="h-12 w-full rounded-full">
             {loading ? "Signing in…" : checking ? "Checking session…" : "Sign in"}
-          </button>
+          </Button>
         </form>
 
         <Link to="/" className="mt-10 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground">

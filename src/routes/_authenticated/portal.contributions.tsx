@@ -43,6 +43,7 @@ function ContributionsPage() {
       user_id: user.id,
       kind: fd.get("kind") as "attend_meeting",
       note: String(fd.get("note") ?? "") || null,
+      evidence_url: String(fd.get("evidence_url") ?? "").trim() || null,
     });
     if (error) return toast.error(error.message);
     toast.success("Logged — pending head approval");
@@ -72,6 +73,7 @@ function ContributionsPage() {
             ))}
           </select>
           <textarea name="note" placeholder="Details (event, what you did)" rows={3} className="w-full border border-border p-3 text-sm" />
+          <input name="evidence_url" type="url" placeholder="Evidence link (Drive, published post, gallery, etc.)" className="w-full border border-border bg-background p-3 text-sm" />
           <button className="bg-foreground text-background px-6 py-3 text-xs font-bold uppercase tracking-widest">Submit</button>
         </form>
       )}
@@ -83,6 +85,8 @@ function ContributionsPage() {
               <div>
                 <div className="font-bold capitalize">{c.kind.replace(/_/g, " ")}</div>
                 <div className="text-xs text-foreground/60 mt-1">{c.note || "—"} · {new Date(c.created_at).toLocaleDateString()}</div>
+                {c.evidence_url && <a href={c.evidence_url} target="_blank" rel="noopener noreferrer" className="mt-1 block text-xs font-semibold text-brand hover:underline">View evidence</a>}
+                {c.review_note && <div className="mt-2 text-xs"><strong>Reviewer note:</strong> {c.review_note}</div>}
               </div>
               <span className={`text-[10px] uppercase tracking-widest font-bold px-3 py-1 border ${
                 c.status === "approved" ? "border-brand text-brand" :
