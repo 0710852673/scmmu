@@ -53,14 +53,52 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string
+          entity: string
+          entity_id: string | null
+          id: string
+          meta: Json
+          summary: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          entity: string
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+          summary: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+          summary?: string
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           author_id: string | null
           body: string
           created_at: string
+          deleted_at: string | null
           division: Database["public"]["Enums"]["division_slug"] | null
           id: string
           pinned: boolean
+          publish_at: string | null
           review_note: string | null
           review_status: string
           reviewed_at: string | null
@@ -72,9 +110,11 @@ export type Database = {
           author_id?: string | null
           body: string
           created_at?: string
+          deleted_at?: string | null
           division?: Database["public"]["Enums"]["division_slug"] | null
           id?: string
           pinned?: boolean
+          publish_at?: string | null
           review_note?: string | null
           review_status?: string
           reviewed_at?: string | null
@@ -86,9 +126,11 @@ export type Database = {
           author_id?: string | null
           body?: string
           created_at?: string
+          deleted_at?: string | null
           division?: Database["public"]["Enums"]["division_slug"] | null
           id?: string
           pinned?: boolean
+          publish_at?: string | null
           review_note?: string | null
           review_status?: string
           reviewed_at?: string | null
@@ -564,6 +606,7 @@ export type Database = {
           category: Database["public"]["Enums"]["gallery_category"]
           created_at: string
           created_by: string | null
+          deleted_at: string | null
           event_date: string | null
           id: string
           image_url: string
@@ -581,6 +624,7 @@ export type Database = {
           category: Database["public"]["Enums"]["gallery_category"]
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           event_date?: string | null
           id?: string
           image_url: string
@@ -598,6 +642,7 @@ export type Database = {
           category?: Database["public"]["Enums"]["gallery_category"]
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           event_date?: string | null
           id?: string
           image_url?: string
@@ -1064,10 +1109,12 @@ export type Database = {
         Row: {
           cover_image: string | null
           created_at: string
+          deleted_at: string | null
           description: string | null
           event_date: string | null
           id: string
           is_featured: boolean
+          publish_at: string | null
           published: boolean
           review_note: string | null
           review_status: string
@@ -1082,10 +1129,12 @@ export type Database = {
         Insert: {
           cover_image?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           event_date?: string | null
           id?: string
           is_featured?: boolean
+          publish_at?: string | null
           published?: boolean
           review_note?: string | null
           review_status?: string
@@ -1100,10 +1149,12 @@ export type Database = {
         Update: {
           cover_image?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           event_date?: string | null
           id?: string
           is_featured?: boolean
+          publish_at?: string | null
           published?: boolean
           review_note?: string | null
           review_status?: string
@@ -1413,12 +1464,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1442,11 +1493,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1467,11 +1518,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1492,11 +1543,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1509,11 +1560,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

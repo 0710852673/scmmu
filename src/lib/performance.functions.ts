@@ -408,23 +408,50 @@ export const reviewContribution = createServerFn({ method: "POST" })
         reviewed_at: new Date().toISOString(),
       })
       .eq("id", data.id)
-      .select("user_id,kind")
+      .select("user_id,kind,evidence_url,division")
       .maybeSingle();
     if (error) throw new Error(error.message);
 
+    let notifiedAt: string | null = null;
     if (row) {
-      await supabaseAdmin.from("notifications").insert({
+      const title =
+        data.status === "approved"
+          ? "Contribution verified"
+          : data.status === "rejected"
+            ? "Contribution rejected"
+            : "Contribution reopened";
+      const { error: notifyError } = await supabaseAdmin.from("notifications").insert({
         user_id: row.user_id,
-        title:
-          data.status === "approved"
-            ? "Contribution verified"
-            : data.status === "rejected"
-              ? "Contribution rejected"
-              : "Contribution reopened",
+        title,
         body:
           (data.review_note ? `${data.review_note} — ` : "") +
           `${String(row.kind).replace(/_/g, " ")}`,
       });
+      if (!notifyError) notifiedAt = new Date().toISOString();
+
+      const { data: member } = await supabaseAdmin
+        .from("profiles")
+        .select("full_name,admission_number")
+        .eq("id", row.user_id)
+        .maybeSingle();
+
+      const { recordActivity } = await import("@/lib/audit.server");
+      await recordActivity(supabaseAdmin as any, context.userId, {
+        action: `contribution.${data.status}`,
+        entity: "contributions",
+        entity_id: data.id,
+        summary: `${title} — ${String(row.kind).replace(/_/g, " ")} for ${member?.full_name ?? "a member"}${member?.admission_number ? ` (${member.admission_number})` : ""}`,
+        meta: {
+          member_id: row.user_id,
+          member_name: member?.full_name ?? null,
+          kind: row.kind,
+          division: row.division,
+          evidence_url: row.evidence_url ?? null,
+          review_note: data.review_note || null,
+          notified_at: notifiedAt,
+        },
+      });
     }
-    return { ok: true };
+    return { ok: true, notifiedAt };
   });
+
