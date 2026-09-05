@@ -53,14 +53,52 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string
+          entity: string
+          entity_id: string | null
+          id: string
+          meta: Json
+          summary: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          entity: string
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+          summary: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+          summary?: string
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           author_id: string | null
           body: string
           created_at: string
+          deleted_at: string | null
           division: Database["public"]["Enums"]["division_slug"] | null
           id: string
           pinned: boolean
+          publish_at: string | null
           review_note: string | null
           review_status: string
           reviewed_at: string | null
@@ -72,9 +110,11 @@ export type Database = {
           author_id?: string | null
           body: string
           created_at?: string
+          deleted_at?: string | null
           division?: Database["public"]["Enums"]["division_slug"] | null
           id?: string
           pinned?: boolean
+          publish_at?: string | null
           review_note?: string | null
           review_status?: string
           reviewed_at?: string | null
@@ -86,9 +126,11 @@ export type Database = {
           author_id?: string | null
           body?: string
           created_at?: string
+          deleted_at?: string | null
           division?: Database["public"]["Enums"]["division_slug"] | null
           id?: string
           pinned?: boolean
+          publish_at?: string | null
           review_note?: string | null
           review_status?: string
           reviewed_at?: string | null
@@ -564,6 +606,7 @@ export type Database = {
           category: Database["public"]["Enums"]["gallery_category"]
           created_at: string
           created_by: string | null
+          deleted_at: string | null
           event_date: string | null
           id: string
           image_url: string
@@ -581,6 +624,7 @@ export type Database = {
           category: Database["public"]["Enums"]["gallery_category"]
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           event_date?: string | null
           id?: string
           image_url: string
@@ -598,6 +642,7 @@ export type Database = {
           category?: Database["public"]["Enums"]["gallery_category"]
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           event_date?: string | null
           id?: string
           image_url?: string
@@ -1064,10 +1109,12 @@ export type Database = {
         Row: {
           cover_image: string | null
           created_at: string
+          deleted_at: string | null
           description: string | null
           event_date: string | null
           id: string
           is_featured: boolean
+          publish_at: string | null
           published: boolean
           review_note: string | null
           review_status: string
@@ -1082,10 +1129,12 @@ export type Database = {
         Insert: {
           cover_image?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           event_date?: string | null
           id?: string
           is_featured?: boolean
+          publish_at?: string | null
           published?: boolean
           review_note?: string | null
           review_status?: string
@@ -1100,10 +1149,12 @@ export type Database = {
         Update: {
           cover_image?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           event_date?: string | null
           id?: string
           is_featured?: boolean
+          publish_at?: string | null
           published?: boolean
           review_note?: string | null
           review_status?: string
