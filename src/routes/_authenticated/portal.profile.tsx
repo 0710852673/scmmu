@@ -56,24 +56,81 @@ function ProfilePage() {
   const initials = (profile?.full_name || user.email || "?")
     .split(" ").map((s: string) => s[0]).join("").slice(0, 2).toUpperCase();
 
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [opts, setOpts] = useState({
+    contact: true, bio: true, skills: true, achievements: true,
+    photo: true, confidential: true,
+  });
+
   async function exportProfile() {
     if (!profile) return;
-    await exportSectionsPdf(
-      `${profile.admission_number ?? "sccmu"}-member-profile.pdf`,
-      profile.full_name || "SCCMU Member",
-      profile.admission_number ?? "Member profile",
-      [
-        { heading: "Member details", kv: [["Email", user.email ?? "—"], ["WhatsApp", profile.whatsapp], ["Grade", profile.grade], ["Class", profile.class], ["Primary division", profile.primary_division?.replace(/_/g, " ")], ["Join date", profile.join_date]] },
-        { heading: "Profile", text: profile.bio || "No biography added." },
-        { heading: "Skills", table: { columns: ["Division", "Level"], rows: (skills ?? []).map((skill) => [skill.division.replace(/_/g, " "), skill.tier]) } },
-        { heading: "Achievements", table: { columns: ["Achievement", "Awarded"], rows: (achievements ?? []).map((item) => { const achievement = item.achievements as { name?: string } | null; return [achievement?.name ?? "Achievement", new Date(item.awarded_at).toLocaleDateString()]; }) } },
-      ],
-      { kicker: "SCCMU MEMBER RECORD", photoUrl: profile.photo_url, confidential: true },
-    );
+    setExporting(true);
+    try {
+      const sections = [] as Parameters<typeof exportSectionsPdf>[3];
+      sections.push({
+        heading: "Member details",
+        kv: [
+          ...(opts.contact ? [["Email", user.email ?? "—"] as [string, string], ["WhatsApp", profile.whatsapp] as [string, string]] : []),
+          ["Grade", profile.grade] as [string, string],
+          ["Class", profile.class] as [string, string],
+          ["Primary division", profile.primary_division?.replace(/_/g, " ")] as [string, string],
+          ["Join date", profile.join_date] as [string, string],
+        ],
+      });
+      if (opts.bio) sections.push({ heading: "Profile", text: profile.bio || "No biography added." });
+      if (opts.skills) sections.push({ heading: "Skills", table: { columns: ["Division", "Level"], rows: (skills ?? []).map((skill) => [skill.division.replace(/_/g, " "), skill.tier]) } });
+      if (opts.achievements) sections.push({ heading: "Achievements", table: { columns: ["Achievement", "Awarded"], rows: (achievements ?? []).map((item) => { const achievement = item.achievements as { name?: string } | null; return [achievement?.name ?? "Achievement", new Date(item.awarded_at).toLocaleDateString()]; }) } });
+
+      await exportSectionsPdf(
+        `${profile.admission_number ?? "sccmu"}-member-profile.pdf`,
+        profile.full_name || "SCCMU Member",
+        profile.admission_number ?? "Member profile",
+        sections,
+        {
+          kicker: "SCCMU MEMBER RECORD",
+          photoUrl: opts.photo ? profile.photo_url : null,
+          confidential: opts.confidential,
+        },
+      );
+      toast.success("Your profile PDF has been downloaded.");
+      setPdfOpen(false);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not create the PDF. Please try again.");
+    } finally {
+      setExporting(false);
+    }
   }
 
   return (
-    <PortalPage eyebrow={isTic ? "Teacher In Charge" : isAdmin ? "Administrator" : isElite ? "Elite Board" : "Member"} title="My Profile" action={<Button type="button" onClick={exportProfile} disabled={!profile}><FileDown /> Export profile PDF</Button>}>
+    <PortalPage eyebrow={isTic ? "Teacher In Charge" : isAdmin ? "Administrator" : isElite ? "Elite Board" : "Member"} title="My Profile" action={<Button type="button" onClick={() => setPdfOpen((v) => !v)} disabled={!profile}><FileDown /> Export profile PDF</Button>}>
+      {pdfOpen && (
+        <Card className="mb-6">
+          <h3 className="font-display text-sm font-bold uppercase tracking-[0.18em] text-muted-foreground">Choose what to include</h3>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {([
+              ["contact", "Email & WhatsApp"],
+              ["bio", "About me"],
+              ["skills", "Skill levels"],
+              ["achievements", "Achievements"],
+              ["photo", "Profile photo"],
+              ["confidential", "Confidential stamp"],
+            ] as const).map(([key, label]) => (
+              <label key={key} className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={opts[key]} className="accent-brand h-4 w-4"
+                  onChange={(e) => setOpts((o) => ({ ...o, [key]: e.target.checked }))} />
+                {label}
+              </label>
+            ))}
+          </div>
+          <div className="mt-5 flex gap-3">
+            <Button type="button" onClick={exportProfile} disabled={exporting || !profile}>
+              {exporting ? "Preparing…" : "Download PDF"}
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setPdfOpen(false)}>Cancel</Button>
+          </div>
+        </Card>
+      )}
       <div className="grid lg:grid-cols-[320px_1fr] gap-8">
         {/* IDENTITY CARD */}
         <Card className="p-0 overflow-hidden">
