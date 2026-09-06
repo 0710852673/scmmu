@@ -47,8 +47,8 @@ function HealthPage() {
 
       <SectionTitle sub="Things waiting on a human right now">Attention needed</SectionTitle>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Pending contributions" value={data.health.pendingContributions} icon={AlertCircle} tone={data.health.pendingContributions ? "warn" : "default"} />
-        <Stat label="Awaiting review" value={data.health.pendingReview} icon={Clock} tone={data.health.pendingReview ? "warn" : "default"} />
+        <Stat label="Pending contributions" value={data.health.pendingContributions} icon={AlertCircle} tone={data.health.pendingContributions ? "brand" : "default"} />
+        <Stat label="Awaiting review" value={data.health.pendingReview} icon={Clock} tone={data.health.pendingReview ? "brand" : "default"} />
         <Stat label="Open bookings" value={data.health.openBookings} icon={Calendar} />
         <Stat label="Live now" value={data.health.liveStreams} icon={Radio} />
         <Stat label="Unread notifications" value={data.health.unreadNotifications} icon={AlertCircle} />
@@ -67,9 +67,9 @@ function HealthPage() {
               <YAxis fontSize={11} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="contributions" fill="hsl(var(--brand))" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="points" fill="hsl(var(--amber))" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="bookings" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="contributions" fill="var(--brand)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="points" fill="var(--amber)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="bookings" fill="var(--muted-foreground)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
