@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { getPortalAccess, hasAnyPermission } from "@/lib/access";
+import { createFileRoute , redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -8,6 +9,11 @@ import { Trash2, Send, AlertCircle } from "lucide-react";
 import { notifyBookingStatus, notifyBookingSubmitted } from "@/lib/email.functions";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/bookings")({
+  beforeLoad: async ({ context }) => {
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)) && !hasAnyPermission(access, ["bookings.manage"]))
+      throw redirect({ to: "/portal" });
+  },
   component: AdminBookings,
 });
 
