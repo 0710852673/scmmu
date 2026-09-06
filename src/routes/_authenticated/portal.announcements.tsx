@@ -24,14 +24,14 @@ function Announcements() {
     queryKey: ["all-announcements"],
     queryFn: async () => {
       const { data } = await supabase.from("announcements")
-        .select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false });
+        .select("*").is("deleted_at", null).order("pinned", { ascending: false }).order("created_at", { ascending: false });
       return data ?? [];
     },
   });
 
   async function del(id: string) {
     if (!confirm("Delete this announcement?")) return;
-    const { error } = await supabase.from("announcements").delete().eq("id", id);
+    const { error } = await supabase.from("announcements").update({ deleted_at: new Date().toISOString() } as any).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Deleted");
     qc.invalidateQueries({ queryKey: ["all-announcements"] });
