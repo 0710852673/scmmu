@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { getPortalAccess } from "@/lib/access";
+import { createFileRoute , redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -6,6 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Card } from "@/components/portal/PortalUI";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/email-templates")({
+  beforeLoad: async ({ context }) => {
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)))
+      throw redirect({ to: "/portal" });
+  },
   component: EmailTemplates,
 });
 

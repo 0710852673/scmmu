@@ -38,6 +38,7 @@ import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_aut
 import { Route as AuthenticatedPortalAssignmentsRouteImport } from './routes/_authenticated/portal.assignments'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
 import { Route as AuthenticatedPortalAdminVerificationRouteImport } from './routes/_authenticated/portal.admin.verification'
+import { Route as AuthenticatedPortalAdminTrashRouteImport } from './routes/_authenticated/portal.admin.trash'
 import { Route as AuthenticatedPortalAdminStreamsRouteImport } from './routes/_authenticated/portal.admin.streams'
 import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
 import { Route as AuthenticatedPortalAdminReviewQueueRouteImport } from './routes/_authenticated/portal.admin.review-queue'
@@ -48,6 +49,7 @@ import { Route as AuthenticatedPortalAdminPerformanceRouteImport } from './route
 import { Route as AuthenticatedPortalAdminNotificationRulesRouteImport } from './routes/_authenticated/portal.admin.notification-rules'
 import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_authenticated/portal.admin.messages'
 import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
+import { Route as AuthenticatedPortalAdminHealthRouteImport } from './routes/_authenticated/portal.admin.health'
 import { Route as AuthenticatedPortalAdminGalleryRouteImport } from './routes/_authenticated/portal.admin.gallery'
 import { Route as AuthenticatedPortalAdminEventsRouteImport } from './routes/_authenticated/portal.admin.events'
 import { Route as AuthenticatedPortalAdminEmailTemplatesRouteImport } from './routes/_authenticated/portal.admin.email-templates'
@@ -56,6 +58,7 @@ import { Route as AuthenticatedPortalAdminCoverageRouteImport } from './routes/_
 import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
 import { Route as AuthenticatedPortalAdminBoardRouteImport } from './routes/_authenticated/portal.admin.board'
 import { Route as AuthenticatedPortalAdminAwardsRouteImport } from './routes/_authenticated/portal.admin.awards'
+import { Route as AuthenticatedPortalAdminActivityRouteImport } from './routes/_authenticated/portal.admin.activity'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -213,6 +216,12 @@ const AuthenticatedPortalAdminVerificationRoute =
     path: '/portal/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminTrashRoute =
+  AuthenticatedPortalAdminTrashRouteImport.update({
+    id: '/portal/admin/trash',
+    path: '/portal/admin/trash',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminStreamsRoute =
   AuthenticatedPortalAdminStreamsRouteImport.update({
     id: '/portal/admin/streams',
@@ -273,6 +282,12 @@ const AuthenticatedPortalAdminMembersRoute =
     path: '/portal/admin/members',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminHealthRoute =
+  AuthenticatedPortalAdminHealthRouteImport.update({
+    id: '/portal/admin/health',
+    path: '/portal/admin/health',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminGalleryRoute =
   AuthenticatedPortalAdminGalleryRouteImport.update({
     id: '/portal/admin/gallery',
@@ -321,6 +336,12 @@ const AuthenticatedPortalAdminAwardsRoute =
     path: '/portal/admin/awards',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminActivityRoute =
+  AuthenticatedPortalAdminActivityRouteImport.update({
+    id: '/portal/admin/activity',
+    path: '/portal/admin/activity',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -350,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/activity': typeof AuthenticatedPortalAdminActivityRoute
   '/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
@@ -358,6 +380,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
   '/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
+  '/portal/admin/health': typeof AuthenticatedPortalAdminHealthRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
@@ -368,6 +391,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
+  '/portal/admin/trash': typeof AuthenticatedPortalAdminTrashRoute
   '/portal/admin/verification': typeof AuthenticatedPortalAdminVerificationRoute
 }
 export interface FileRoutesByTo {
@@ -398,6 +422,7 @@ export interface FileRoutesByTo {
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/activity': typeof AuthenticatedPortalAdminActivityRoute
   '/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
@@ -406,6 +431,7 @@ export interface FileRoutesByTo {
   '/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
   '/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
+  '/portal/admin/health': typeof AuthenticatedPortalAdminHealthRoute
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
@@ -416,6 +442,7 @@ export interface FileRoutesByTo {
   '/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
+  '/portal/admin/trash': typeof AuthenticatedPortalAdminTrashRoute
   '/portal/admin/verification': typeof AuthenticatedPortalAdminVerificationRoute
 }
 export interface FileRoutesById {
@@ -448,6 +475,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/admin/activity': typeof AuthenticatedPortalAdminActivityRoute
   '/_authenticated/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/_authenticated/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/_authenticated/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
@@ -456,6 +484,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/email-templates': typeof AuthenticatedPortalAdminEmailTemplatesRoute
   '/_authenticated/portal/admin/events': typeof AuthenticatedPortalAdminEventsRoute
   '/_authenticated/portal/admin/gallery': typeof AuthenticatedPortalAdminGalleryRoute
+  '/_authenticated/portal/admin/health': typeof AuthenticatedPortalAdminHealthRoute
   '/_authenticated/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/_authenticated/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/_authenticated/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
@@ -466,6 +495,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
   '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/_authenticated/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
+  '/_authenticated/portal/admin/trash': typeof AuthenticatedPortalAdminTrashRoute
   '/_authenticated/portal/admin/verification': typeof AuthenticatedPortalAdminVerificationRoute
 }
 export interface FileRouteTypes {
@@ -498,6 +528,7 @@ export interface FileRouteTypes {
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal/'
+    | '/portal/admin/activity'
     | '/portal/admin/awards'
     | '/portal/admin/board'
     | '/portal/admin/bookings'
@@ -506,6 +537,7 @@ export interface FileRouteTypes {
     | '/portal/admin/email-templates'
     | '/portal/admin/events'
     | '/portal/admin/gallery'
+    | '/portal/admin/health'
     | '/portal/admin/members'
     | '/portal/admin/messages'
     | '/portal/admin/notification-rules'
@@ -516,6 +548,7 @@ export interface FileRouteTypes {
     | '/portal/admin/review-queue'
     | '/portal/admin/site'
     | '/portal/admin/streams'
+    | '/portal/admin/trash'
     | '/portal/admin/verification'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -546,6 +579,7 @@ export interface FileRouteTypes {
     | '/portal/profile'
     | '/portal/rankings'
     | '/portal'
+    | '/portal/admin/activity'
     | '/portal/admin/awards'
     | '/portal/admin/board'
     | '/portal/admin/bookings'
@@ -554,6 +588,7 @@ export interface FileRouteTypes {
     | '/portal/admin/email-templates'
     | '/portal/admin/events'
     | '/portal/admin/gallery'
+    | '/portal/admin/health'
     | '/portal/admin/members'
     | '/portal/admin/messages'
     | '/portal/admin/notification-rules'
@@ -564,6 +599,7 @@ export interface FileRouteTypes {
     | '/portal/admin/review-queue'
     | '/portal/admin/site'
     | '/portal/admin/streams'
+    | '/portal/admin/trash'
     | '/portal/admin/verification'
   id:
     | '__root__'
@@ -595,6 +631,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/rankings'
     | '/_authenticated/portal/'
+    | '/_authenticated/portal/admin/activity'
     | '/_authenticated/portal/admin/awards'
     | '/_authenticated/portal/admin/board'
     | '/_authenticated/portal/admin/bookings'
@@ -603,6 +640,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/email-templates'
     | '/_authenticated/portal/admin/events'
     | '/_authenticated/portal/admin/gallery'
+    | '/_authenticated/portal/admin/health'
     | '/_authenticated/portal/admin/members'
     | '/_authenticated/portal/admin/messages'
     | '/_authenticated/portal/admin/notification-rules'
@@ -613,6 +651,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/review-queue'
     | '/_authenticated/portal/admin/site'
     | '/_authenticated/portal/admin/streams'
+    | '/_authenticated/portal/admin/trash'
     | '/_authenticated/portal/admin/verification'
   fileRoutesById: FileRoutesById
 }
@@ -841,6 +880,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/trash': {
+      id: '/_authenticated/portal/admin/trash'
+      path: '/portal/admin/trash'
+      fullPath: '/portal/admin/trash'
+      preLoaderRoute: typeof AuthenticatedPortalAdminTrashRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/streams': {
       id: '/_authenticated/portal/admin/streams'
       path: '/portal/admin/streams'
@@ -911,6 +957,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminMembersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/health': {
+      id: '/_authenticated/portal/admin/health'
+      path: '/portal/admin/health'
+      fullPath: '/portal/admin/health'
+      preLoaderRoute: typeof AuthenticatedPortalAdminHealthRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/gallery': {
       id: '/_authenticated/portal/admin/gallery'
       path: '/portal/admin/gallery'
@@ -967,6 +1020,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminAwardsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/activity': {
+      id: '/_authenticated/portal/admin/activity'
+      path: '/portal/admin/activity'
+      fullPath: '/portal/admin/activity'
+      preLoaderRoute: typeof AuthenticatedPortalAdminActivityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -982,6 +1042,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+  AuthenticatedPortalAdminActivityRoute: typeof AuthenticatedPortalAdminActivityRoute
   AuthenticatedPortalAdminAwardsRoute: typeof AuthenticatedPortalAdminAwardsRoute
   AuthenticatedPortalAdminBoardRoute: typeof AuthenticatedPortalAdminBoardRoute
   AuthenticatedPortalAdminBookingsRoute: typeof AuthenticatedPortalAdminBookingsRoute
@@ -990,6 +1051,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminEmailTemplatesRoute: typeof AuthenticatedPortalAdminEmailTemplatesRoute
   AuthenticatedPortalAdminEventsRoute: typeof AuthenticatedPortalAdminEventsRoute
   AuthenticatedPortalAdminGalleryRoute: typeof AuthenticatedPortalAdminGalleryRoute
+  AuthenticatedPortalAdminHealthRoute: typeof AuthenticatedPortalAdminHealthRoute
   AuthenticatedPortalAdminMembersRoute: typeof AuthenticatedPortalAdminMembersRoute
   AuthenticatedPortalAdminMessagesRoute: typeof AuthenticatedPortalAdminMessagesRoute
   AuthenticatedPortalAdminNotificationRulesRoute: typeof AuthenticatedPortalAdminNotificationRulesRoute
@@ -1000,6 +1062,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminReviewQueueRoute: typeof AuthenticatedPortalAdminReviewQueueRoute
   AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
   AuthenticatedPortalAdminStreamsRoute: typeof AuthenticatedPortalAdminStreamsRoute
+  AuthenticatedPortalAdminTrashRoute: typeof AuthenticatedPortalAdminTrashRoute
   AuthenticatedPortalAdminVerificationRoute: typeof AuthenticatedPortalAdminVerificationRoute
 }
 
@@ -1015,6 +1078,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+  AuthenticatedPortalAdminActivityRoute: AuthenticatedPortalAdminActivityRoute,
   AuthenticatedPortalAdminAwardsRoute: AuthenticatedPortalAdminAwardsRoute,
   AuthenticatedPortalAdminBoardRoute: AuthenticatedPortalAdminBoardRoute,
   AuthenticatedPortalAdminBookingsRoute: AuthenticatedPortalAdminBookingsRoute,
@@ -1025,6 +1089,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedPortalAdminEmailTemplatesRoute,
   AuthenticatedPortalAdminEventsRoute: AuthenticatedPortalAdminEventsRoute,
   AuthenticatedPortalAdminGalleryRoute: AuthenticatedPortalAdminGalleryRoute,
+  AuthenticatedPortalAdminHealthRoute: AuthenticatedPortalAdminHealthRoute,
   AuthenticatedPortalAdminMembersRoute: AuthenticatedPortalAdminMembersRoute,
   AuthenticatedPortalAdminMessagesRoute: AuthenticatedPortalAdminMessagesRoute,
   AuthenticatedPortalAdminNotificationRulesRoute:
@@ -1040,6 +1105,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedPortalAdminReviewQueueRoute,
   AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
   AuthenticatedPortalAdminStreamsRoute: AuthenticatedPortalAdminStreamsRoute,
+  AuthenticatedPortalAdminTrashRoute: AuthenticatedPortalAdminTrashRoute,
   AuthenticatedPortalAdminVerificationRoute:
     AuthenticatedPortalAdminVerificationRoute,
 }

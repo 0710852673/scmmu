@@ -65,7 +65,7 @@ function AdminProjects() {
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {
-          const { error } = await supabase.from("projects").delete().eq("id", id as string);
+          const { error } = await supabase.from("projects").update({ deleted_at: new Date().toISOString() } as any).eq("id", id as string);
           return { error: error?.message ?? null };
         }}
         renderRow={(r) => (

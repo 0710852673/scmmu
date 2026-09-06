@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { getPortalAccess } from "@/lib/access";
+import { createFileRoute , redirect } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -10,6 +11,11 @@ import {
 import { PortalPage, Card, SectionTitle, Empty } from "@/components/portal/PortalUI";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/awards")({
+  beforeLoad: async ({ context }) => {
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)))
+      throw redirect({ to: "/portal" });
+  },
   component: AwardsPage,
 });
 

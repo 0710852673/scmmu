@@ -47,7 +47,7 @@ function AdminGallery() {
   const { roles, permissions, canPublish } = usePublishRights(user.id, "gallery.publish");
   const isStaff = roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role));
   const { rows, refresh } = useTable<Row>(["admin-gallery"], async () => {
-    const { data } = await supabase.from("gallery_items").select("*").order("created_at", { ascending: false });
+    const { data } = await supabase.from("gallery_items").select("*").is("deleted_at", null).order("created_at", { ascending: false });
     return (data ?? []) as Row[];
   });
 
@@ -75,7 +75,7 @@ function AdminGallery() {
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {
-          const { error } = await supabase.from("gallery_items").delete().eq("id", id as string);
+          const { error } = await supabase.from("gallery_items").update({ deleted_at: new Date().toISOString() } as any).eq("id", id as string);
           return { error: error?.message ?? null };
         }}
         renderRow={(r) => (

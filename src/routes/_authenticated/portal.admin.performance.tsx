@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { getPortalAccess } from "@/lib/access";
+import { createFileRoute , redirect } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -8,6 +9,11 @@ import { PortalPage, Card, Stat, Empty } from "@/components/portal/PortalUI";
 import { exportTablePdf } from "@/lib/pdf";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/performance")({
+  beforeLoad: async ({ context }) => {
+    const access = await getPortalAccess(context.user.id);
+    if (!access.roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)))
+      throw redirect({ to: "/portal" });
+  },
   component: PerformanceDashboard,
 });
 
