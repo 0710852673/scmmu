@@ -1,4 +1,4 @@
-import { getPortalAccess, hasAnyPermission } from "@/lib/access";
+import { getPortalAccess } from "@/lib/access";
 import { createFileRoute , redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -11,7 +11,7 @@ import { notifyContactMessage } from "@/lib/email.functions";
 export const Route = createFileRoute("/_authenticated/portal/admin/messages")({
   beforeLoad: async ({ context }) => {
     const access = await getPortalAccess(context.user.id);
-    if (!access.roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)) && !hasAnyPermission(access, ["messages.manage"]))
+    if (!access.roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)))
       throw redirect({ to: "/portal" });
   },
   component: AdminMessages,

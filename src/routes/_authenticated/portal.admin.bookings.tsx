@@ -11,7 +11,7 @@ import { notifyBookingStatus, notifyBookingSubmitted } from "@/lib/email.functio
 export const Route = createFileRoute("/_authenticated/portal/admin/bookings")({
   beforeLoad: async ({ context }) => {
     const access = await getPortalAccess(context.user.id);
-    if (!access.roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)) && !hasAnyPermission(access, ["bookings.manage"]))
+    if (!access.roles.some((r) => ["administrator", "tic", "section_head", "executive_board"].includes(r)) && !hasAnyPermission(access, ["coverage.manage"]))
       throw redirect({ to: "/portal" });
   },
   component: AdminBookings,
