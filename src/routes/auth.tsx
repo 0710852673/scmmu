@@ -39,7 +39,9 @@ function Auth() {
         if (!alive) return;
         if (data.user) navigate({ to: "/portal" });
         else {
-          if (sessionError && (sessionError.message.toLowerCase().includes("refresh") || sessionError.message.toLowerCase().includes("session"))) {
+          const raw = (sessionError?.message ?? "").toLowerCase();
+          const expired = raw.includes("refresh token") || raw.includes("expired") || raw.includes("jwt");
+          if (expired) {
             setNotice("Your session expired. Sign in again to continue.");
           }
           setChecking(false);
