@@ -8,7 +8,7 @@ export const PUBLISHER_ROLES = ["administrator", "tic", "executive_board"];
 
 export function usePublishRights(userId: string, publishPermission?: string) {
   const q = useQuery({
-    queryKey: ["my-roles", userId],
+    queryKey: ["portal-access", userId],
     queryFn: async () => {
       return getPortalAccess(userId);
     },
