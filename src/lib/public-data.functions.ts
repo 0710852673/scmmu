@@ -26,6 +26,7 @@ export const getProjects = createServerFn({ method: "GET" }).handler(async () =>
     .from("projects")
     .select("id,slug,title,summary,cover_image,event_date,is_featured")
     .eq("published", true)
+    .eq("review_status", "approved")
     .is("deleted_at", null)
     .or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`)
     .order("event_date", { ascending: false });
