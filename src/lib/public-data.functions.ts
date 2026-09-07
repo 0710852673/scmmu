@@ -26,6 +26,7 @@ export const getProjects = createServerFn({ method: "GET" }).handler(async () =>
     .from("projects")
     .select("id,slug,title,summary,cover_image,event_date,is_featured")
     .eq("published", true)
+    .eq("review_status", "approved")
     .is("deleted_at", null)
     .or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`)
     .order("event_date", { ascending: false });
@@ -38,6 +39,7 @@ export const getGallery = createServerFn({ method: "GET" }).handler(async () => 
   const { data, error } = await sb
     .from("gallery_items")
     .select("id,category,title,image_url,media_type,video_url,event_date")
+    .eq("review_status", "approved")
     .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(120);
@@ -116,9 +118,9 @@ export const searchSite = createServerFn({ method: "GET" })
     const sb = publicClient();
     const like = `%${q}%`;
     const [g, p, a, e] = await Promise.all([
-      sb.from("gallery_items").select("id,title,image_url,category,media_type").is("deleted_at", null).ilike("title", like).limit(20),
+      sb.from("gallery_items").select("id,title,image_url,category,media_type").eq("review_status", "approved").is("deleted_at", null).ilike("title", like).limit(20),
       sb.from("projects").select("id,slug,title,summary,cover_image").eq("published", true).is("deleted_at", null).or(`title.ilike.${like},summary.ilike.${like}`).limit(20),
-      sb.from("announcements").select("id,title,body,created_at").is("deleted_at", null).or(`title.ilike.${like},body.ilike.${like}`).limit(20),
+      sb.from("announcements").select("id,title,body,created_at").eq("review_status", "approved").is("deleted_at", null).or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`).or(`title.ilike.${like},body.ilike.${like}`).limit(20),
       sb.from("events").select("id,name,event_date,location").or(`name.ilike.${like},description.ilike.${like}`).limit(20),
     ]);
     return {
@@ -137,7 +139,7 @@ export const getYearlyRecap = createServerFn({ method: "GET" })
     const start = `${data.year}-01-01`;
     const end = `${data.year}-12-31`;
     const [g, p, e, s] = await Promise.all([
-      sb.from("gallery_items").select("id,title,image_url,category,media_type,video_url,event_date,created_at").is("deleted_at", null)
+      sb.from("gallery_items").select("id,title,image_url,category,media_type,video_url,event_date,created_at").eq("review_status", "approved").is("deleted_at", null)
         .gte("created_at", start).lte("created_at", `${end}T23:59:59`).order("created_at", { ascending: false }).limit(24),
       sb.from("projects").select("id,slug,title,summary,cover_image,event_date").eq("published", true).is("deleted_at", null)
         .gte("event_date", start).lte("event_date", end).order("event_date", { ascending: false }).limit(20),

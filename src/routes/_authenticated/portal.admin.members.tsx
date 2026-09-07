@@ -112,8 +112,9 @@ function AdminMembers() {
         {isLoading ? (
           <div className="p-10 grid place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>
         ) : ordered.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-px">
+            <table className="w-full min-w-[560px] text-sm">
+
               <thead className="bg-muted/50 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                 <tr>
                   <th className="text-left px-5 py-3">MU #</th>

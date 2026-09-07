@@ -31,7 +31,8 @@ function Rankings() {
       {list.length === 0 ? (
         <Empty>No ranked members yet.</Empty>
       ) : (
-        <table className="w-full text-sm border-collapse">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[520px] text-sm border-collapse">
           <thead>
             <tr className="text-left text-[10px] uppercase tracking-widest text-foreground/40 border-b border-border">
               <th className="py-3">#</th>
@@ -53,6 +54,7 @@ function Rankings() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </PortalPage>
   );
