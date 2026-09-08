@@ -666,6 +666,39 @@ export type Database = {
           },
         ]
       }
+      letter_templates: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          letterhead_image_url: string | null
+          name: string
+          storage_path: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          letterhead_image_url?: string | null
+          name: string
+          storage_path: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          letterhead_image_url?: string | null
+          name?: string
+          storage_path?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       live_streams: {
         Row: {
           created_at: string
@@ -1168,6 +1201,103 @@ export type Database = {
         }
         Relationships: []
       }
+      release_letter_members: {
+        Row: {
+          class_name: string
+          created_at: string
+          full_name: string
+          id: string
+          letter_id: string
+          member_user_id: string | null
+          position: number
+        }
+        Insert: {
+          class_name?: string
+          created_at?: string
+          full_name: string
+          id?: string
+          letter_id: string
+          member_user_id?: string | null
+          position?: number
+        }
+        Update: {
+          class_name?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          letter_id?: string
+          member_user_id?: string | null
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "release_letter_members_letter_id_fkey"
+            columns: ["letter_id"]
+            isOneToOne: false
+            referencedRelation: "release_letters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      release_letters: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          docx_path: string | null
+          event_name: string
+          generated_at: string | null
+          id: string
+          intro_line: string | null
+          letter_date: string
+          pdf_path: string | null
+          ref_no: string
+          status: string
+          template_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          docx_path?: string | null
+          event_name: string
+          generated_at?: string | null
+          id?: string
+          intro_line?: string | null
+          letter_date?: string
+          pdf_path?: string | null
+          ref_no: string
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          docx_path?: string | null
+          event_name?: string
+          generated_at?: string | null
+          id?: string
+          intro_line?: string | null
+          letter_date?: string
+          pdf_path?: string | null
+          ref_no?: string
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "release_letters_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "letter_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_settings: {
         Row: {
           about_eyebrow: string
@@ -1383,6 +1513,7 @@ export type Database = {
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       next_mu_number: { Args: never; Returns: string }
+      next_release_letter_ref: { Args: never; Returns: string }
     }
     Enums: {
       app_role:
