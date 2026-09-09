@@ -27,6 +27,35 @@ export type LetterRecord = {
   students: (LetterStudent & { id: string; position: number })[];
 };
 
+/* ───────────────── member directory ───────────────── */
+
+export type LetterMemberOption = {
+  id: string;
+  full_name: string;
+  class_name: string;
+  grade: string | null;
+  admission_number: string | null;
+};
+
+/** Members available for selection in the letter builder. */
+export const listLetterMemberOptions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertStaff(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("profiles")
+      .select("id,full_name,grade,class,admission_number")
+      .order("full_name");
+    return (data ?? []).map((p) => ({
+      id: p.id,
+      full_name: p.full_name,
+      class_name: [p.grade, p.class].filter(Boolean).join("-") || (p.class ?? ""),
+      grade: p.grade ?? null,
+      admission_number: p.admission_number ?? null,
+    })) as LetterMemberOption[];
+  });
+
 /* ───────────────── templates ───────────────── */
 
 export const listLetterTemplates = createServerFn({ method: "GET" })
