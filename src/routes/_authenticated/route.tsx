@@ -51,6 +51,7 @@ const TIC_NAV: NavItem[] = [
   { to: "/portal/admin/verification", label: "Verify Contributions", icon: BadgeCheck },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
+  { to: "/portal/admin/release-letters", label: "Release Letters", icon: FileText },
   { to: "/portal/admin/health", label: "Health & Analytics", icon: Activity },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
   { to: "/portal/password", label: "Password", icon: KeyRound },
