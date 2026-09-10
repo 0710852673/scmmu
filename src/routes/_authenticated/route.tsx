@@ -90,6 +90,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/portal/admin/awards", label: "Fair Awards", icon: Trophy },
   { to: "/portal/admin/verification", label: "Verify Contributions", icon: BadgeCheck },
   { to: "/portal/admin/email-templates", label: "Email Templates", icon: MailPlus },
+  { to: "/portal/admin/release-letters", label: "Release Letters", icon: FileText },
   { to: "/portal/admin/activity", label: "Activity Log", icon: History },
   { to: "/portal/admin/trash", label: "Bin", icon: Trash2 },
   { to: "/portal/admin/health", label: "Health & Analytics", icon: Activity },
