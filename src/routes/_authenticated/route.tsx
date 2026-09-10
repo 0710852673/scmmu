@@ -66,6 +66,7 @@ const HEAD_NAV: NavItem[] = [
   { to: "/portal/admin/gallery", label: "Gallery", icon: ImagePlus },
   { to: "/portal/admin/bookings", label: "Coverage Bookings", icon: BookmarkCheck },
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
+  { to: "/portal/admin/release-letters", label: "Release Letters", icon: FileText },
   { to: "/portal/admin/trash", label: "Bin", icon: Trash2 },
   { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
 ];
