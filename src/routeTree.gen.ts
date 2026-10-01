@@ -9,100 +9,61 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as BookRouteImport } from './routes/book'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as GalleryRouteImport } from './routes/gallery'
-import { Route as LeadershipRouteImport } from './routes/leadership'
-import { Route as LiveRouteImport } from './routes/live'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as DivisionsIndexRouteImport } from './routes/divisions.index'
-import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
-import { Route as MembersIdRouteImport } from './routes/members.$id'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as LiveRouteImport } from './routes/live'
+import { Route as LeadershipRouteImport } from './routes/leadership'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
-import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as DivisionsIndexRouteImport } from './routes/divisions.index'
 import { Route as RecapYearRouteImport } from './routes/recap.$year'
+import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as MembersIdRouteImport } from './routes/members.$id'
+import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
-import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
-import { Route as AuthenticatedPortalAssignmentsRouteImport } from './routes/_authenticated/portal.assignments'
-import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
-import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
-import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
-import { Route as AuthenticatedPortalNotificationsRouteImport } from './routes/_authenticated/portal.notifications'
-import { Route as AuthenticatedPortalPasswordRouteImport } from './routes/_authenticated/portal.password'
-import { Route as AuthenticatedPortalPerformanceRouteImport } from './routes/_authenticated/portal.performance'
-import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
 import { Route as AuthenticatedPortalRankingsRouteImport } from './routes/_authenticated/portal.rankings'
-import { Route as AuthenticatedPortalAdminActivityRouteImport } from './routes/_authenticated/portal.admin.activity'
-import { Route as AuthenticatedPortalAdminAwardsRouteImport } from './routes/_authenticated/portal.admin.awards'
-import { Route as AuthenticatedPortalAdminBoardRouteImport } from './routes/_authenticated/portal.admin.board'
-import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
-import { Route as AuthenticatedPortalAdminCoverageRouteImport } from './routes/_authenticated/portal.admin.coverage'
-import { Route as AuthenticatedPortalAdminDivisionsRouteImport } from './routes/_authenticated/portal.admin.divisions'
-import { Route as AuthenticatedPortalAdminEmailTemplatesRouteImport } from './routes/_authenticated/portal.admin.email-templates'
-import { Route as AuthenticatedPortalAdminEventsRouteImport } from './routes/_authenticated/portal.admin.events'
-import { Route as AuthenticatedPortalAdminGalleryRouteImport } from './routes/_authenticated/portal.admin.gallery'
-import { Route as AuthenticatedPortalAdminHealthRouteImport } from './routes/_authenticated/portal.admin.health'
-import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
-import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_authenticated/portal.admin.messages'
-import { Route as AuthenticatedPortalAdminNotificationRulesRouteImport } from './routes/_authenticated/portal.admin.notification-rules'
-import { Route as AuthenticatedPortalAdminPerformanceRouteImport } from './routes/_authenticated/portal.admin.performance'
-import { Route as AuthenticatedPortalAdminPermissionsRouteImport } from './routes/_authenticated/portal.admin.permissions'
-import { Route as AuthenticatedPortalAdminPointRulesRouteImport } from './routes/_authenticated/portal.admin.point-rules'
-import { Route as AuthenticatedPortalAdminProjectsRouteImport } from './routes/_authenticated/portal.admin.projects'
-import { Route as AuthenticatedPortalAdminReleaseLettersRouteImport } from './routes/_authenticated/portal.admin.release-letters'
-import { Route as AuthenticatedPortalAdminReviewQueueRouteImport } from './routes/_authenticated/portal.admin.review-queue'
-import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
-import { Route as AuthenticatedPortalAdminStreamsRouteImport } from './routes/_authenticated/portal.admin.streams'
-import { Route as AuthenticatedPortalAdminTrashRouteImport } from './routes/_authenticated/portal.admin.trash'
+import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
+import { Route as AuthenticatedPortalPerformanceRouteImport } from './routes/_authenticated/portal.performance'
+import { Route as AuthenticatedPortalPasswordRouteImport } from './routes/_authenticated/portal.password'
+import { Route as AuthenticatedPortalNotificationsRouteImport } from './routes/_authenticated/portal.notifications'
+import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
+import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
+import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
+import { Route as AuthenticatedPortalAssignmentsRouteImport } from './routes/_authenticated/portal.assignments'
+import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
 import { Route as AuthenticatedPortalAdminVerificationRouteImport } from './routes/_authenticated/portal.admin.verification'
+import { Route as AuthenticatedPortalAdminTrashRouteImport } from './routes/_authenticated/portal.admin.trash'
+import { Route as AuthenticatedPortalAdminStreamsRouteImport } from './routes/_authenticated/portal.admin.streams'
+import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
+import { Route as AuthenticatedPortalAdminReviewQueueRouteImport } from './routes/_authenticated/portal.admin.review-queue'
+import { Route as AuthenticatedPortalAdminReleaseLettersRouteImport } from './routes/_authenticated/portal.admin.release-letters'
+import { Route as AuthenticatedPortalAdminProjectsRouteImport } from './routes/_authenticated/portal.admin.projects'
+import { Route as AuthenticatedPortalAdminPointRulesRouteImport } from './routes/_authenticated/portal.admin.point-rules'
+import { Route as AuthenticatedPortalAdminPermissionsRouteImport } from './routes/_authenticated/portal.admin.permissions'
+import { Route as AuthenticatedPortalAdminPerformanceRouteImport } from './routes/_authenticated/portal.admin.performance'
+import { Route as AuthenticatedPortalAdminNotificationRulesRouteImport } from './routes/_authenticated/portal.admin.notification-rules'
+import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_authenticated/portal.admin.messages'
+import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
+import { Route as AuthenticatedPortalAdminHealthRouteImport } from './routes/_authenticated/portal.admin.health'
+import { Route as AuthenticatedPortalAdminGalleryRouteImport } from './routes/_authenticated/portal.admin.gallery'
+import { Route as AuthenticatedPortalAdminEventsRouteImport } from './routes/_authenticated/portal.admin.events'
+import { Route as AuthenticatedPortalAdminEmailTemplatesRouteImport } from './routes/_authenticated/portal.admin.email-templates'
+import { Route as AuthenticatedPortalAdminDivisionsRouteImport } from './routes/_authenticated/portal.admin.divisions'
+import { Route as AuthenticatedPortalAdminCoverageRouteImport } from './routes/_authenticated/portal.admin.coverage'
+import { Route as AuthenticatedPortalAdminBookingsRouteImport } from './routes/_authenticated/portal.admin.bookings'
+import { Route as AuthenticatedPortalAdminBoardRouteImport } from './routes/_authenticated/portal.admin.board'
+import { Route as AuthenticatedPortalAdminAwardsRouteImport } from './routes/_authenticated/portal.admin.awards'
+import { Route as AuthenticatedPortalAdminActivityRouteImport } from './routes/_authenticated/portal.admin.activity'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BookRoute = BookRouteImport.update({
-  id: '/book',
-  path: '/book',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GalleryRoute = GalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LeadershipRoute = LeadershipRouteImport.update({
-  id: '/leadership',
-  path: '/leadership',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LiveRoute = LiveRouteImport.update({
-  id: '/live',
-  path: '/live',
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -110,24 +71,48 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
+const LiveRoute = LiveRouteImport.update({
+  id: '/live',
+  path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DivisionsIndexRoute = DivisionsIndexRouteImport.update({
-  id: '/divisions/',
-  path: '/divisions/',
+const LeadershipRoute = LeadershipRouteImport.update({
+  id: '/leadership',
+  path: '/leadership',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DivisionsSlugRoute = DivisionsSlugRouteImport.update({
-  id: '/divisions/$slug',
-  path: '/divisions/$slug',
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MembersIdRoute = MembersIdRouteImport.update({
-  id: '/members/$id',
-  path: '/members/$id',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
@@ -135,14 +120,29 @@ const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
   path: '/projects/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
-  id: '/projects/$slug',
-  path: '/projects/$slug',
+const DivisionsIndexRoute = DivisionsIndexRouteImport.update({
+  id: '/divisions/',
+  path: '/divisions/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecapYearRoute = RecapYearRouteImport.update({
   id: '/recap/$year',
   path: '/recap/$year',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
+  id: '/projects/$slug',
+  path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembersIdRoute = MembersIdRouteImport.update({
+  id: '/members/$id',
+  path: '/members/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DivisionsSlugRoute = DivisionsSlugRouteImport.update({
+  id: '/divisions/$slug',
+  path: '/divisions/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPortalIndexRoute =
@@ -151,52 +151,10 @@ const AuthenticatedPortalIndexRoute =
     path: '/portal/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAnnouncementsRoute =
-  AuthenticatedPortalAnnouncementsRouteImport.update({
-    id: '/portal/announcements',
-    path: '/portal/announcements',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAssignmentsRoute =
-  AuthenticatedPortalAssignmentsRouteImport.update({
-    id: '/portal/assignments',
-    path: '/portal/assignments',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAttendanceRoute =
-  AuthenticatedPortalAttendanceRouteImport.update({
-    id: '/portal/attendance',
-    path: '/portal/attendance',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalContributionsRoute =
-  AuthenticatedPortalContributionsRouteImport.update({
-    id: '/portal/contributions',
-    path: '/portal/contributions',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalEventsRoute =
-  AuthenticatedPortalEventsRouteImport.update({
-    id: '/portal/events',
-    path: '/portal/events',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalNotificationsRoute =
-  AuthenticatedPortalNotificationsRouteImport.update({
-    id: '/portal/notifications',
-    path: '/portal/notifications',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalPasswordRoute =
-  AuthenticatedPortalPasswordRouteImport.update({
-    id: '/portal/password',
-    path: '/portal/password',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalPerformanceRoute =
-  AuthenticatedPortalPerformanceRouteImport.update({
-    id: '/portal/performance',
-    path: '/portal/performance',
+const AuthenticatedPortalRankingsRoute =
+  AuthenticatedPortalRankingsRouteImport.update({
+    id: '/portal/rankings',
+    path: '/portal/rankings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPortalProfileRoute =
@@ -205,136 +163,58 @@ const AuthenticatedPortalProfileRoute =
     path: '/portal/profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalRankingsRoute =
-  AuthenticatedPortalRankingsRouteImport.update({
-    id: '/portal/rankings',
-    path: '/portal/rankings',
+const AuthenticatedPortalPerformanceRoute =
+  AuthenticatedPortalPerformanceRouteImport.update({
+    id: '/portal/performance',
+    path: '/portal/performance',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminActivityRoute =
-  AuthenticatedPortalAdminActivityRouteImport.update({
-    id: '/portal/admin/activity',
-    path: '/portal/admin/activity',
+const AuthenticatedPortalPasswordRoute =
+  AuthenticatedPortalPasswordRouteImport.update({
+    id: '/portal/password',
+    path: '/portal/password',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminAwardsRoute =
-  AuthenticatedPortalAdminAwardsRouteImport.update({
-    id: '/portal/admin/awards',
-    path: '/portal/admin/awards',
+const AuthenticatedPortalNotificationsRoute =
+  AuthenticatedPortalNotificationsRouteImport.update({
+    id: '/portal/notifications',
+    path: '/portal/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminBoardRoute =
-  AuthenticatedPortalAdminBoardRouteImport.update({
-    id: '/portal/admin/board',
-    path: '/portal/admin/board',
+const AuthenticatedPortalEventsRoute =
+  AuthenticatedPortalEventsRouteImport.update({
+    id: '/portal/events',
+    path: '/portal/events',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminBookingsRoute =
-  AuthenticatedPortalAdminBookingsRouteImport.update({
-    id: '/portal/admin/bookings',
-    path: '/portal/admin/bookings',
+const AuthenticatedPortalContributionsRoute =
+  AuthenticatedPortalContributionsRouteImport.update({
+    id: '/portal/contributions',
+    path: '/portal/contributions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminCoverageRoute =
-  AuthenticatedPortalAdminCoverageRouteImport.update({
-    id: '/portal/admin/coverage',
-    path: '/portal/admin/coverage',
+const AuthenticatedPortalAttendanceRoute =
+  AuthenticatedPortalAttendanceRouteImport.update({
+    id: '/portal/attendance',
+    path: '/portal/attendance',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminDivisionsRoute =
-  AuthenticatedPortalAdminDivisionsRouteImport.update({
-    id: '/portal/admin/divisions',
-    path: '/portal/admin/divisions',
+const AuthenticatedPortalAssignmentsRoute =
+  AuthenticatedPortalAssignmentsRouteImport.update({
+    id: '/portal/assignments',
+    path: '/portal/assignments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminEmailTemplatesRoute =
-  AuthenticatedPortalAdminEmailTemplatesRouteImport.update({
-    id: '/portal/admin/email-templates',
-    path: '/portal/admin/email-templates',
+const AuthenticatedPortalAnnouncementsRoute =
+  AuthenticatedPortalAnnouncementsRouteImport.update({
+    id: '/portal/announcements',
+    path: '/portal/announcements',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminEventsRoute =
-  AuthenticatedPortalAdminEventsRouteImport.update({
-    id: '/portal/admin/events',
-    path: '/portal/admin/events',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminGalleryRoute =
-  AuthenticatedPortalAdminGalleryRouteImport.update({
-    id: '/portal/admin/gallery',
-    path: '/portal/admin/gallery',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminHealthRoute =
-  AuthenticatedPortalAdminHealthRouteImport.update({
-    id: '/portal/admin/health',
-    path: '/portal/admin/health',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminMembersRoute =
-  AuthenticatedPortalAdminMembersRouteImport.update({
-    id: '/portal/admin/members',
-    path: '/portal/admin/members',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminMessagesRoute =
-  AuthenticatedPortalAdminMessagesRouteImport.update({
-    id: '/portal/admin/messages',
-    path: '/portal/admin/messages',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminNotificationRulesRoute =
-  AuthenticatedPortalAdminNotificationRulesRouteImport.update({
-    id: '/portal/admin/notification-rules',
-    path: '/portal/admin/notification-rules',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminPerformanceRoute =
-  AuthenticatedPortalAdminPerformanceRouteImport.update({
-    id: '/portal/admin/performance',
-    path: '/portal/admin/performance',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminPermissionsRoute =
-  AuthenticatedPortalAdminPermissionsRouteImport.update({
-    id: '/portal/admin/permissions',
-    path: '/portal/admin/permissions',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminPointRulesRoute =
-  AuthenticatedPortalAdminPointRulesRouteImport.update({
-    id: '/portal/admin/point-rules',
-    path: '/portal/admin/point-rules',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminProjectsRoute =
-  AuthenticatedPortalAdminProjectsRouteImport.update({
-    id: '/portal/admin/projects',
-    path: '/portal/admin/projects',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminReleaseLettersRoute =
-  AuthenticatedPortalAdminReleaseLettersRouteImport.update({
-    id: '/portal/admin/release-letters',
-    path: '/portal/admin/release-letters',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminReviewQueueRoute =
-  AuthenticatedPortalAdminReviewQueueRouteImport.update({
-    id: '/portal/admin/review-queue',
-    path: '/portal/admin/review-queue',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminSiteRoute =
-  AuthenticatedPortalAdminSiteRouteImport.update({
-    id: '/portal/admin/site',
-    path: '/portal/admin/site',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPortalAdminStreamsRoute =
-  AuthenticatedPortalAdminStreamsRouteImport.update({
-    id: '/portal/admin/streams',
-    path: '/portal/admin/streams',
+const AuthenticatedPortalAdminVerificationRoute =
+  AuthenticatedPortalAdminVerificationRouteImport.update({
+    id: '/portal/admin/verification',
+    path: '/portal/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPortalAdminTrashRoute =
@@ -343,10 +223,130 @@ const AuthenticatedPortalAdminTrashRoute =
     path: '/portal/admin/trash',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPortalAdminVerificationRoute =
-  AuthenticatedPortalAdminVerificationRouteImport.update({
-    id: '/portal/admin/verification',
-    path: '/portal/admin/verification',
+const AuthenticatedPortalAdminStreamsRoute =
+  AuthenticatedPortalAdminStreamsRouteImport.update({
+    id: '/portal/admin/streams',
+    path: '/portal/admin/streams',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminSiteRoute =
+  AuthenticatedPortalAdminSiteRouteImport.update({
+    id: '/portal/admin/site',
+    path: '/portal/admin/site',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminReviewQueueRoute =
+  AuthenticatedPortalAdminReviewQueueRouteImport.update({
+    id: '/portal/admin/review-queue',
+    path: '/portal/admin/review-queue',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminReleaseLettersRoute =
+  AuthenticatedPortalAdminReleaseLettersRouteImport.update({
+    id: '/portal/admin/release-letters',
+    path: '/portal/admin/release-letters',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminProjectsRoute =
+  AuthenticatedPortalAdminProjectsRouteImport.update({
+    id: '/portal/admin/projects',
+    path: '/portal/admin/projects',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminPointRulesRoute =
+  AuthenticatedPortalAdminPointRulesRouteImport.update({
+    id: '/portal/admin/point-rules',
+    path: '/portal/admin/point-rules',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminPermissionsRoute =
+  AuthenticatedPortalAdminPermissionsRouteImport.update({
+    id: '/portal/admin/permissions',
+    path: '/portal/admin/permissions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminPerformanceRoute =
+  AuthenticatedPortalAdminPerformanceRouteImport.update({
+    id: '/portal/admin/performance',
+    path: '/portal/admin/performance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminNotificationRulesRoute =
+  AuthenticatedPortalAdminNotificationRulesRouteImport.update({
+    id: '/portal/admin/notification-rules',
+    path: '/portal/admin/notification-rules',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminMessagesRoute =
+  AuthenticatedPortalAdminMessagesRouteImport.update({
+    id: '/portal/admin/messages',
+    path: '/portal/admin/messages',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminMembersRoute =
+  AuthenticatedPortalAdminMembersRouteImport.update({
+    id: '/portal/admin/members',
+    path: '/portal/admin/members',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminHealthRoute =
+  AuthenticatedPortalAdminHealthRouteImport.update({
+    id: '/portal/admin/health',
+    path: '/portal/admin/health',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminGalleryRoute =
+  AuthenticatedPortalAdminGalleryRouteImport.update({
+    id: '/portal/admin/gallery',
+    path: '/portal/admin/gallery',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminEventsRoute =
+  AuthenticatedPortalAdminEventsRouteImport.update({
+    id: '/portal/admin/events',
+    path: '/portal/admin/events',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminEmailTemplatesRoute =
+  AuthenticatedPortalAdminEmailTemplatesRouteImport.update({
+    id: '/portal/admin/email-templates',
+    path: '/portal/admin/email-templates',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminDivisionsRoute =
+  AuthenticatedPortalAdminDivisionsRouteImport.update({
+    id: '/portal/admin/divisions',
+    path: '/portal/admin/divisions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminCoverageRoute =
+  AuthenticatedPortalAdminCoverageRouteImport.update({
+    id: '/portal/admin/coverage',
+    path: '/portal/admin/coverage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminBookingsRoute =
+  AuthenticatedPortalAdminBookingsRouteImport.update({
+    id: '/portal/admin/bookings',
+    path: '/portal/admin/bookings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminBoardRoute =
+  AuthenticatedPortalAdminBoardRouteImport.update({
+    id: '/portal/admin/board',
+    path: '/portal/admin/board',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminAwardsRoute =
+  AuthenticatedPortalAdminAwardsRouteImport.update({
+    id: '/portal/admin/awards',
+    path: '/portal/admin/awards',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAdminActivityRoute =
+  AuthenticatedPortalAdminActivityRouteImport.update({
+    id: '/portal/admin/activity',
+    path: '/portal/admin/activity',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -690,67 +690,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/book': {
-      id: '/book'
-      path: '/book'
-      fullPath: '/book'
-      preLoaderRoute: typeof BookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gallery': {
-      id: '/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof GalleryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/leadership': {
-      id: '/leadership'
-      path: '/leadership'
-      fullPath: '/leadership'
-      preLoaderRoute: typeof LeadershipRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/live': {
-      id: '/live'
-      path: '/live'
-      fullPath: '/live'
-      preLoaderRoute: typeof LiveRouteImport
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -760,32 +704,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
+    '/live': {
+      id: '/live'
+      path: '/live'
+      fullPath: '/live'
+      preLoaderRoute: typeof LiveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/divisions/': {
-      id: '/divisions/'
-      path: '/divisions'
-      fullPath: '/divisions/'
-      preLoaderRoute: typeof DivisionsIndexRouteImport
+    '/leadership': {
+      id: '/leadership'
+      path: '/leadership'
+      fullPath: '/leadership'
+      preLoaderRoute: typeof LeadershipRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/divisions/$slug': {
-      id: '/divisions/$slug'
-      path: '/divisions/$slug'
-      fullPath: '/divisions/$slug'
-      preLoaderRoute: typeof DivisionsSlugRouteImport
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/members/$id': {
-      id: '/members/$id'
-      path: '/members/$id'
-      fullPath: '/members/$id'
-      preLoaderRoute: typeof MembersIdRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/': {
@@ -795,11 +774,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projects/$slug': {
-      id: '/projects/$slug'
-      path: '/projects/$slug'
-      fullPath: '/projects/$slug'
-      preLoaderRoute: typeof ProjectsSlugRouteImport
+    '/divisions/': {
+      id: '/divisions/'
+      path: '/divisions'
+      fullPath: '/divisions/'
+      preLoaderRoute: typeof DivisionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recap/$year': {
@@ -809,74 +788,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecapYearRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/$slug': {
+      id: '/projects/$slug'
+      path: '/projects/$slug'
+      fullPath: '/projects/$slug'
+      preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/members/$id': {
+      id: '/members/$id'
+      path: '/members/$id'
+      fullPath: '/members/$id'
+      preLoaderRoute: typeof MembersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/divisions/$slug': {
+      id: '/divisions/$slug'
+      path: '/divisions/$slug'
+      fullPath: '/divisions/$slug'
+      preLoaderRoute: typeof DivisionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/portal/': {
       id: '/_authenticated/portal/'
       path: '/portal'
       fullPath: '/portal/'
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/announcements': {
-      id: '/_authenticated/portal/announcements'
-      path: '/portal/announcements'
-      fullPath: '/portal/announcements'
-      preLoaderRoute: typeof AuthenticatedPortalAnnouncementsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/assignments': {
-      id: '/_authenticated/portal/assignments'
-      path: '/portal/assignments'
-      fullPath: '/portal/assignments'
-      preLoaderRoute: typeof AuthenticatedPortalAssignmentsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/attendance': {
-      id: '/_authenticated/portal/attendance'
-      path: '/portal/attendance'
-      fullPath: '/portal/attendance'
-      preLoaderRoute: typeof AuthenticatedPortalAttendanceRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/contributions': {
-      id: '/_authenticated/portal/contributions'
-      path: '/portal/contributions'
-      fullPath: '/portal/contributions'
-      preLoaderRoute: typeof AuthenticatedPortalContributionsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/events': {
-      id: '/_authenticated/portal/events'
-      path: '/portal/events'
-      fullPath: '/portal/events'
-      preLoaderRoute: typeof AuthenticatedPortalEventsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/notifications': {
-      id: '/_authenticated/portal/notifications'
-      path: '/portal/notifications'
-      fullPath: '/portal/notifications'
-      preLoaderRoute: typeof AuthenticatedPortalNotificationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/password': {
-      id: '/_authenticated/portal/password'
-      path: '/portal/password'
-      fullPath: '/portal/password'
-      preLoaderRoute: typeof AuthenticatedPortalPasswordRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/performance': {
-      id: '/_authenticated/portal/performance'
-      path: '/portal/performance'
-      fullPath: '/portal/performance'
-      preLoaderRoute: typeof AuthenticatedPortalPerformanceRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/profile': {
-      id: '/_authenticated/portal/profile'
-      path: '/portal/profile'
-      fullPath: '/portal/profile'
-      preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/portal/rankings': {
@@ -886,151 +823,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalRankingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/activity': {
-      id: '/_authenticated/portal/admin/activity'
-      path: '/portal/admin/activity'
-      fullPath: '/portal/admin/activity'
-      preLoaderRoute: typeof AuthenticatedPortalAdminActivityRouteImport
+    '/_authenticated/portal/profile': {
+      id: '/_authenticated/portal/profile'
+      path: '/portal/profile'
+      fullPath: '/portal/profile'
+      preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/awards': {
-      id: '/_authenticated/portal/admin/awards'
-      path: '/portal/admin/awards'
-      fullPath: '/portal/admin/awards'
-      preLoaderRoute: typeof AuthenticatedPortalAdminAwardsRouteImport
+    '/_authenticated/portal/performance': {
+      id: '/_authenticated/portal/performance'
+      path: '/portal/performance'
+      fullPath: '/portal/performance'
+      preLoaderRoute: typeof AuthenticatedPortalPerformanceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/board': {
-      id: '/_authenticated/portal/admin/board'
-      path: '/portal/admin/board'
-      fullPath: '/portal/admin/board'
-      preLoaderRoute: typeof AuthenticatedPortalAdminBoardRouteImport
+    '/_authenticated/portal/password': {
+      id: '/_authenticated/portal/password'
+      path: '/portal/password'
+      fullPath: '/portal/password'
+      preLoaderRoute: typeof AuthenticatedPortalPasswordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/bookings': {
-      id: '/_authenticated/portal/admin/bookings'
-      path: '/portal/admin/bookings'
-      fullPath: '/portal/admin/bookings'
-      preLoaderRoute: typeof AuthenticatedPortalAdminBookingsRouteImport
+    '/_authenticated/portal/notifications': {
+      id: '/_authenticated/portal/notifications'
+      path: '/portal/notifications'
+      fullPath: '/portal/notifications'
+      preLoaderRoute: typeof AuthenticatedPortalNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/coverage': {
-      id: '/_authenticated/portal/admin/coverage'
-      path: '/portal/admin/coverage'
-      fullPath: '/portal/admin/coverage'
-      preLoaderRoute: typeof AuthenticatedPortalAdminCoverageRouteImport
+    '/_authenticated/portal/events': {
+      id: '/_authenticated/portal/events'
+      path: '/portal/events'
+      fullPath: '/portal/events'
+      preLoaderRoute: typeof AuthenticatedPortalEventsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/divisions': {
-      id: '/_authenticated/portal/admin/divisions'
-      path: '/portal/admin/divisions'
-      fullPath: '/portal/admin/divisions'
-      preLoaderRoute: typeof AuthenticatedPortalAdminDivisionsRouteImport
+    '/_authenticated/portal/contributions': {
+      id: '/_authenticated/portal/contributions'
+      path: '/portal/contributions'
+      fullPath: '/portal/contributions'
+      preLoaderRoute: typeof AuthenticatedPortalContributionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/email-templates': {
-      id: '/_authenticated/portal/admin/email-templates'
-      path: '/portal/admin/email-templates'
-      fullPath: '/portal/admin/email-templates'
-      preLoaderRoute: typeof AuthenticatedPortalAdminEmailTemplatesRouteImport
+    '/_authenticated/portal/attendance': {
+      id: '/_authenticated/portal/attendance'
+      path: '/portal/attendance'
+      fullPath: '/portal/attendance'
+      preLoaderRoute: typeof AuthenticatedPortalAttendanceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/events': {
-      id: '/_authenticated/portal/admin/events'
-      path: '/portal/admin/events'
-      fullPath: '/portal/admin/events'
-      preLoaderRoute: typeof AuthenticatedPortalAdminEventsRouteImport
+    '/_authenticated/portal/assignments': {
+      id: '/_authenticated/portal/assignments'
+      path: '/portal/assignments'
+      fullPath: '/portal/assignments'
+      preLoaderRoute: typeof AuthenticatedPortalAssignmentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/gallery': {
-      id: '/_authenticated/portal/admin/gallery'
-      path: '/portal/admin/gallery'
-      fullPath: '/portal/admin/gallery'
-      preLoaderRoute: typeof AuthenticatedPortalAdminGalleryRouteImport
+    '/_authenticated/portal/announcements': {
+      id: '/_authenticated/portal/announcements'
+      path: '/portal/announcements'
+      fullPath: '/portal/announcements'
+      preLoaderRoute: typeof AuthenticatedPortalAnnouncementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/health': {
-      id: '/_authenticated/portal/admin/health'
-      path: '/portal/admin/health'
-      fullPath: '/portal/admin/health'
-      preLoaderRoute: typeof AuthenticatedPortalAdminHealthRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/members': {
-      id: '/_authenticated/portal/admin/members'
-      path: '/portal/admin/members'
-      fullPath: '/portal/admin/members'
-      preLoaderRoute: typeof AuthenticatedPortalAdminMembersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/messages': {
-      id: '/_authenticated/portal/admin/messages'
-      path: '/portal/admin/messages'
-      fullPath: '/portal/admin/messages'
-      preLoaderRoute: typeof AuthenticatedPortalAdminMessagesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/notification-rules': {
-      id: '/_authenticated/portal/admin/notification-rules'
-      path: '/portal/admin/notification-rules'
-      fullPath: '/portal/admin/notification-rules'
-      preLoaderRoute: typeof AuthenticatedPortalAdminNotificationRulesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/performance': {
-      id: '/_authenticated/portal/admin/performance'
-      path: '/portal/admin/performance'
-      fullPath: '/portal/admin/performance'
-      preLoaderRoute: typeof AuthenticatedPortalAdminPerformanceRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/permissions': {
-      id: '/_authenticated/portal/admin/permissions'
-      path: '/portal/admin/permissions'
-      fullPath: '/portal/admin/permissions'
-      preLoaderRoute: typeof AuthenticatedPortalAdminPermissionsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/point-rules': {
-      id: '/_authenticated/portal/admin/point-rules'
-      path: '/portal/admin/point-rules'
-      fullPath: '/portal/admin/point-rules'
-      preLoaderRoute: typeof AuthenticatedPortalAdminPointRulesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/projects': {
-      id: '/_authenticated/portal/admin/projects'
-      path: '/portal/admin/projects'
-      fullPath: '/portal/admin/projects'
-      preLoaderRoute: typeof AuthenticatedPortalAdminProjectsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/release-letters': {
-      id: '/_authenticated/portal/admin/release-letters'
-      path: '/portal/admin/release-letters'
-      fullPath: '/portal/admin/release-letters'
-      preLoaderRoute: typeof AuthenticatedPortalAdminReleaseLettersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/review-queue': {
-      id: '/_authenticated/portal/admin/review-queue'
-      path: '/portal/admin/review-queue'
-      fullPath: '/portal/admin/review-queue'
-      preLoaderRoute: typeof AuthenticatedPortalAdminReviewQueueRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/site': {
-      id: '/_authenticated/portal/admin/site'
-      path: '/portal/admin/site'
-      fullPath: '/portal/admin/site'
-      preLoaderRoute: typeof AuthenticatedPortalAdminSiteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/portal/admin/streams': {
-      id: '/_authenticated/portal/admin/streams'
-      path: '/portal/admin/streams'
-      fullPath: '/portal/admin/streams'
-      preLoaderRoute: typeof AuthenticatedPortalAdminStreamsRouteImport
+    '/_authenticated/portal/admin/verification': {
+      id: '/_authenticated/portal/admin/verification'
+      path: '/portal/admin/verification'
+      fullPath: '/portal/admin/verification'
+      preLoaderRoute: typeof AuthenticatedPortalAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/portal/admin/trash': {
@@ -1040,11 +900,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminTrashRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/portal/admin/verification': {
-      id: '/_authenticated/portal/admin/verification'
-      path: '/portal/admin/verification'
-      fullPath: '/portal/admin/verification'
-      preLoaderRoute: typeof AuthenticatedPortalAdminVerificationRouteImport
+    '/_authenticated/portal/admin/streams': {
+      id: '/_authenticated/portal/admin/streams'
+      path: '/portal/admin/streams'
+      fullPath: '/portal/admin/streams'
+      preLoaderRoute: typeof AuthenticatedPortalAdminStreamsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/site': {
+      id: '/_authenticated/portal/admin/site'
+      path: '/portal/admin/site'
+      fullPath: '/portal/admin/site'
+      preLoaderRoute: typeof AuthenticatedPortalAdminSiteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/review-queue': {
+      id: '/_authenticated/portal/admin/review-queue'
+      path: '/portal/admin/review-queue'
+      fullPath: '/portal/admin/review-queue'
+      preLoaderRoute: typeof AuthenticatedPortalAdminReviewQueueRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/release-letters': {
+      id: '/_authenticated/portal/admin/release-letters'
+      path: '/portal/admin/release-letters'
+      fullPath: '/portal/admin/release-letters'
+      preLoaderRoute: typeof AuthenticatedPortalAdminReleaseLettersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/projects': {
+      id: '/_authenticated/portal/admin/projects'
+      path: '/portal/admin/projects'
+      fullPath: '/portal/admin/projects'
+      preLoaderRoute: typeof AuthenticatedPortalAdminProjectsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/point-rules': {
+      id: '/_authenticated/portal/admin/point-rules'
+      path: '/portal/admin/point-rules'
+      fullPath: '/portal/admin/point-rules'
+      preLoaderRoute: typeof AuthenticatedPortalAdminPointRulesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/permissions': {
+      id: '/_authenticated/portal/admin/permissions'
+      path: '/portal/admin/permissions'
+      fullPath: '/portal/admin/permissions'
+      preLoaderRoute: typeof AuthenticatedPortalAdminPermissionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/performance': {
+      id: '/_authenticated/portal/admin/performance'
+      path: '/portal/admin/performance'
+      fullPath: '/portal/admin/performance'
+      preLoaderRoute: typeof AuthenticatedPortalAdminPerformanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/notification-rules': {
+      id: '/_authenticated/portal/admin/notification-rules'
+      path: '/portal/admin/notification-rules'
+      fullPath: '/portal/admin/notification-rules'
+      preLoaderRoute: typeof AuthenticatedPortalAdminNotificationRulesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/messages': {
+      id: '/_authenticated/portal/admin/messages'
+      path: '/portal/admin/messages'
+      fullPath: '/portal/admin/messages'
+      preLoaderRoute: typeof AuthenticatedPortalAdminMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/members': {
+      id: '/_authenticated/portal/admin/members'
+      path: '/portal/admin/members'
+      fullPath: '/portal/admin/members'
+      preLoaderRoute: typeof AuthenticatedPortalAdminMembersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/health': {
+      id: '/_authenticated/portal/admin/health'
+      path: '/portal/admin/health'
+      fullPath: '/portal/admin/health'
+      preLoaderRoute: typeof AuthenticatedPortalAdminHealthRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/gallery': {
+      id: '/_authenticated/portal/admin/gallery'
+      path: '/portal/admin/gallery'
+      fullPath: '/portal/admin/gallery'
+      preLoaderRoute: typeof AuthenticatedPortalAdminGalleryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/events': {
+      id: '/_authenticated/portal/admin/events'
+      path: '/portal/admin/events'
+      fullPath: '/portal/admin/events'
+      preLoaderRoute: typeof AuthenticatedPortalAdminEventsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/email-templates': {
+      id: '/_authenticated/portal/admin/email-templates'
+      path: '/portal/admin/email-templates'
+      fullPath: '/portal/admin/email-templates'
+      preLoaderRoute: typeof AuthenticatedPortalAdminEmailTemplatesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/divisions': {
+      id: '/_authenticated/portal/admin/divisions'
+      path: '/portal/admin/divisions'
+      fullPath: '/portal/admin/divisions'
+      preLoaderRoute: typeof AuthenticatedPortalAdminDivisionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/coverage': {
+      id: '/_authenticated/portal/admin/coverage'
+      path: '/portal/admin/coverage'
+      fullPath: '/portal/admin/coverage'
+      preLoaderRoute: typeof AuthenticatedPortalAdminCoverageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/bookings': {
+      id: '/_authenticated/portal/admin/bookings'
+      path: '/portal/admin/bookings'
+      fullPath: '/portal/admin/bookings'
+      preLoaderRoute: typeof AuthenticatedPortalAdminBookingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/board': {
+      id: '/_authenticated/portal/admin/board'
+      path: '/portal/admin/board'
+      fullPath: '/portal/admin/board'
+      preLoaderRoute: typeof AuthenticatedPortalAdminBoardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/awards': {
+      id: '/_authenticated/portal/admin/awards'
+      path: '/portal/admin/awards'
+      fullPath: '/portal/admin/awards'
+      preLoaderRoute: typeof AuthenticatedPortalAdminAwardsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/admin/activity': {
+      id: '/_authenticated/portal/admin/activity'
+      path: '/portal/admin/activity'
+      fullPath: '/portal/admin/activity'
+      preLoaderRoute: typeof AuthenticatedPortalAdminActivityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
   }
