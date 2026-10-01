@@ -11,7 +11,7 @@ export const Route = createFileRoute("/projects/$slug")({
     ],
   }),
   component: ProjectDetail,
-  errorComponent: ({ error }) => <SiteShell><div className="p-20 text-center">{error.message}</div></SiteShell>,
+  errorComponent: ({ error }) => <SiteShell><div className="p-20 text-center">{(error as Error).message}</div></SiteShell>,
   notFoundComponent: () => <SiteShell><div className="p-20 text-center">Project not found.</div></SiteShell>,
 });
 

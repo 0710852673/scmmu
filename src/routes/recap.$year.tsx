@@ -11,7 +11,7 @@ export const Route = createFileRoute("/recap/$year")({
       { name: "description", content: `A visual recap of Sivali Central College Media Unit's ${params.year}.` },
     ],
   }),
-  errorComponent: ({ error }) => <SiteShell><div className="p-16 text-center text-destructive">{error.message}</div></SiteShell>,
+  errorComponent: ({ error }) => <SiteShell><div className="p-16 text-center text-destructive">{(error as Error).message}</div></SiteShell>,
   component: Recap,
 });
 

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/divisions/$slug")({
   }),
   component: DivisionDetail,
   notFoundComponent: () => <SiteShell><div className="p-20 text-center">Division not found.</div></SiteShell>,
-  errorComponent: ({ error }) => <SiteShell><div className="p-20 text-center">{error.message}</div></SiteShell>,
+  errorComponent: ({ error }) => <SiteShell><div className="p-20 text-center">{(error as Error).message}</div></SiteShell>,
 });
 
 function DivisionDetail() {

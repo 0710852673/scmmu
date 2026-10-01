@@ -18,7 +18,7 @@ export const Route = createFileRoute("/members/$id")({
     ],
   }),
   notFoundComponent: () => <SiteShell><div className="p-16 text-center">Member not found.</div></SiteShell>,
-  errorComponent: ({ error }) => <SiteShell><div className="p-16 text-center text-destructive">{error.message}</div></SiteShell>,
+  errorComponent: ({ error }) => <SiteShell><div className="p-16 text-center text-destructive">{(error as Error).message}</div></SiteShell>,
   component: MemberPortfolio,
 });
 
