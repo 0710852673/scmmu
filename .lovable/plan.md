@@ -1,76 +1,37 @@
-# SCCMU Digital Platform — Build Plan
+# SCCMU — Missing Systems Integration Plan
 
-A 3-part platform at sccmu.lk: public marketing site, member portal with ranking engine, and MediaFlow content workflow. Built on TanStack Start + Lovable Cloud. White Apple/Notion aesthetic. Placeholder content throughout — you swap real assets later.
+Many of the 14 items already exist in part (coverage center, crew assignment, notification rules, activity log, bin, scheduled publishing, health page, yearly analytics, login error messages). This plan **extends** those rather than rebuilding them, and is split into 4 delivery batches so each one is tested before moving on.
 
-## Phase 0 — Design direction (first step after approval)
-Generate 3 rendered design directions in the white/Apple/Notion register (varying composition, density, hierarchy) for the public Home page. You pick one; tokens (palette, type, radii, spacing) get locked across every surface — public site, portal dashboard, admin, MediaFlow.
+## Batch A — Operations backbone (items 1, 2, 8, 11)
+- **Smart Assignment:** a "services" list (Photography, Live Streaming, Editing…) each linked to a division. When a booking is saved, the matching division heads are auto-assigned, notified in the portal, and emailed. Admin can reassign; every change is kept in an assignment history. New services can be added from the admin page.
+- **Smart Email:** extend the existing notification rules with an "email" switch per event type (client: received/approved/rejected/completed; heads: assignment; board: critical; members: assignment only). All sending goes through one central place.
+- **Audit Log upgrade:** the existing activity log gains old value / new value, and database-level tracking for roles, points, bookings, settings, permissions and member details. Nobody can edit or delete entries; admins with the audit permission only.
+- **Login protection:** failed-attempt counting, a 15-minute lock after 5 failures, logging of attempts, and an "Account inactive" state. Messages stay generic where needed to avoid revealing which emails exist.
 
-## Phase 1 — Foundation
-- Enable Lovable Cloud (auth, Postgres, storage, email).
-- Design tokens in `src/styles.css` (white bg, neutral grays, single accent, generous spacing, rounded cards, large type).
-- App shells: public marketing layout + authenticated portal layout with sidebar.
-- Role system via `app_role` enum + `user_roles` table + `has_role()` SECURITY DEFINER (member, section_head, executive_board, tic, administrator). No public signup — accounts created only by admin.
-- Email/password auth + `/auth` page. `_authenticated/` gated subtree.
+## Batch B — Media & event pages (items 3, 4, 12)
+- Gallery items gain: event link, caption, external link, "featured/selected" and publish status, with a soft limit warning (15 small / 50 large event).
+- New **public event coverage page** per event (e.g. /events/nonimi-26): selected photos, highlight video, full livestream playable on the page (YouTube/Facebook embed), Facebook album link, and the coverage team grouped by division (pulled from assignments). Public/private toggle.
+- Scheduled publishing: add cancel/reschedule and publication history; times shown and set in Sri Lanka time; an hourly check publishes due items.
 
-## Phase 2 — Public Website
-Routes (each with its own SEO `head()`):
-- `/` Home — hero, intro, live stats, featured projects, latest productions, CTAs
-- `/about` — history, timeline, achievements, awards
-- `/divisions` index + `/divisions/$slug` for Photography, Photo Editing & Graphics, Videography & Editing, Live Streaming, Technical, Announcing, Social Media (description, team, gallery, stats, achievements)
-- `/projects` index + `/projects/$slug` (Live on the Lake, Student Parliament Live, Sports Meet, Prize Giving) — description, photos, videos, crew, stats
-- `/gallery` with category tabs (Photography, Videography, BTS, Live Productions)
-- `/leadership` — Executive Board, Section Heads, TIC Board with photo cards
-- `/contact` — Facebook, WhatsApp Channel, TikTok, YouTube, WhatsApp, email, address, form, big "Chat With SCCMU" button
-- `/book` — event booking (see Phase 3)
+## Batch C — Content lifecycle & PDFs (items 5, 6, 9)
+- **Version history:** Draft → Review → Published → Archived for projects, announcements and event pages. Each save stores a version; admins can view, compare side-by-side, and restore. The live version stays unchanged while a draft is edited.
+- **PDF Template Editor:** templates saved in the database (Official Letter, Certificate, Event Report, Contribution Report, Member Report, Booking Report) with logo, header, footer, stamp, watermark, colours, fonts, sizes, margins and alignment.
+- **Live PDF preview:** the preview is the real PDF rendered in the page, so preview and download match exactly, including page count. Generated documents are stored and logged.
 
-Stats on Home are read from DB (aggregations) so they stay live.
+## Batch D — Reliability & continuity (items 7, 10, 13, 14)
+- **Backup & Recovery Center** using Google Drive (you'll be asked to connect a Google account): Backup Now, history with type/size/status, daily database / weekly media / monthly full schedule. Restore needs the backup permission, a typed confirmation, and takes an automatic safety backup first.
+- **Error management:** users only ever see "Something went wrong. Our team has been notified." Details are logged with passwords/tokens stripped, grouped by repeat count, with severity and a resolve status on an admin dashboard.
+- **Yearly analytics:** extend the current page with a year picker (auto-lists every year with data), year-vs-year comparison, division and achievement breakdowns, and PDF/CSV export.
+- **Leadership handover:** handover records (outgoing team, incoming team, date, status, responsibility checklist), handover documentation pages, and a guided role transfer that keeps the previous leadership in history.
 
-## Phase 3 — Event Booking System
-- `/book` route with tabs: Internal School Request / Inter-School Request.
-- Form fields: event name, dept/school, contact person, WhatsApp, date, time, venue, event type, **multi-select required services** (Photography, Videography, Live Streaming, Announcing, LED Wall Control, Audio, Other), audience size, notes.
-- On submit: persist to `bookings`, send Gmail notification via server function + Resend (or Cloud email), show "Our team will contact you through WhatsApp shortly."
-- Admin sees in dashboard with status pipeline: New Request → Contacted → Under Discussion → Confirmed → Completed → Rejected.
+## Permissions
+New abilities added to the existing permissions system: `manage_backups`, `edit_pdf_templates`, `view_audit`, `manage_handover`, `manage_publishing`, `view_errors`. Admins don't get them automatically except the two current owner accounts. Every sensitive action is checked on the server.
 
-## Phase 4 — Member Portal
-- `/portal` dashboard: attendance %, current rank, events participated, skill levels, achievements, notifications.
-- `/portal/profile` — photo, name, admission #, grade, class, section, join date, contacts; tabs for attendance / events / achievements / skill levels.
-- `/portal/attendance` — manual marking (Phase 1); shows %, monthly, yearly. (Fingerprint = future.)
-- `/portal/events` — browse events, request to participate (select role) → pending/approved/rejected. "Missing event" submission flow for head review.
-- `/portal/mediaflow` — see Phase 6.
-- `/portal/announcements` + section notices + direct messages + task assignments.
+## Technical details
+- New tables: services, booking_assignments (+ history), login_attempts, media fields on gallery_items, event_pages, content_versions, publication_log, pdf_templates, generated_documents, backups, error_events (grouped by fingerprint), handovers, handover_docs. Audit triggers write to activity_logs (old/new jsonb).
+- Scheduling via an hourly scheduled job (publishing) and daily job (backup) calling protected server routes; times in Asia/Colombo.
+- PDF rendering via the existing jsPDF pipeline, previewed as a blob in an iframe.
+- Every admin screen built mobile-first with card layouts on small screens.
 
-## Phase 5 — Ranking, Skills & Achievements Engine
-- `points_log` table: every action (attend meeting=1, participate=5, lead=10, upload=1, approved edit=3, approved caption=2, publish=2, complete task=2). Inserted only after head approval.
-- Per-division scores: photography_score, editing_score, streaming_score, social_score (derived views).
-- Overall = 20% attendance + 50% contributions + 20% participation + 10% leadership.
-- Activity Level (computed monthly): Inactive <10, Active 10–30, Highly Active 30–60, Elite 60+.
-- Skill Levels per division (Beginner/Intermediate/Advanced/Expert) assigned by section head.
-- Achievements/badges: First Event, 10/25/50 Events, Stream Specialist, Senior Photographer, Senior Editor, Trainee, etc. — auto-granted by triggers + manual grants.
-- Annual Awards page: system surfaces top 5 nominees per category (Best Photographer/Editor/Stream Operator/Announcer/Caption Writer/Social Media/Most Active + extras); board confirms winner. MVP picked from top contributors.
-- All point-earning contributions require head approval before points settle (pending → approved → points awarded).
-
-## Phase 6 — MediaFlow System
-- `media_items` table tracks workflow: Uploaded → Editing → Edited → Caption Writing → Review → Approved → Published.
-- Kanban-style board + list view, role-aware actions (photographer uploads, head assigns editor, editor uploads edited version, head assigns caption writer, caption submitted, head reviews, publish).
-- Storage bucket for raw + edited files; thumbnails.
-- Every transition logged + contributes to points (after approval).
-
-## Phase 7 — Admin Panel (`/admin`)
-Manage Members (create accounts, assign roles), Attendance, Events, Divisions, Projects, Rankings (view/adjust), Bookings (pipeline), MediaFlow oversight, Contact Messages.
-
-## Phase 8 — Polish
-SEO `head()` per route, responsive QA, motion (framer-motion subtle), 404/error boundaries, accessibility pass.
-
-## Out of scope (Phase 2 later)
-Equipment QR system, biometric attendance.
-
----
-
-## Technical notes
-- Stack: TanStack Start + React 19 + Tailwind v4 + shadcn + framer-motion.
-- Lovable Cloud (Supabase under the hood) for DB/auth/storage; Resend or built-in email for booking notifications.
-- Roles in `user_roles` (never on profiles). RLS on every table; `has_role()` SECURITY DEFINER used in policies.
-- Public reads via narrow `TO anon` SELECT policies + server publishable client (stats, divisions, projects, gallery, leadership).
-- All point awards gated through head-approval server functions to prevent spam.
-- File uploads via Supabase Storage with signed URLs.
-- This is a large multi-week scope — first build delivers structure end-to-end with placeholder content; we'll iterate per area.
+## Note on usage
+This is a large build. Your workspace was low on monthly credits last time — I'll deliver batch by batch (A first) so nothing is left half-finished.
