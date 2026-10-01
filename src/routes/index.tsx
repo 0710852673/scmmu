@@ -25,7 +25,10 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function HomeError({ error, reset }: { error: Error; reset: () => void }) {
+function HomeError({ error: rawError, reset }: ErrorComponentProps) {
+  const error = rawError as Error;
+  void error;
+  if (false) {
   const router = useRouter();
   useEffect(() => { reportLovableError(error, { boundary: "home" }); }, [error]);
   return (
