@@ -1,3 +1,4 @@
+import type { ErrorComponentProps } from "@tanstack/react-router";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -25,7 +26,8 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function HomeError({ error, reset }: { error: Error; reset: () => void }) {
+function HomeError({ error: rawError, reset }: ErrorComponentProps) {
+  const error = rawError as Error;
   const router = useRouter();
   useEffect(() => { reportLovableError(error, { boundary: "home" }); }, [error]);
   return (
