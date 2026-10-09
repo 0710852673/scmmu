@@ -56,6 +56,7 @@ import { Route as AuthenticatedPortalAdminPointRulesRouteImport } from './routes
 import { Route as AuthenticatedPortalAdminProjectsRouteImport } from './routes/_authenticated/portal.admin.projects'
 import { Route as AuthenticatedPortalAdminReleaseLettersRouteImport } from './routes/_authenticated/portal.admin.release-letters'
 import { Route as AuthenticatedPortalAdminReviewQueueRouteImport } from './routes/_authenticated/portal.admin.review-queue'
+import { Route as AuthenticatedPortalAdminServicesRouteImport } from './routes/_authenticated/portal.admin.services'
 import { Route as AuthenticatedPortalAdminSiteRouteImport } from './routes/_authenticated/portal.admin.site'
 import { Route as AuthenticatedPortalAdminStreamsRouteImport } from './routes/_authenticated/portal.admin.streams'
 import { Route as AuthenticatedPortalAdminTrashRouteImport } from './routes/_authenticated/portal.admin.trash'
@@ -325,6 +326,12 @@ const AuthenticatedPortalAdminReviewQueueRoute =
     path: '/portal/admin/review-queue',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminServicesRoute =
+  AuthenticatedPortalAdminServicesRouteImport.update({
+    id: '/portal/admin/services',
+    path: '/portal/admin/services',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminSiteRoute =
   AuthenticatedPortalAdminSiteRouteImport.update({
     id: '/portal/admin/site',
@@ -397,6 +404,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/portal/admin/release-letters': typeof AuthenticatedPortalAdminReleaseLettersRoute
   '/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
+  '/portal/admin/services': typeof AuthenticatedPortalAdminServicesRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
   '/portal/admin/trash': typeof AuthenticatedPortalAdminTrashRoute
@@ -449,6 +457,7 @@ export interface FileRoutesByTo {
   '/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/portal/admin/release-letters': typeof AuthenticatedPortalAdminReleaseLettersRoute
   '/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
+  '/portal/admin/services': typeof AuthenticatedPortalAdminServicesRoute
   '/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
   '/portal/admin/trash': typeof AuthenticatedPortalAdminTrashRoute
@@ -503,6 +512,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/projects': typeof AuthenticatedPortalAdminProjectsRoute
   '/_authenticated/portal/admin/release-letters': typeof AuthenticatedPortalAdminReleaseLettersRoute
   '/_authenticated/portal/admin/review-queue': typeof AuthenticatedPortalAdminReviewQueueRoute
+  '/_authenticated/portal/admin/services': typeof AuthenticatedPortalAdminServicesRoute
   '/_authenticated/portal/admin/site': typeof AuthenticatedPortalAdminSiteRoute
   '/_authenticated/portal/admin/streams': typeof AuthenticatedPortalAdminStreamsRoute
   '/_authenticated/portal/admin/trash': typeof AuthenticatedPortalAdminTrashRoute
@@ -557,6 +567,7 @@ export interface FileRouteTypes {
     | '/portal/admin/projects'
     | '/portal/admin/release-letters'
     | '/portal/admin/review-queue'
+    | '/portal/admin/services'
     | '/portal/admin/site'
     | '/portal/admin/streams'
     | '/portal/admin/trash'
@@ -609,6 +620,7 @@ export interface FileRouteTypes {
     | '/portal/admin/projects'
     | '/portal/admin/release-letters'
     | '/portal/admin/review-queue'
+    | '/portal/admin/services'
     | '/portal/admin/site'
     | '/portal/admin/streams'
     | '/portal/admin/trash'
@@ -662,6 +674,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/projects'
     | '/_authenticated/portal/admin/release-letters'
     | '/_authenticated/portal/admin/review-queue'
+    | '/_authenticated/portal/admin/services'
     | '/_authenticated/portal/admin/site'
     | '/_authenticated/portal/admin/streams'
     | '/_authenticated/portal/admin/trash'
@@ -1019,6 +1032,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminReviewQueueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/services': {
+      id: '/_authenticated/portal/admin/services'
+      path: '/portal/admin/services'
+      fullPath: '/portal/admin/services'
+      preLoaderRoute: typeof AuthenticatedPortalAdminServicesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/site': {
       id: '/_authenticated/portal/admin/site'
       path: '/portal/admin/site'
@@ -1081,6 +1101,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminProjectsRoute: typeof AuthenticatedPortalAdminProjectsRoute
   AuthenticatedPortalAdminReleaseLettersRoute: typeof AuthenticatedPortalAdminReleaseLettersRoute
   AuthenticatedPortalAdminReviewQueueRoute: typeof AuthenticatedPortalAdminReviewQueueRoute
+  AuthenticatedPortalAdminServicesRoute: typeof AuthenticatedPortalAdminServicesRoute
   AuthenticatedPortalAdminSiteRoute: typeof AuthenticatedPortalAdminSiteRoute
   AuthenticatedPortalAdminStreamsRoute: typeof AuthenticatedPortalAdminStreamsRoute
   AuthenticatedPortalAdminTrashRoute: typeof AuthenticatedPortalAdminTrashRoute
@@ -1126,6 +1147,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedPortalAdminReleaseLettersRoute,
   AuthenticatedPortalAdminReviewQueueRoute:
     AuthenticatedPortalAdminReviewQueueRoute,
+  AuthenticatedPortalAdminServicesRoute: AuthenticatedPortalAdminServicesRoute,
   AuthenticatedPortalAdminSiteRoute: AuthenticatedPortalAdminSiteRoute,
   AuthenticatedPortalAdminStreamsRoute: AuthenticatedPortalAdminStreamsRoute,
   AuthenticatedPortalAdminTrashRoute: AuthenticatedPortalAdminTrashRoute,
