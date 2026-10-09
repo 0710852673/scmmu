@@ -184,23 +184,54 @@ export const notifyBookingSubmitted = createServerFn({ method: "POST" })
       } catch (e: any) { results.push({ to: b.email, ok: false, error: e.message }); }
     }
 
+    // ── Smart assignment: services -> divisions -> responsible heads only ──
+    const { data: svcRows } = await supabaseAdmin.from("services").select("key,division").eq("active", true);
+    const svcMap = new Map((svcRows ?? []).map((r: any) => [String(r.key).toLowerCase(), r.division as string]));
+    const divisions = Array.from(new Set(((b.services ?? []) as string[]).map((s) => svcMap.get(s.toLowerCase())).filter(Boolean) as string[]));
+    const alreadyAssigned = ((b.assigned_divisions ?? []) as string[]).length > 0;
+    let headIds: string[] = [];
+    if (divisions.length) {
+      const { data: heads } = await supabaseAdmin.from("user_roles").select("user_id,division").eq("role", "section_head").in("division", divisions as never[]);
+      headIds = Array.from(new Set((heads ?? []).map((h: any) => h.user_id)));
+      if (!alreadyAssigned) {
+        await supabaseAdmin.from("bookings").update({ assigned_divisions: divisions as never }).eq("id", b.id);
+        const { data: existing } = await supabaseAdmin.from("coverage_assignments").select("user_id").eq("booking_id", b.id);
+        const have = new Set((existing ?? []).map((e: any) => e.user_id));
+        const rows = (heads ?? []).filter((h: any) => !have.has(h.user_id)).map((h: any) => ({
+          booking_id: b.id, user_id: h.user_id, division: h.division, service: "Division lead",
+          note: "Auto-assigned from requested services", status: "assigned",
+        }));
+        if (rows.length) await supabaseAdmin.from("coverage_assignments").insert(rows as never);
+        await supabaseAdmin.from("booking_status_history").insert({
+          booking_id: b.id, from_status: b.status, to_status: b.status,
+          note: `Smart assignment: ${divisions.join(", ")} (${rows.length} head${rows.length === 1 ? "" : "s"})`,
+        } as never);
+      }
+    }
+    // Portal notifications: relevant heads + TIC/Admin oversight (portal only, no email)
+    const { data: oversight } = await supabaseAdmin.from("user_roles").select("user_id").in("role", ["tic", "administrator"]);
+    const portalIds = new Set<string>([...headIds, ...(oversight ?? []).map((r: any) => r.user_id)]);
+    if (portalIds.size && !alreadyAssigned) {
+      await supabaseAdmin.from("notifications").insert([...portalIds].map((uid) => ({
+        user_id: uid, title: `New booking: ${b.event_name}`,
+        body: headIds.includes(uid) ? "Your division has been assigned to this coverage request." : `Divisions involved: ${divisions.join(", ") || "none matched"}`,
+        kind: "booking", link: "/portal/admin/coverage", priority: headIds.includes(uid) ? "high" : "normal",
+      })) as never);
+    }
+    // Email only the heads whose divisions are actually needed
     const staffTpl = await loadTemplate(supabaseAdmin, "staff_notification");
-    if (staffTpl) {
-      const { data: staff } = await supabaseAdmin.from("user_roles").select("user_id").in("role", ["tic", "executive_board", "section_head", "administrator"]);
-      const ids = Array.from(new Set((staff ?? []).map((r: any) => r.user_id)));
-      if (ids.length) {
-        const { data: profs } = await supabaseAdmin.from("profiles").select("email").in("id", ids);
-        const emails = (profs ?? []).map((p: any) => p.email).filter((e: any): e is string => !!e && e.includes("@"));
-        for (const to of emails) {
-          try {
-            await gmailSend(buildRaw({
-              to,
-              subject: render(staffTpl.subject, vars),
-              html: brandWrap("New coverage booking", render(staffTpl.body_html, vars), settings),
-            }));
-            results.push({ to, ok: true });
-          } catch (e: any) { results.push({ to, ok: false, error: e.message }); }
-        }
+    if (staffTpl && headIds.length && !alreadyAssigned) {
+      const { data: profs } = await supabaseAdmin.from("profiles").select("email").in("id", headIds);
+      const emails = (profs ?? []).map((p: any) => p.email).filter((e: any): e is string => !!e && e.includes("@"));
+      for (const to of emails) {
+        try {
+          await gmailSend(buildRaw({
+            to,
+            subject: render(staffTpl.subject, vars),
+            html: brandWrap("New coverage assignment", render(staffTpl.body_html, vars), settings),
+          }));
+          results.push({ to, ok: true });
+        } catch (e: any) { results.push({ to, ok: false, error: e.message }); }
       }
     }
     const anyFail = results.some((r) => !r.ok);
