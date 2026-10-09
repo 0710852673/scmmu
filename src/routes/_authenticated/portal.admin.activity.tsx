@@ -80,3 +80,29 @@ function ActivityPage() {
     </PortalPage>
   );
 }
+
+const HIDDEN = new Set(["updated_at", "created_at", "id"]);
+function ChangeDiff({ oldV, newV }: { oldV: any; newV: any }) {
+  const keys = Array.from(new Set([...Object.keys(oldV ?? {}), ...Object.keys(newV ?? {})])).filter((k) => !HIDDEN.has(k));
+  const changed = keys.filter((k) => JSON.stringify(oldV?.[k]) !== JSON.stringify(newV?.[k]));
+  if (!changed.length) return null;
+  const fmt = (v: unknown) => (v === null || v === undefined ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v));
+  return (
+    <div className="mt-2 overflow-x-auto rounded-md border border-border text-xs">
+      <table className="w-full">
+        <thead className="bg-muted/50 text-[10px] uppercase tracking-widest text-muted-foreground">
+          <tr><th className="px-2 py-1 text-left">Field</th><th className="px-2 py-1 text-left">Old value</th><th className="px-2 py-1 text-left">New value</th></tr>
+        </thead>
+        <tbody>
+          {changed.slice(0, 12).map((k) => (
+            <tr key={k} className="border-t border-border">
+              <td className="px-2 py-1 font-semibold">{k.replace(/_/g, " ")}</td>
+              <td className="px-2 py-1 text-muted-foreground break-all">{fmt(oldV?.[k]).slice(0, 160)}</td>
+              <td className="px-2 py-1 break-all">{fmt(newV?.[k]).slice(0, 160)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
