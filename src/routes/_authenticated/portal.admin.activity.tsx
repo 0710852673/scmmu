@@ -71,6 +71,7 @@ function ActivityPage() {
                     Member notified {new Date(row.meta.notified_at as string).toLocaleString()}
                   </div>
                 )}
+                {(row.old_value || row.new_value) && <ChangeDiff oldV={row.old_value} newV={row.new_value} />}
               </div>
             </Card>
           ))}
