@@ -84,6 +84,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/portal/admin/messages", label: "Messages", icon: Mail },
   { to: "/portal/admin/review-queue", label: "Review Queue", icon: CheckSquare },
   { to: "/portal/admin/notification-rules", label: "Notification Rules", icon: Bell },
+  { to: "/portal/admin/services", label: "Services & Routing", icon: Bell },
   { to: "/portal/admin/permissions", label: "Roles & Permissions", icon: Shield },
   { to: "/portal/admin/point-rules", label: "Point Rules", icon: CheckSquare },
   { to: "/portal/admin/performance", label: "Member Performance", icon: Trophy },
