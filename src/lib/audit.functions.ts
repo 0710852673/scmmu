@@ -12,6 +12,8 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
 }
 
 export type ActivityRow = {
+  old_value?: Record<string, any> | null;
+  new_value?: Record<string, any> | null;
   id: string;
   actor_id: string | null;
   actor_name: string | null;

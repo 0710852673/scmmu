@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { LogoMark } from "@/components/site/Logo";
 import { friendlyAuthError } from "@/lib/auth-errors";
+import { secureSignIn } from "@/lib/login.functions";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
@@ -59,13 +60,19 @@ function Auth() {
       return;
     }
     setLoading(true);
-    const { data, error: err } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
-    });
+    let msg: string | null = null;
+    try {
+      const res = await secureSignIn({ data: { email: email.trim().toLowerCase(), password } });
+      if (!res.ok) msg = res.message;
+      else {
+        const { error: err } = await supabase.auth.setSession({ access_token: res.access_token, refresh_token: res.refresh_token });
+        if (err) msg = friendlyAuthError(err);
+      }
+    } catch {
+      msg = "Something went wrong. Our team has been notified.";
+    }
     setLoading(false);
-    if (err || !data.session) {
-      const msg = friendlyAuthError(err);
+    if (msg) {
       setError(msg);
       toast.error(msg);
       return;
