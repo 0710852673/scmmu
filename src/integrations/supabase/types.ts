@@ -63,6 +63,8 @@ export type Database = {
           entity_id: string | null
           id: string
           meta: Json
+          new_value: Json | null
+          old_value: Json | null
           summary: string
         }
         Insert: {
@@ -74,6 +76,8 @@ export type Database = {
           entity_id?: string | null
           id?: string
           meta?: Json
+          new_value?: Json | null
+          old_value?: Json | null
           summary: string
         }
         Update: {
@@ -85,6 +89,8 @@ export type Database = {
           entity_id?: string | null
           id?: string
           meta?: Json
+          new_value?: Json | null
+          old_value?: Json | null
           summary?: string
         }
         Relationships: []
@@ -747,6 +753,36 @@ export type Database = {
         }
         Relationships: []
       }
+      login_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip: string | null
+          reason: string | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip?: string | null
+          reason?: string | null
+          success: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip?: string | null
+          reason?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       media_items: {
         Row: {
           caption: string | null
@@ -1089,6 +1125,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active: boolean
           admission_number: string | null
           bio: string | null
           class: string | null
@@ -1105,6 +1142,7 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          active?: boolean
           admission_number?: string | null
           bio?: string | null
           class?: string | null
@@ -1121,6 +1159,7 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          active?: boolean
           admission_number?: string | null
           bio?: string | null
           class?: string | null
@@ -1297,6 +1336,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      services: {
+        Row: {
+          active: boolean
+          created_at: string
+          display_order: number
+          division: Database["public"]["Enums"]["division_slug"]
+          key: string
+          label: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          display_order?: number
+          division: Database["public"]["Enums"]["division_slug"]
+          key: string
+          label: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          display_order?: number
+          division?: Database["public"]["Enums"]["division_slug"]
+          key?: string
+          label?: string
+        }
+        Relationships: []
       }
       site_settings: {
         Row: {
