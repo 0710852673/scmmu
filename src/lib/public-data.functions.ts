@@ -163,3 +163,30 @@ export const getBookingAnalytics = createServerFn({ method: "GET" }).handler(asy
   // We rely on RLS; anon may not access. Return empty and let admin fetch client-side instead.
   return { placeholder: true } as { placeholder: true };
 });
+
+// ── Event coverage page (public, only when the event is marked public) ──
+export const getEventPage = createServerFn({ method: "GET" })
+  .inputValidator((d: { slug: string }) => ({ slug: String(d?.slug ?? "").slice(0, 120) }))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: ev } = await supabaseAdmin
+      .from("events")
+      .select("id,name,event_date,location,description,category,slug,cover_image,highlight_video_url,livestream_url,album_url,is_public")
+      .eq("slug", data.slug).eq("is_public", true).maybeSingle();
+    if (!ev) return { event: null, photos: [], team: [] };
+    const [{ data: photos }, { data: parts }] = await Promise.all([
+      supabaseAdmin.from("gallery_items").select("id,title,image_url,media_type,video_url,external_url")
+        .eq("event_id", ev.id).eq("featured", true).eq("review_status", "approved").is("deleted_at", null)
+        .order("created_at").limit(60),
+      supabaseAdmin.from("event_participants").select("user_id,division,role").eq("event_id", ev.id).eq("status", "approved"),
+    ]);
+    const ids = [...new Set((parts ?? []).map((p) => p.user_id))];
+    const { data: profs } = ids.length
+      ? await supabaseAdmin.from("profiles").select("id,full_name,primary_division").in("id", ids)
+      : { data: [] as any[] };
+    const team = (parts ?? []).map((p) => {
+      const pr = (profs ?? []).find((x: any) => x.id === p.user_id);
+      return { name: pr?.full_name ?? "Member", division: (p.division ?? pr?.primary_division ?? "other") as string, role: p.role };
+    });
+    return { event: ev, photos: photos ?? [], team };
+  });

@@ -6,7 +6,7 @@ import { Card } from "./PortalUI";
 export type FieldDef = {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "date" | "select" | "checkbox" | "url";
+  type?: "text" | "textarea" | "number" | "date" | "select" | "checkbox" | "url" | "datetime";
   options?: { value: string; label: string }[];
   placeholder?: string;
   required?: boolean;
@@ -175,6 +175,20 @@ function FieldInput({ field, value, onChange }: { field: FieldDef; value: any; o
         <input type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)}
           className="h-4 w-4 rounded border-border" />
         {label}
+      </label>
+    );
+  }
+  if (field.type === "datetime") {
+    // Always Sri Lanka time (UTC+05:30), regardless of the device timezone.
+    const toLocal = (iso: string) => new Date(new Date(iso).getTime() + 330 * 60000).toISOString().slice(0, 16);
+    return (
+      <label className={`block ${span}`}>{label} <span className="text-muted-foreground">(Sri Lanka time)</span>
+        <div className="flex gap-2">
+          <input type="datetime-local" value={value ? toLocal(value) : ""}
+            onChange={(e) => onChange(e.target.value ? new Date(`${e.target.value}:00+05:30`).toISOString() : null)}
+            className={cls} />
+          {value && <button type="button" onClick={() => onChange(null)} className="mt-1 shrink-0 rounded-md border border-border px-3 text-xs">Cancel schedule</button>}
+        </div>
       </label>
     );
   }
