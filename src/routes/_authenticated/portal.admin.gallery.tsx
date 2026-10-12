@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import { PortalPage } from "@/components/portal/PortalUI";
 import { AdminEditor, useTable, type FieldDef } from "@/components/portal/AdminEditor";
 import { GALLERY_CATEGORIES, prettyLabel } from "@/lib/site-content";
@@ -25,6 +26,8 @@ type Row = {
   video_url: string | null;
   event_date: string | null;
   review_status: string;
+  event_id: string | null;
+  featured: boolean;
 };
 
 const fields: FieldDef[] = [
@@ -40,9 +43,20 @@ const fields: FieldDef[] = [
   },
   { key: "video_url", label: "Video URL (for videos)", type: "url", colSpan: 2 },
   { key: "event_date", label: "Event date", type: "date" },
+  { key: "external_url", label: "External link (Facebook album / Drive)", type: "url", colSpan: 2 },
+  { key: "featured", label: "Selected / featured", type: "checkbox" },
 ];
 
 function AdminGallery() {
+  const { data: events } = useQuery({
+    queryKey: ["gallery-event-options"],
+    queryFn: async () => ((await supabase.from("events").select("id,name,event_date,event_size").order("event_date", { ascending: false }).limit(200)).data ?? []),
+  });
+  const allFields: FieldDef[] = [
+    ...fields,
+    { key: "event_id", label: "Event", type: "select", colSpan: 2,
+      options: [{ value: "", label: "— No event —" }, ...(events ?? []).map((e: any) => ({ value: e.id, label: `${e.name} (${e.event_date})` }))] },
+  ];
   const { user } = Route.useRouteContext();
   const { roles, permissions, canPublish } = usePublishRights(user.id, "gallery.publish");
   const isStaff = roles.some((role) => ["administrator", "tic", "section_head", "executive_board"].includes(role));
@@ -56,7 +70,7 @@ function AdminGallery() {
       <AdminEditor<Row>
         title="Gallery items"
         rows={rows}
-        fields={fields}
+        fields={allFields}
         emptyRow={{ category: "photography", media_type: "photo" } as Partial<Row>}
         refresh={refresh}
         canCreate={isStaff || permissions.includes("gallery.create")}
@@ -64,13 +78,13 @@ function AdminGallery() {
         canDelete={isStaff || permissions.includes("gallery.delete")}
         onCreate={async (row) => {
           const { error } = await supabase.from("gallery_items")
-            .insert({ ...(row as any), ...reviewFields(canPublish, user.id) } as any);
+            .insert({ ...(row as any), event_id: (row as any).event_id || null, ...reviewFields(canPublish, user.id) } as any);
           if (!error && !canPublish) await notifySubmitted("Gallery media", (row as any).title || "Untitled media");
           return { error: error?.message ?? null };
         }}
         onUpdate={async (id, patch) => {
           const { error } = await supabase.from("gallery_items")
-            .update({ ...(patch as any), ...reviewFields(canPublish, user.id) } as any).eq("id", id as string);
+            .update({ ...(patch as any), ...("event_id" in (patch as any) ? { event_id: (patch as any).event_id || null } : {}), ...reviewFields(canPublish, user.id) } as any).eq("id", id as string);
           if (!error && !canPublish) await notifySubmitted("Gallery media", (patch as any).title || "Untitled media");
           return { error: error?.message ?? null };
         }}
@@ -87,6 +101,10 @@ function AdminGallery() {
                 <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${REVIEW_CLASS[r.review_status] ?? ""}`}>
                   {REVIEW_LABEL[r.review_status] ?? r.review_status}
                 </span>
+                {r.featured && <span className="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-brand">Selected</span>}
+                {(() => { const ev = (events ?? []).find((e: any) => e.id === r.event_id) as any; if (!ev) return null;
+                  const n = rows.filter((x) => x.event_id === ev.id && x.featured).length; const max = ev.event_size === "large" ? 50 : 15;
+                  return <span className={n > max ? "font-semibold text-destructive" : ""}>{ev.name} · {n}/{max} selected</span>; })()}
                 {prettyLabel(r.category)}{r.media_type === "video" ? " · Video" : ""}{r.event_date ? ` · ${r.event_date}` : ""}
               </div>
             </div>
