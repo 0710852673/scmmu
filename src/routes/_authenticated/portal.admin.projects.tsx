@@ -30,6 +30,7 @@ const fields: FieldDef[] = [
   { key: "event_date", label: "Event date", type: "date" },
   { key: "is_featured", label: "Featured on home", type: "checkbox" },
   { key: "published", label: "Published (visible on site)", type: "checkbox" },
+  { key: "publish_at", label: "Scheduled publish", type: "datetime", colSpan: 2 },
 ];
 
 function AdminProjects() {
