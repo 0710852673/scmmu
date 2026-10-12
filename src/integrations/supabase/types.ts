@@ -519,34 +519,55 @@ export type Database = {
       }
       events: {
         Row: {
+          album_url: string | null
           category: string | null
+          cover_image: string | null
           created_at: string
           created_by: string | null
           description: string | null
           event_date: string
+          event_size: string
+          highlight_video_url: string | null
           id: string
+          is_public: boolean
+          livestream_url: string | null
           location: string | null
           name: string
+          slug: string | null
         }
         Insert: {
+          album_url?: string | null
           category?: string | null
+          cover_image?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           event_date: string
+          event_size?: string
+          highlight_video_url?: string | null
           id?: string
+          is_public?: boolean
+          livestream_url?: string | null
           location?: string | null
           name: string
+          slug?: string | null
         }
         Update: {
+          album_url?: string | null
           category?: string | null
+          cover_image?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           event_date?: string
+          event_size?: string
+          highlight_video_url?: string | null
           id?: string
+          is_public?: boolean
+          livestream_url?: string | null
           location?: string | null
           name?: string
+          slug?: string | null
         }
         Relationships: []
       }
@@ -614,6 +635,9 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           event_date: string | null
+          event_id: string | null
+          external_url: string | null
+          featured: boolean
           id: string
           image_url: string
           media_type: string
@@ -632,6 +656,9 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           event_date?: string | null
+          event_id?: string | null
+          external_url?: string | null
+          featured?: boolean
           id?: string
           image_url: string
           media_type?: string
@@ -650,6 +677,9 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           event_date?: string | null
+          event_id?: string | null
+          external_url?: string | null
+          featured?: boolean
           id?: string
           image_url?: string
           media_type?: string
@@ -663,6 +693,13 @@ export type Database = {
           video_url?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "gallery_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "gallery_items_project_id_fkey"
             columns: ["project_id"]
