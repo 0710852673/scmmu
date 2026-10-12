@@ -22,6 +22,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as DivisionsIndexRouteImport } from './routes/divisions.index'
 import { Route as DivisionsSlugRouteImport } from './routes/divisions.$slug'
+import { Route as EventsSlugRouteImport } from './routes/events.$slug'
 import { Route as MembersIdRouteImport } from './routes/members.$id'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
@@ -124,6 +125,11 @@ const DivisionsIndexRoute = DivisionsIndexRouteImport.update({
 const DivisionsSlugRoute = DivisionsSlugRouteImport.update({
   id: '/divisions/$slug',
   path: '/divisions/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsSlugRoute = EventsSlugRouteImport.update({
+  id: '/events/$slug',
+  path: '/events/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MembersIdRoute = MembersIdRouteImport.update({
@@ -369,6 +375,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
+  '/events/$slug': typeof EventsSlugRoute
   '/members/$id': typeof MembersIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/recap/$year': typeof RecapYearRoute
@@ -422,6 +429,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
+  '/events/$slug': typeof EventsSlugRoute
   '/members/$id': typeof MembersIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/recap/$year': typeof RecapYearRoute
@@ -477,6 +485,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/divisions/$slug': typeof DivisionsSlugRoute
+  '/events/$slug': typeof EventsSlugRoute
   '/members/$id': typeof MembersIdRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/recap/$year': typeof RecapYearRoute
@@ -532,6 +541,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/divisions/$slug'
+    | '/events/$slug'
     | '/members/$id'
     | '/projects/$slug'
     | '/recap/$year'
@@ -585,6 +595,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/divisions/$slug'
+    | '/events/$slug'
     | '/members/$id'
     | '/projects/$slug'
     | '/recap/$year'
@@ -639,6 +650,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/divisions/$slug'
+    | '/events/$slug'
     | '/members/$id'
     | '/projects/$slug'
     | '/recap/$year'
@@ -694,6 +706,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SearchRoute: typeof SearchRoute
   DivisionsSlugRoute: typeof DivisionsSlugRoute
+  EventsSlugRoute: typeof EventsSlugRoute
   MembersIdRoute: typeof MembersIdRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   RecapYearRoute: typeof RecapYearRoute
@@ -792,6 +805,13 @@ declare module '@tanstack/react-router' {
       path: '/divisions/$slug'
       fullPath: '/divisions/$slug'
       preLoaderRoute: typeof DivisionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events/$slug': {
+      id: '/events/$slug'
+      path: '/events/$slug'
+      fullPath: '/events/$slug'
+      preLoaderRoute: typeof EventsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/members/$id': {
@@ -1171,6 +1191,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SearchRoute: SearchRoute,
   DivisionsSlugRoute: DivisionsSlugRoute,
+  EventsSlugRoute: EventsSlugRoute,
   MembersIdRoute: MembersIdRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   RecapYearRoute: RecapYearRoute,
