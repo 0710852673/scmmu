@@ -18,6 +18,7 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/auth" });
+    if (data.user.app_metadata?.must_change_password) throw redirect({ to: "/first-login" });
     return { user: data.user };
   },
   component: PortalLayout,
@@ -75,6 +76,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/portal/admin/coverage", label: "Coverage Operations", icon: Briefcase },
   { to: "/portal/admin/streams", label: "Live Streams", icon: Radio },
   { to: "/portal/admin/members", label: "All Members", icon: Users },
+  { to: "/portal/admin/onboarding", label: "Member Onboarding", icon: MailPlus },
   { to: "/portal/admin/board", label: "Board & Leadership", icon: Shield },
   { to: "/portal/admin/projects", label: "Projects", icon: FolderKanban },
   { to: "/portal/admin/events", label: "Events", icon: Calendar },

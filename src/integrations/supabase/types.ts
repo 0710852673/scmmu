@@ -924,6 +924,39 @@ export type Database = {
           },
         ]
       }
+      member_onboarding: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email_authorized_at: string | null
+          email_authorized_by: string | null
+          email_error: string | null
+          email_sent_at: string | null
+          email_status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email_authorized_at?: string | null
+          email_authorized_by?: string | null
+          email_error?: string | null
+          email_sent_at?: string | null
+          email_status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email_authorized_at?: string | null
+          email_authorized_by?: string | null
+          email_error?: string | null
+          email_sent_at?: string | null
+          email_status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       member_skills: {
         Row: {
           assigned_by: string | null
