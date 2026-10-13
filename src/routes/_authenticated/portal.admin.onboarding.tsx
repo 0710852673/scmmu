@@ -72,7 +72,7 @@ function OnboardingPage() {
             <label className="text-xs font-semibold">Section
               <select className={input} value={form.primary_division} onChange={(e) => setForm({ ...form, primary_division: e.target.value })}>
                 <option value="">—</option>
-                {DIVISIONS.map((d: string) => <option key={d} value={d}>{(DIVISION_LABEL as any)[d] ?? d}</option>)}
+                {DIVISIONS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
               </select>
             </label>
             <button disabled={busy} className="sm:col-span-2 inline-flex items-center justify-center gap-2 rounded-full brand-gradient px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
