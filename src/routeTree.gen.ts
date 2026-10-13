@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FirstLoginRouteImport } from './routes/first-login'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LeadershipRouteImport } from './routes/leadership'
 import { Route as LiveRouteImport } from './routes/live'
@@ -51,6 +52,7 @@ import { Route as AuthenticatedPortalAdminHealthRouteImport } from './routes/_au
 import { Route as AuthenticatedPortalAdminMembersRouteImport } from './routes/_authenticated/portal.admin.members'
 import { Route as AuthenticatedPortalAdminMessagesRouteImport } from './routes/_authenticated/portal.admin.messages'
 import { Route as AuthenticatedPortalAdminNotificationRulesRouteImport } from './routes/_authenticated/portal.admin.notification-rules'
+import { Route as AuthenticatedPortalAdminOnboardingRouteImport } from './routes/_authenticated/portal.admin.onboarding'
 import { Route as AuthenticatedPortalAdminPerformanceRouteImport } from './routes/_authenticated/portal.admin.performance'
 import { Route as AuthenticatedPortalAdminPermissionsRouteImport } from './routes/_authenticated/portal.admin.permissions'
 import { Route as AuthenticatedPortalAdminPointRulesRouteImport } from './routes/_authenticated/portal.admin.point-rules'
@@ -90,6 +92,11 @@ const BookRoute = BookRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FirstLoginRoute = FirstLoginRouteImport.update({
+  id: '/first-login',
+  path: '/first-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -296,6 +303,12 @@ const AuthenticatedPortalAdminNotificationRulesRoute =
     path: '/portal/admin/notification-rules',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminOnboardingRoute =
+  AuthenticatedPortalAdminOnboardingRouteImport.update({
+    id: '/portal/admin/onboarding',
+    path: '/portal/admin/onboarding',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminPerformanceRoute =
   AuthenticatedPortalAdminPerformanceRouteImport.update({
     id: '/portal/admin/performance',
@@ -369,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
+  '/first-login': typeof FirstLoginRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/live': typeof LiveRoute
@@ -405,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/portal/admin/onboarding': typeof AuthenticatedPortalAdminOnboardingRoute
   '/portal/admin/performance': typeof AuthenticatedPortalAdminPerformanceRoute
   '/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
@@ -423,6 +438,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
+  '/first-login': typeof FirstLoginRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/live': typeof LiveRoute
@@ -459,6 +475,7 @@ export interface FileRoutesByTo {
   '/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/portal/admin/onboarding': typeof AuthenticatedPortalAdminOnboardingRoute
   '/portal/admin/performance': typeof AuthenticatedPortalAdminPerformanceRoute
   '/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
@@ -479,6 +496,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
+  '/first-login': typeof FirstLoginRoute
   '/gallery': typeof GalleryRoute
   '/leadership': typeof LeadershipRoute
   '/live': typeof LiveRoute
@@ -515,6 +533,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin/members': typeof AuthenticatedPortalAdminMembersRoute
   '/_authenticated/portal/admin/messages': typeof AuthenticatedPortalAdminMessagesRoute
   '/_authenticated/portal/admin/notification-rules': typeof AuthenticatedPortalAdminNotificationRulesRoute
+  '/_authenticated/portal/admin/onboarding': typeof AuthenticatedPortalAdminOnboardingRoute
   '/_authenticated/portal/admin/performance': typeof AuthenticatedPortalAdminPerformanceRoute
   '/_authenticated/portal/admin/permissions': typeof AuthenticatedPortalAdminPermissionsRoute
   '/_authenticated/portal/admin/point-rules': typeof AuthenticatedPortalAdminPointRulesRoute
@@ -535,6 +554,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/book'
     | '/contact'
+    | '/first-login'
     | '/gallery'
     | '/leadership'
     | '/live'
@@ -571,6 +591,7 @@ export interface FileRouteTypes {
     | '/portal/admin/members'
     | '/portal/admin/messages'
     | '/portal/admin/notification-rules'
+    | '/portal/admin/onboarding'
     | '/portal/admin/performance'
     | '/portal/admin/permissions'
     | '/portal/admin/point-rules'
@@ -589,6 +610,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/book'
     | '/contact'
+    | '/first-login'
     | '/gallery'
     | '/leadership'
     | '/live'
@@ -625,6 +647,7 @@ export interface FileRouteTypes {
     | '/portal/admin/members'
     | '/portal/admin/messages'
     | '/portal/admin/notification-rules'
+    | '/portal/admin/onboarding'
     | '/portal/admin/performance'
     | '/portal/admin/permissions'
     | '/portal/admin/point-rules'
@@ -644,6 +667,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/book'
     | '/contact'
+    | '/first-login'
     | '/gallery'
     | '/leadership'
     | '/live'
@@ -680,6 +704,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin/members'
     | '/_authenticated/portal/admin/messages'
     | '/_authenticated/portal/admin/notification-rules'
+    | '/_authenticated/portal/admin/onboarding'
     | '/_authenticated/portal/admin/performance'
     | '/_authenticated/portal/admin/permissions'
     | '/_authenticated/portal/admin/point-rules'
@@ -700,6 +725,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
+  FirstLoginRoute: typeof FirstLoginRoute
   GalleryRoute: typeof GalleryRoute
   LeadershipRoute: typeof LeadershipRoute
   LiveRoute: typeof LiveRoute
@@ -756,6 +782,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/first-login': {
+      id: '/first-login'
+      path: '/first-login'
+      fullPath: '/first-login'
+      preLoaderRoute: typeof FirstLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -1010,6 +1043,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminNotificationRulesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/admin/onboarding': {
+      id: '/_authenticated/portal/admin/onboarding'
+      path: '/portal/admin/onboarding'
+      fullPath: '/portal/admin/onboarding'
+      preLoaderRoute: typeof AuthenticatedPortalAdminOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/admin/performance': {
       id: '/_authenticated/portal/admin/performance'
       path: '/portal/admin/performance'
@@ -1115,6 +1155,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAdminMembersRoute: typeof AuthenticatedPortalAdminMembersRoute
   AuthenticatedPortalAdminMessagesRoute: typeof AuthenticatedPortalAdminMessagesRoute
   AuthenticatedPortalAdminNotificationRulesRoute: typeof AuthenticatedPortalAdminNotificationRulesRoute
+  AuthenticatedPortalAdminOnboardingRoute: typeof AuthenticatedPortalAdminOnboardingRoute
   AuthenticatedPortalAdminPerformanceRoute: typeof AuthenticatedPortalAdminPerformanceRoute
   AuthenticatedPortalAdminPermissionsRoute: typeof AuthenticatedPortalAdminPermissionsRoute
   AuthenticatedPortalAdminPointRulesRoute: typeof AuthenticatedPortalAdminPointRulesRoute
@@ -1156,6 +1197,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAdminMessagesRoute: AuthenticatedPortalAdminMessagesRoute,
   AuthenticatedPortalAdminNotificationRulesRoute:
     AuthenticatedPortalAdminNotificationRulesRoute,
+  AuthenticatedPortalAdminOnboardingRoute:
+    AuthenticatedPortalAdminOnboardingRoute,
   AuthenticatedPortalAdminPerformanceRoute:
     AuthenticatedPortalAdminPerformanceRoute,
   AuthenticatedPortalAdminPermissionsRoute:
@@ -1185,6 +1228,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
+  FirstLoginRoute: FirstLoginRoute,
   GalleryRoute: GalleryRoute,
   LeadershipRoute: LeadershipRoute,
   LiveRoute: LiveRoute,
