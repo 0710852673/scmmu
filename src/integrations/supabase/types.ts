@@ -1650,6 +1650,7 @@ export type Database = {
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       next_mu_number: { Args: never; Returns: string }
       next_release_letter_ref: { Args: never; Returns: string }
+      renumber_member_numbers: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role:

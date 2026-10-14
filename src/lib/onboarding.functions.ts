@@ -20,8 +20,10 @@ const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&
 
 type CreateInput = {
   full_name: string; email: string; grade?: string; class?: string;
-  whatsapp?: string; primary_division?: string;
+  whatsapp?: string; primary_division?: string; role?: string;
 };
+const ROLES = ["member", "tic", "section_head", "executive_board", "administrator"];
+const ROLE_ALIAS: Record<string, string> = { admin: "administrator", head: "section_head", "section head": "section_head", board: "executive_board", "executive board": "executive_board" };
 
 /** Phase A: creates the account only. Never sends or queues email. */
 export const onboardCreateMember = createServerFn({ method: "POST" })
@@ -31,7 +33,10 @@ export const onboardCreateMember = createServerFn({ method: "POST" })
     const full_name = String(d.full_name ?? "").trim();
     if (!full_name) throw new Error("Full name is required.");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Enter a valid email address.");
-    return { ...d, email, full_name };
+    const r = String(d.role ?? "member").trim().toLowerCase();
+    const role = ROLE_ALIAS[r] ?? r;
+    if (!ROLES.includes(role)) throw new Error("Role must be Member, TIC, Head, Board or Admin.");
+    return { ...d, email, full_name, role };
   })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
@@ -56,10 +61,15 @@ export const onboardCreateMember = createServerFn({ method: "POST" })
       const v = (data as any)[k]; if (typeof v === "string" && v.trim()) patch[k] = v.trim();
     }
     if (Object.keys(patch).length) await supabaseAdmin.from("profiles").update(patch as any).eq("id", uid);
+    if (data.role !== "member") {
+      await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
+      await supabaseAdmin.from("user_roles").insert({ user_id: uid, role: data.role as any });
+    }
     await supabaseAdmin.from("member_onboarding").insert({ user_id: uid, created_by: context.userId });
+    await supabaseAdmin.rpc("renumber_member_numbers" as any);
     const { data: prof } = await supabaseAdmin.from("profiles").select("admission_number").eq("id", uid).maybeSingle();
     // Password is returned once to the admin's screen and never stored.
-    return { user_id: uid, email: data.email, full_name: data.full_name, mu: prof?.admission_number ?? null, temp_password: password };
+    return { user_id: uid, role: data.role, email: data.email, full_name: data.full_name, mu: prof?.admission_number ?? null, temp_password: password };
   });
 
 export const onboardList = createServerFn({ method: "GET" })
@@ -119,10 +129,11 @@ export const onboardSendWelcome = createServerFn({ method: "POST" })
       const body = `<p>Dear ${name},</p>
 <p>Welcome to the <b>SCC Media Unit</b>. Your member portal account is ready.</p>
 <table style="width:100%;border-collapse:collapse;margin:14px 0;background:#f6f6f7;border-radius:10px">
-<tr><td style="padding:10px 14px;color:#6b7280">MU number</td><td style="padding:10px 14px;font-weight:700">${mu}</td></tr>
+<tr><td style="padding:10px 14px;color:#6b7280">Member number</td><td style="padding:10px 14px;font-weight:700">${mu}</td></tr>
 <tr><td style="padding:10px 14px;color:#6b7280">Login email</td><td style="padding:10px 14px">${esc(prof.email)}</td></tr>
-<tr><td style="padding:10px 14px;color:#6b7280">Temporary password</td><td style="padding:10px 14px;font-family:monospace;font-size:15px;font-weight:700">${esc(password)}</td></tr>
+<tr><td style="padding:10px 14px;color:#6b7280">Temporary password</td><td style="padding:10px 14px"><span style="display:inline-block;font-family:monospace;font-size:17px;font-weight:700;letter-spacing:1px;background:#fff;border:1px dashed #f5b91e;border-radius:8px;padding:8px 12px;user-select:all;-webkit-user-select:all">${esc(password)}</span><div style="font-size:11px;color:#6b7280;margin-top:4px">Tap / long-press the password to select and copy it.</div></td></tr>
 </table>
+<p style="font-size:13px;color:#6b7280">Copy-ready password: <code style="user-select:all;-webkit-user-select:all;font-size:14px">${esc(password)}</code></p>
 <p style="text-align:center;margin:20px 0"><a href="${PORTAL_URL}" style="background:#f5b91e;color:#111318;padding:12px 26px;border-radius:999px;text-decoration:none;font-weight:700">Sign in to the portal</a></p>
 <p><b>First login:</b> after signing in you will be asked to choose your own new password before you can use the portal. Please do not share your password with anyone.</p>
 <p><b>Your MU number</b> is your unique SCCMU identification number. Keep it for future reference.</p>

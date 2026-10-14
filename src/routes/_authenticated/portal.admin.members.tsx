@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -61,7 +62,7 @@ function AdminMembers() {
     qc.invalidateQueries({ queryKey: ["board-members"] });
   };
 
-  const createMut = useMutation({ mutationFn: (i: any) => createFn({ data: i }), onSuccess: () => { invalidate(); setNewOpen(false); } });
+  const createMut = useMutation({ mutationFn: (i: any) => createFn({ data: i }), onSuccess: () => { invalidate(); setNewOpen(false); toast.success("Account created. Send the welcome email from Member Onboarding."); } });
   const updateMut = useMutation({ mutationFn: (i: any) => updateFn({ data: i }), onSuccess: () => { invalidate(); setEditing(null); } });
   const deleteMut = useMutation({ mutationFn: (user_id: string) => deleteFn({ data: { user_id } }), onSuccess: invalidate });
 

@@ -8,6 +8,13 @@
       "when": 1791863660514,
       "tag": "0000_member_onboarding",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791989937167,
+      "tag": "0001_sequential_member_numbers",
+      "breakpoints": true
     }
   ]
 }

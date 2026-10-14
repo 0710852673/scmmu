@@ -57,7 +57,7 @@ function FirstLogin() {
       const { data } = await supabase.auth.getUser();
       if (data.user?.app_metadata?.must_change_password) throw new Error("Password could not be confirmed. Please try again.");
       setDone(true);
-      setTimeout(() => navigate({ to: "/portal", replace: true }), 1000);
+
     } catch (err: any) {
       setError(err?.message?.startsWith("Use at least") || err?.message?.startsWith("Password") ? err.message : "Something went wrong. Please try again.");
     } finally { setBusy(false); }
@@ -67,11 +67,19 @@ function FirstLogin() {
     <main className="grid min-h-screen place-items-center bg-background px-5 py-12">
       <section className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-sm md:p-8">
         <LogoMark size={36} />
-        <h1 className="mt-8 font-display text-3xl font-extrabold">Welcome{name ? `, ${name.split(" ")[0]}` : ""}!</h1>
+        <p className="mt-6 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary">First login</p>
+        <h1 className="mt-3 font-display text-3xl font-extrabold">Welcome{name ? `, ${name.split(" ")[0]}` : ""}!</h1>
         <p className="mt-2 text-sm text-muted-foreground">Before you use the portal, please replace your temporary password with your own.</p>
         {done ? (
-          <div className="mt-8 flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm">
-            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" /> Your password is set. Opening your dashboard…
+          <div className="mt-8 space-y-4">
+            <div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm">
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" /> Your password is set.
+            </div>
+            <div className="rounded-lg border border-border p-4 text-sm">
+              <div className="font-display text-lg font-bold">Welcome to the Sivali Central College Media Unit 🎉</div>
+              <p className="mt-2 text-muted-foreground">Your portal is ready. Complete your profile, check events and announcements, and keep an eye on your notifications for assignments.</p>
+            </div>
+            <Button className="h-11 w-full" onClick={() => navigate({ to: "/portal", replace: true })}>Open my dashboard</Button>
           </div>
         ) : (
           <form onSubmit={submit} className="mt-8 space-y-4">

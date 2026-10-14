@@ -114,19 +114,15 @@ export const adminCreateMember = createServerFn({ method: "POST" })
 
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
-      password: data.password,
+      password: data.password || `${crypto.randomUUID().slice(0, 8)}-Aa1`,
       email_confirm: true,
       user_metadata: { full_name: data.full_name },
+      app_metadata: { must_change_password: true },
     });
     if (error || !created.user) throw new Error(error?.message ?? "Failed to create user");
     const uid = created.user.id;
 
     // MU number for everyone EXCEPT TIC.
-    let admission_number: string | null = null;
-    if (data.role !== "tic") {
-      const { data: mu } = await supabaseAdmin.rpc("next_mu_number");
-      admission_number = (mu as unknown as string) ?? null;
-    }
 
     const profilePatch = clean({
       full_name: data.full_name,
@@ -139,7 +135,6 @@ export const adminCreateMember = createServerFn({ method: "POST" })
       bio: data.bio,
       join_date: data.join_date,
       past_works: data.past_works,
-      admission_number,
     });
 
     const { error: upErr } = await supabaseAdmin.from("profiles").update(profilePatch as any).eq("id", uid);
@@ -158,7 +153,10 @@ export const adminCreateMember = createServerFn({ method: "POST" })
       show_on_site: data.show_on_site ?? true,
     });
 
-    return { id: uid, ok: true, admission_number };
+    await supabaseAdmin.from("member_onboarding").insert({ user_id: uid, created_by: context.userId });
+    await supabaseAdmin.rpc("renumber_member_numbers" as any);
+    const { data: pr } = await supabaseAdmin.from("profiles").select("admission_number").eq("id", uid).maybeSingle();
+    return { id: uid, ok: true, admission_number: pr?.admission_number ?? null };
   });
 
 export const adminUpdateMember = createServerFn({ method: "POST" })
