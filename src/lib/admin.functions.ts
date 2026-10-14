@@ -114,7 +114,7 @@ export const adminCreateMember = createServerFn({ method: "POST" })
 
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
-      password: data.password,
+      password: data.password || `${crypto.randomUUID().slice(0, 8)}-Aa1`,
       email_confirm: true,
       user_metadata: { full_name: data.full_name },
       app_metadata: { must_change_password: true },
