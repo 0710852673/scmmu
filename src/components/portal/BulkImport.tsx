@@ -56,7 +56,7 @@ export function BulkImport({ onDone }: { onDone: () => void }) {
       let grid: string[][];
       if (/\.xlsx$/i.test(f.name)) {
         const { default: readXlsx } = await import("read-excel-file/browser");
-        grid = (await readXlsx(f)).map((r: any[]) => r.map((v) => (v == null ? "" : String(v))));
+        const sheet: any = await readXlsx(f); grid = (Array.isArray(sheet[0]?.data) ? sheet[0].data : sheet).map((r: any[]) => r.map((v) => (v == null ? "" : String(v))));
       } else grid = parseCsv(await f.text());
       const parsed = toRows(grid);
       if (!parsed.length) throw new Error("No member rows found.");
