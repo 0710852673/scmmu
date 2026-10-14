@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Copy, Mail, UserPlus } from "lucide-react";
 import { PortalPage, Card, SectionTitle, Empty } from "@/components/portal/PortalUI";
 import { onboardCreateMember, onboardList, onboardSendWelcome } from "@/lib/onboarding.functions";
+import { BulkImport } from "@/components/portal/BulkImport";
 import { DIVISIONS, DIVISION_LABEL } from "@/lib/site-content";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/onboarding")({
@@ -27,7 +28,7 @@ function OnboardingPage() {
   const list = useServerFn(onboardList);
   const send = useServerFn(onboardSendWelcome);
   const { data: rows = [], isLoading, error: listError } = useQuery({ queryKey: ["onboarding"], queryFn: () => list() });
-  const [form, setForm] = useState({ full_name: "", email: "", grade: "", class: "", whatsapp: "", primary_division: "" });
+  const [form, setForm] = useState({ full_name: "", email: "", grade: "", class: "", whatsapp: "", primary_division: "", role: "member" });
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<null | { full_name: string; email: string; mu: string | null; temp_password: string }>(null);
   const [confirmFor, setConfirmFor] = useState<any>(null);
@@ -40,7 +41,7 @@ function OnboardingPage() {
     try {
       const r = await create({ data: form });
       setResult(r);
-      setForm({ full_name: "", email: "", grade: "", class: "", whatsapp: "", primary_division: "" });
+      setForm({ full_name: "", email: "", grade: "", class: "", whatsapp: "", primary_division: "", role: "member" });
       qc.invalidateQueries({ queryKey: ["onboarding"] });
       toast.success("Account created. No email was sent.");
     } catch (err: any) {
@@ -62,13 +63,19 @@ function OnboardingPage() {
     <PortalPage eyebrow="ADMIN" title="MEMBER ONBOARDING">
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <SectionTitle sub="Creates the account with a temporary password and MU number. No email is sent.">Add one member</SectionTitle>
+          <SectionTitle sub="Creates the account with a temporary password and an automatic number (TIC01… for TICs, MU001… for others).">Add one member</SectionTitle>
           <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
             <label className="sm:col-span-2 text-xs font-semibold">Full name *<input required className={input} value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></label>
             <label className="sm:col-span-2 text-xs font-semibold">Email *<input required type="email" className={input} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
             <label className="text-xs font-semibold">Grade<input className={input} value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} /></label>
             <label className="text-xs font-semibold">Class<input className={input} value={form.class} onChange={(e) => setForm({ ...form, class: e.target.value })} /></label>
             <label className="text-xs font-semibold">WhatsApp<input className={input} value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} /></label>
+            <label className="sm:col-span-2 text-xs font-semibold">Role *
+              <select required className={input} value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                <option value="member">Member</option><option value="tic">TIC</option><option value="section_head">Head</option>
+                <option value="executive_board">Executive Board</option><option value="administrator">Admin</option>
+              </select>
+            </label>
             <label className="text-xs font-semibold">Section
               <select className={input} value={form.primary_division} onChange={(e) => setForm({ ...form, primary_division: e.target.value })}>
                 <option value="">—</option>
@@ -86,7 +93,7 @@ function OnboardingPage() {
             <SectionTitle sub="Shown once. It is not stored. Sending the welcome email later issues a new temporary password.">Account created</SectionTitle>
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Name</dt><dd className="font-semibold">{result.full_name}</dd></div>
-              <div className="flex justify-between gap-3"><dt className="text-muted-foreground">MU number</dt><dd className="font-semibold">{result.mu ?? "—"}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Number</dt><dd className="font-semibold">{result.mu ?? "—"}</dd></div>
               <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Email</dt><dd className="break-all">{result.email}</dd></div>
               <div className="flex items-center justify-between gap-3"><dt className="text-muted-foreground">Temporary password</dt>
                 <dd className="flex items-center gap-2 font-mono font-bold">{result.temp_password}
@@ -98,6 +105,8 @@ function OnboardingPage() {
           </Card>
         )}
       </div>
+
+      <BulkImport onDone={() => qc.invalidateQueries({ queryKey: ["onboarding"] })} />
 
       <Card className="mt-6">
         <SectionTitle sub="Emails are only sent when you press Send and confirm for that one member.">Welcome emails</SectionTitle>
