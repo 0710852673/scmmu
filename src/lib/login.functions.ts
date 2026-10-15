@@ -16,16 +16,11 @@ export const secureSignIn = createServerFn({ method: "POST" })
   .inputValidator((d: { email: string; password: string }) => {
     const email = String(d?.email ?? "").trim().toLowerCase().slice(0, 254);
     const password = String(d?.password ?? "").slice(0, 200);
-    const isLoginId = /^[a-z0-9]{3,20}$/.test(email);
-    if ((!isLoginId && !/^\S+@\S+\.\S+$/.test(email)) || !password) throw new Error("Enter a valid email or login ID and password.");
+    if (!/^\S+@\S+\.\S+$/.test(email) || !password) throw new Error("Enter a valid email and password.");
     return { email, password };
   })
   .handler(async ({ data }): Promise<Result> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    if (!data.email.includes("@")) {
-      const { data: byId } = await supabaseAdmin.from("profiles").select("email").ilike("login_id", data.email).maybeSingle();
-      data = { ...data, email: (byId?.email ?? `${data.email}@login-id.invalid`).toLowerCase() };
-    }
     const ip = (getRequestHeader("cf-connecting-ip") ?? getRequestHeader("x-forwarded-for") ?? "").split(",")[0].slice(0, 64);
     const ua = (getRequestHeader("user-agent") ?? "").slice(0, 200);
     const log = (success: boolean, reason: string) =>
