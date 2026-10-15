@@ -924,6 +924,21 @@ export type Database = {
           },
         ]
       }
+      member_id_counters: {
+        Row: {
+          last_value: number
+          prefix: string
+        }
+        Insert: {
+          last_value?: number
+          prefix: string
+        }
+        Update: {
+          last_value?: number
+          prefix?: string
+        }
+        Relationships: []
+      }
       member_onboarding: {
         Row: {
           created_at: string
@@ -1205,6 +1220,8 @@ export type Database = {
           grade: string | null
           id: string
           join_date: string | null
+          login_id: string | null
+          org_position: string | null
           past_works: string | null
           photo_url: string | null
           primary_division: Database["public"]["Enums"]["division_slug"] | null
@@ -1222,6 +1239,8 @@ export type Database = {
           grade?: string | null
           id: string
           join_date?: string | null
+          login_id?: string | null
+          org_position?: string | null
           past_works?: string | null
           photo_url?: string | null
           primary_division?: Database["public"]["Enums"]["division_slug"] | null
@@ -1239,6 +1258,8 @@ export type Database = {
           grade?: string | null
           id?: string
           join_date?: string | null
+          login_id?: string | null
+          org_position?: string | null
           past_works?: string | null
           photo_url?: string | null
           primary_division?: Database["public"]["Enums"]["division_slug"] | null
@@ -1651,6 +1672,7 @@ export type Database = {
       next_mu_number: { Args: never; Returns: string }
       next_release_letter_ref: { Args: never; Returns: string }
       renumber_member_numbers: { Args: never; Returns: undefined }
+      take_member_id: { Args: { _prefix: string }; Returns: string }
     }
     Enums: {
       app_role:

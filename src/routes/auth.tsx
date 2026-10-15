@@ -147,8 +147,8 @@ function Auth() {
             </div>
           )}
           <label className="block">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Email</span>
-            <input type="email" required autoComplete="email" value={email}
+            <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Email or login ID</span>
+            <input type="text" required autoComplete="username" value={email}
               onChange={(e) => { setEmail(e.target.value); setError(null); }}
               aria-invalid={!!error}
               className={`w-full rounded-lg border bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 ${error ? "border-destructive/60" : "border-border"}`} />
