@@ -77,11 +77,11 @@ function AdminMembers() {
       })
       .slice()
       .sort((a, b) => {
-        const ta = a.admission_number?.startsWith("TIC") ? 0 : 1, tb = b.admission_number?.startsWith("TIC") ? 0 : 1;
+        // TIC members first, then MU members, each by ascending number.
+        const ta = a.admission_number?.startsWith("TIC") ? 0 : a.admission_number ? 1 : 2;
+        const tb = b.admission_number?.startsWith("TIC") ? 0 : b.admission_number ? 1 : 2;
         if (ta !== tb) return ta - tb;
-        const ra = ROLE_ORDER[a.role] ?? 9, rb = ROLE_ORDER[b.role] ?? 9;
-        if (ra !== rb) return ra - rb;
-        return (a.admission_number ?? "zzz").localeCompare(b.admission_number ?? "zzz");
+        return (a.admission_number ?? "").localeCompare(b.admission_number ?? "", undefined, { numeric: true });
       });
   }, [members, q]);
 
