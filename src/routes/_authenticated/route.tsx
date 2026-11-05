@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { Wallet, createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
@@ -190,6 +190,11 @@ function PortalLayout() {
           <a href={mediaflowUrl} target="_blank" rel="noopener noreferrer"
              className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-muted transition-colors">
             <span className="flex items-center gap-2.5"><ExternalLink className="h-4 w-4 text-brand" /> MediaFlow</span>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+          </a>
+          <a href="https://mediaunitfund.lovable.app" target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-muted transition-colors">
+            <span className="flex items-center gap-2.5"><Wallet className="h-4 w-4 text-brand" /> Finance</span>
             <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
           </a>
         </div>
