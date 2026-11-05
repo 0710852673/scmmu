@@ -7,6 +7,7 @@ import {
   Trophy, Megaphone, Users, BookmarkCheck, FolderKanban, Mail, ImagePlus,
   LogOut, Settings, Shield, ChevronRight, Menu, X, CheckSquare, MailPlus, KeyRound,
   Bell, Radio, Briefcase, BadgeCheck, History, Trash2, Activity,
+  Wallet,
 } from "lucide-react";
 import { ThemeToggle } from "@/lib/theme";
 import { getSiteSettings } from "@/lib/public-data.functions";

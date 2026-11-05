@@ -5,6 +5,7 @@ import { PortalPage, Stat, Empty, Card, SectionTitle, RoleBadge } from "@/compon
 import {
   ClipboardCheck, Calendar, Trophy, Award, Megaphone, Users,
   BookmarkCheck, Mail, FolderKanban, Settings, ArrowUpRight, ExternalLink,
+  Wallet,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
