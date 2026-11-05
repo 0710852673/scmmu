@@ -217,7 +217,7 @@ export const staffListMembers = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: profiles }, { data: roles }, { data: featured }] = await Promise.all([
       supabaseAdmin.from("profiles")
-        .select("id,full_name,email,photo_url,admission_number,grade,class,primary_division,whatsapp,bio,join_date,past_works")
+        .select("id,full_name,email,photo_url,admission_number,grade,class,primary_division,whatsapp,bio,join_date,past_works,org_position")
         .order("admission_number", { ascending: true, nullsFirst: false }),
       supabaseAdmin.from("user_roles").select("user_id,role"),
       supabaseAdmin.from("featured_members").select("member_user_id,role_title,board_category,section,display_order,active"),
@@ -229,7 +229,7 @@ export const staffListMembers = createServerFn({ method: "GET" })
 
     return (profiles ?? []).map((p) => ({
       ...p,
-      role: roleMap.get(p.id) ?? "member",
+      role: roleMap.get(p.id) ?? (p.org_position === "TIC" ? "tic" : "member"),
       featured: featMap.get(p.id) ?? null,
     }));
   });
