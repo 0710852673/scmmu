@@ -1,4 +1,4 @@
-import { Wallet, createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
