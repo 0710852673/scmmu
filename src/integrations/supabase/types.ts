@@ -1237,7 +1237,7 @@ export type Database = {
           email?: string | null
           full_name?: string
           grade?: string | null
-          id: string
+          id?: string
           join_date?: string | null
           login_id?: string | null
           org_position?: string | null
