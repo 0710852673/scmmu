@@ -5,6 +5,7 @@ import { PortalPage, Stat, Empty, Card, SectionTitle, RoleBadge } from "@/compon
 import {
   ClipboardCheck, Calendar, Trophy, Award, Megaphone, Users,
   BookmarkCheck, Mail, FolderKanban, Settings, ArrowUpRight, ExternalLink,
+  Wallet,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
@@ -220,6 +221,12 @@ function Dashboard() {
               <ExternalLink className="h-5 w-5 text-brand mb-3" />
               <div className="font-display font-bold">MediaFlow</div>
               <div className="text-xs text-muted-foreground mt-0.5">Open production board</div>
+            </a>
+            <a href="https://mediaunitfund.lovable.app" target="_blank" rel="noopener noreferrer"
+              className="group rounded-2xl border border-border bg-card p-5 hover:border-brand/40 hover:-translate-y-0.5 transition-all shadow-sm">
+              <Wallet className="h-5 w-5 text-brand mb-3" />
+              <div className="font-display font-bold">Finance</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Open media unit fund</div>
             </a>
           </div>
         </section>
