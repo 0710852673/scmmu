@@ -81,11 +81,15 @@ async function syncFeatured(
   opts: { role_title?: string | null; board_category?: BoardCategory; section?: string | null; display_order?: number | null; show_on_site?: boolean },
 ) {
   if (opts.show_on_site === undefined) return;
-  const { data: existing } = await admin
+  const { data: existing, error: lookupError } = await admin
     .from("featured_members").select("id").eq("member_user_id", userId).maybeSingle();
+  if (lookupError) throw new Error(`Featured-member lookup failed: ${lookupError.message}`);
 
   if (!opts.show_on_site) {
-    if (existing?.id) await admin.from("featured_members").delete().eq("id", existing.id);
+    if (existing?.id) {
+      const { error } = await admin.from("featured_members").delete().eq("id", existing.id);
+      if (error) throw new Error(`Featured-member removal failed: ${error.message}`);
+    }
     return;
   }
 
@@ -101,8 +105,10 @@ async function syncFeatured(
     display_order: opts.display_order ?? 0,
     active: true,
   };
-  if (existing?.id) await admin.from("featured_members").update(row).eq("id", existing.id);
-  else await admin.from("featured_members").insert({ ...row, rank: 0, points: 0 });
+  const result = existing?.id
+    ? await admin.from("featured_members").update(row).eq("id", existing.id)
+    : await admin.from("featured_members").insert({ ...row, rank: 0, points: 0 });
+  if (result.error) throw new Error(`Featured-member sync failed: ${result.error.message}`);
 }
 
 export const adminCreateMember = createServerFn({ method: "POST" })
@@ -122,41 +128,55 @@ export const adminCreateMember = createServerFn({ method: "POST" })
     if (error || !created.user) throw new Error(error?.message ?? "Failed to create user");
     const uid = created.user.id;
 
-    // MU number for everyone EXCEPT TIC.
+    try {
+      // MU number for everyone EXCEPT TIC.
+      const profilePatch = clean({
+        full_name: data.full_name,
+        photo_url: data.photo_url,
+        grade: data.grade,
+        class: data.class,
+        whatsapp: data.whatsapp,
+        primary_division: data.primary_division,
+        email: data.email,
+        bio: data.bio,
+        join_date: data.join_date,
+        past_works: data.past_works,
+      });
 
-    const profilePatch = clean({
-      full_name: data.full_name,
-      photo_url: data.photo_url,
-      grade: data.grade,
-      class: data.class,
-      whatsapp: data.whatsapp,
-      primary_division: data.primary_division,
-      email: data.email,
-      bio: data.bio,
-      join_date: data.join_date,
-      past_works: data.past_works,
-    });
+      const { error: upErr } = await supabaseAdmin.from("profiles").update(profilePatch as any).eq("id", uid);
+      if (upErr) throw new Error(`Profile update failed: ${upErr.message}`);
 
-    const { error: upErr } = await supabaseAdmin.from("profiles").update(profilePatch as any).eq("id", uid);
-    if (upErr) throw new Error(`Profile update failed: ${upErr.message}`);
+      if (data.role !== "member") {
+        const { error: deleteRoleError } = await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
+        if (deleteRoleError) throw new Error(`Default role cleanup failed: ${deleteRoleError.message}`);
+        const { error: roleError } = await supabaseAdmin.from("user_roles").insert({ user_id: uid, role: data.role });
+        if (roleError) throw new Error(`Role assignment failed: ${roleError.message}`);
+      }
 
-    if (data.role !== "member") {
-      await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
-      await supabaseAdmin.from("user_roles").insert({ user_id: uid, role: data.role });
+      await syncFeatured(supabaseAdmin, uid, data, {
+        role_title: data.role_title,
+        board_category: boardCategoryFor(data.role, data.board_category),
+        section: data.section,
+        display_order: data.display_order,
+        show_on_site: data.show_on_site ?? true,
+      });
+
+      const { error: onboardingError } = await supabaseAdmin.from("member_onboarding").insert({ user_id: uid, created_by: context.userId });
+      if (onboardingError) throw new Error(`Onboarding setup failed: ${onboardingError.message}`);
+      const { error: numberingError } = await supabaseAdmin.rpc("renumber_member_numbers" as any);
+      if (numberingError) throw new Error(`Member-number update failed: ${numberingError.message}`);
+      const { data: pr, error: profileReadError } = await supabaseAdmin.from("profiles").select("admission_number").eq("id", uid).maybeSingle();
+      if (profileReadError) throw new Error(`Member-number lookup failed: ${profileReadError.message}`);
+      return { id: uid, ok: true, admission_number: pr?.admission_number ?? null };
+    } catch (cause) {
+      // The profile is created by the auth trigger and cascades when this user is removed.
+      const { error: rollbackError } = await supabaseAdmin.auth.admin.deleteUser(uid);
+      if (rollbackError) {
+        console.error("[Admin] Failed to roll back partially created member:", rollbackError.message);
+        throw new Error(`Member setup failed and the temporary login could not be removed. Contact an administrator. Original error: ${cause instanceof Error ? cause.message : "Unknown error"}`);
+      }
+      throw cause;
     }
-
-    await syncFeatured(supabaseAdmin, uid, data, {
-      role_title: data.role_title,
-      board_category: boardCategoryFor(data.role, data.board_category),
-      section: data.section,
-      display_order: data.display_order,
-      show_on_site: data.show_on_site ?? true,
-    });
-
-    await supabaseAdmin.from("member_onboarding").insert({ user_id: uid, created_by: context.userId });
-    await supabaseAdmin.rpc("renumber_member_numbers" as any);
-    const { data: pr } = await supabaseAdmin.from("profiles").select("admission_number").eq("id", uid).maybeSingle();
-    return { id: uid, ok: true, admission_number: pr?.admission_number ?? null };
   });
 
 export const adminUpdateMember = createServerFn({ method: "POST" })
@@ -173,7 +193,8 @@ export const adminUpdateMember = createServerFn({ method: "POST" })
     }
 
     if (data.patch.email) {
-      await supabaseAdmin.auth.admin.updateUserById(data.user_id, { email: data.patch.email });
+      const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, { email: data.patch.email });
+      if (error) throw new Error(`Login email update failed: ${error.message}`);
     }
 
     if (data.new_password && data.new_password.length > 0) {
@@ -182,8 +203,10 @@ export const adminUpdateMember = createServerFn({ method: "POST" })
     }
 
     if (data.role) {
-      await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
-      await supabaseAdmin.from("user_roles").insert({ user_id: data.user_id, role: data.role });
+      const { error: deleteRoleError } = await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
+      if (deleteRoleError) throw new Error(`Existing role cleanup failed: ${deleteRoleError.message}`);
+      const { error: roleError } = await supabaseAdmin.from("user_roles").insert({ user_id: data.user_id, role: data.role });
+      if (roleError) throw new Error(`Role assignment failed: ${roleError.message}`);
     }
 
     await syncFeatured(supabaseAdmin, data.user_id, data.patch, {
