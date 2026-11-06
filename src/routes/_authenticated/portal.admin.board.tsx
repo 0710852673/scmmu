@@ -44,21 +44,30 @@ function AdminBoard() {
     const { data } = await supabase.from("featured_members").select("*").order("board_category").order("display_order");
     return (data ?? []) as Row[];
   });
+  const { rows: members } = useTable<{ id: string; full_name: string; admission_number: string | null }>(["admin-board-members"], async () => {
+    const { data } = await supabase.from("profiles").select("id,full_name,admission_number").order("admission_number");
+    return (data ?? []) as any;
+  });
+  const allFields: FieldDef[] = [...fields, {
+    key: "member_user_id", label: "Linked member record", type: "select", colSpan: 2,
+    options: [{ value: "", label: "— Not linked —" }, ...members.map((m) => ({ value: m.id, label: `${m.admission_number ?? ""} – ${m.full_name}` }))],
+  }];
+  const clean = (r: any) => ("member_user_id" in r ? { ...r, member_user_id: r.member_user_id || null } : r);
 
   return (
     <PortalPage eyebrow="Administrator" title="Board & Leadership">
       <AdminEditor<Row>
         title="Board members"
         rows={rows}
-        fields={fields}
+        fields={allFields}
         emptyRow={{ active: true, display_order: 0, board_category: "executive" } as Partial<Row>}
         refresh={refresh}
         onCreate={async (row) => {
-          const { error } = await supabase.from("featured_members").insert({ ...(row as any), rank: 0, points: 0 });
+          const { error } = await supabase.from("featured_members").insert({ ...clean(row), rank: 0, points: 0 });
           return { error: error?.message ?? null };
         }}
         onUpdate={async (id, patch) => {
-          const { error } = await supabase.from("featured_members").update(patch as any).eq("id", id as string);
+          const { error } = await supabase.from("featured_members").update(clean(patch)).eq("id", id as string);
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {
