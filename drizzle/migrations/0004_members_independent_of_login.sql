@@ -1,0 +1,12 @@
+ALTER TABLE public.attendance DROP CONSTRAINT IF EXISTS attendance_user_id_fkey;
+ALTER TABLE public.points_log DROP CONSTRAINT IF EXISTS points_log_user_id_fkey;
+ALTER TABLE public.contributions DROP CONSTRAINT IF EXISTS contributions_user_id_fkey;
+ALTER TABLE public.member_achievements DROP CONSTRAINT IF EXISTS member_achievements_user_id_fkey;
+ALTER TABLE public.member_skills DROP CONSTRAINT IF EXISTS member_skills_user_id_fkey;
+ALTER TABLE public.featured_members DROP CONSTRAINT IF EXISTS featured_members_member_user_id_fkey;
+ALTER TABLE public.attendance ADD CONSTRAINT attendance_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE NOT VALID;
+ALTER TABLE public.points_log ADD CONSTRAINT points_log_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE NOT VALID;
+ALTER TABLE public.contributions ADD CONSTRAINT contributions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE NOT VALID;
+ALTER TABLE public.member_achievements ADD CONSTRAINT member_achievements_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE NOT VALID;
+ALTER TABLE public.member_skills ADD CONSTRAINT member_skills_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE NOT VALID;
+ALTER TABLE public.featured_members ADD CONSTRAINT featured_members_member_user_id_fkey FOREIGN KEY (member_user_id) REFERENCES public.profiles(id) ON DELETE SET NULL NOT VALID;
