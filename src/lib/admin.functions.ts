@@ -226,14 +226,17 @@ export const adminDeleteMember = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    // Member record first (attendance/points/etc. cascade; public listing is unlinked, kept).
-    const { error: pErr } = await supabaseAdmin.from("profiles").delete().eq("id", data.user_id);
-    if (pErr) throw new Error(pErr.message);
-    // Then the login, if one exists (members like TIC003 have none).
-    const { data: u } = await supabaseAdmin.auth.admin.getUserById(data.user_id);
+    // Delete the auth user first: the profiles FK cascades related member data.
+    // This prevents deleting the member record while leaving an active login behind.
+    const { data: u, error: lookupError } = await supabaseAdmin.auth.admin.getUserById(data.user_id);
+    if (lookupError) throw new Error(`Could not verify member login: ${lookupError.message}`);
     if (u?.user) {
       const { error } = await supabaseAdmin.auth.admin.deleteUser(data.user_id);
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(`Login deletion failed: ${error.message}`);
+    } else {
+      // Defensive fallback for legacy profile-only records.
+      const { error } = await supabaseAdmin.from("profiles").delete().eq("id", data.user_id);
+      if (error) throw new Error(`Member record deletion failed: ${error.message}`);
     }
     return { ok: true };
   });
