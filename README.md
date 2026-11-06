@@ -4,7 +4,7 @@ ell me whatt questions do u have before build
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://scmmu.lovable.app
+**Live app**: https://sccmu.lovable.app
 
 ## Build with Lovable
 
