@@ -197,8 +197,20 @@ export const getSystemHealth = createServerFn({ method: "GET" })
       (announcements.data ?? []).filter((a) => a.review_status === "pending" && !a.deleted_at).length;
 
     const years = new Set<number>([year]);
-    for (const c of contributions.data ?? []) years.add(new Date(c.created_at).getFullYear());
-    for (const b of bookings.data ?? []) years.add(new Date(b.created_at).getFullYear());
+    const addYear = (value?: string | null) => {
+      if (!value) return;
+      const parsed = new Date(value);
+      if (!Number.isNaN(parsed.getTime())) years.add(parsed.getFullYear());
+    };
+    for (const p of profiles.data ?? []) addYear(p.created_at);
+    for (const c of contributions.data ?? []) addYear(c.created_at);
+    for (const b of bookings.data ?? []) addYear(b.created_at);
+    for (const e of events.data ?? []) addYear(e.event_date);
+    for (const g of gallery.data ?? []) addYear(g.created_at);
+    for (const p of projects.data ?? []) addYear(p.created_at);
+    for (const a of announcements.data ?? []) addYear(a.created_at);
+    for (const s of streams.data ?? []) addYear(s.created_at);
+    for (const p of points.data ?? []) addYear(p.created_at);
 
     return {
       year,
@@ -214,6 +226,11 @@ export const getSystemHealth = createServerFn({ method: "GET" })
         pointsAwarded: (points.data ?? [])
           .filter((p) => inYear(p.created_at))
           .reduce((s, p) => s + (p.points ?? 0), 0),
+      },
+      yearly: {
+        gallery: (gallery.data ?? []).filter((g) => inYear(g.created_at) && !g.deleted_at).length,
+        projects: (projects.data ?? []).filter((p) => inYear(p.created_at) && !p.deleted_at).length,
+        announcements: (announcements.data ?? []).filter((a) => inYear(a.created_at) && !a.deleted_at).length,
       },
       health: {
         pendingContributions: (contributions.data ?? []).filter((c) => c.status === "pending").length,

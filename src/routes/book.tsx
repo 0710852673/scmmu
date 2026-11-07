@@ -1,13 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyBookingSubmitted } from "@/lib/email.functions";
-import { COVERAGE_SERVICES } from "@/lib/coverage";
-
-const SERVICES = COVERAGE_SERVICES.map((s) => s.value);
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -22,6 +20,21 @@ export const Route = createFileRoute("/book")({
 });
 
 function Book() {
+  const serviceQuery = useQuery({
+    queryKey: ["public-booking-services"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("services")
+        .select("key,label")
+        .eq("active", true)
+        .order("display_order", { ascending: true })
+        .order("label", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+  const availableServices = serviceQuery.data ?? [];
   const [kind, setKind] = useState<"internal" | "inter_school">("internal");
   const [services, setServices] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -161,7 +174,14 @@ function Book() {
               Required Services <span className="text-accent">— select all that apply</span>
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {SERVICES.map((s) => {
+              {serviceQuery.isLoading ? (
+                <p className="col-span-full text-sm text-muted-foreground">Loading available services…</p>
+              ) : serviceQuery.isError ? (
+                <p className="col-span-full text-sm text-destructive" role="alert">We could not load the service list. Please refresh the page or contact SCCMU.</p>
+              ) : availableServices.length === 0 ? (
+                <p className="col-span-full text-sm text-muted-foreground">No services are currently available. Please contact SCCMU.</p>
+              ) : availableServices.map((service) => {
+                const s = service.key;
                 const on = services.includes(s);
                 return (
                   <button
@@ -186,7 +206,7 @@ function Book() {
           </div>
 
           <button
-            disabled={submitting || services.length === 0}
+            disabled={submitting || services.length === 0 || serviceQuery.isLoading || serviceQuery.isError || availableServices.length === 0}
             className="w-full bg-foreground text-background py-4 text-xs font-bold uppercase tracking-widest hover:bg-accent transition-colors disabled:opacity-50"
           >
             {submitting ? "Submitting…" : "Submit Request"}

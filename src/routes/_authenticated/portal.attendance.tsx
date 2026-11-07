@@ -12,18 +12,19 @@ function AttendancePage() {
   const { data } = useQuery({
     queryKey: ["att", user.id],
     queryFn: async () => {
-      const { data } = await supabase.from("attendance").select("*").eq("user_id", user.id).order("attended_on", { ascending: false });
+      const { data } = await supabase.from("attendance").select("id,attended_on,meeting_label,status").eq("user_id", user.id).order("attended_on", { ascending: false });
       return data ?? [];
     },
   });
 
-  const total = data?.length ?? 0;
-  const thisMonth = (data ?? []).filter((r) => {
+  const presentRecords = (data ?? []).filter((r) => r.status === "present");
+  const total = presentRecords.length;
+  const thisMonth = presentRecords.filter((r) => {
     const d = new Date(r.attended_on);
     const now = new Date();
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
-  const thisYear = (data ?? []).filter((r) => new Date(r.attended_on).getFullYear() === new Date().getFullYear()).length;
+  const thisYear = presentRecords.filter((r) => new Date(r.attended_on).getFullYear() === new Date().getFullYear()).length;
 
   return (
     <PortalPage title="Attendance">
@@ -39,7 +40,7 @@ function AttendancePage() {
           {data.map((a) => (
             <li key={a.id} className="border border-border px-4 py-3 bg-card flex justify-between">
               <span>{a.attended_on}</span>
-              <span className="text-foreground/60">{a.meeting_label || "Meeting"}</span>
+              <span className="flex items-center gap-3 text-foreground/60"><span>{a.meeting_label || "Meeting"}</span><span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase">{a.status || "present"}</span></span>
             </li>
           ))}
         </ul>
