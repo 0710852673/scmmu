@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
 // SCCMU = Sivali Central College Media Unit. Never write "SCCMU Media Unit" (redundant).
@@ -240,8 +241,11 @@ export const notifyBookingSubmitted = createServerFn({ method: "POST" })
 
 // ── booking status change ─────────────────────────────────────────
 export const notifyBookingStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: { bookingId: string; status: string; reason?: string }) => d)
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { data: staff, error: accessError } = await context.supabase.rpc("is_staff", { _user_id: context.userId });
+    if (accessError || !staff) throw new Error("Forbidden: staff only");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: b } = await supabaseAdmin.from("bookings").select("*").eq("id", data.bookingId).maybeSingle();
     if (!b) return { ok: false, error: "booking_not_found" };
