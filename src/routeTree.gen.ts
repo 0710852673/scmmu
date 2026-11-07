@@ -33,6 +33,7 @@ import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_
 import { Route as AuthenticatedPortalAssignmentsRouteImport } from './routes/_authenticated/portal.assignments'
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
 import { Route as AuthenticatedPortalAdminAttendanceRouteImport } from './routes/_authenticated/portal.admin.attendance'
+import { Route as AuthenticatedPortalAdminErrorsRouteImport } from './routes/_authenticated/portal.admin.errors'
 import { Route as AuthenticatedPortalContributionsRouteImport } from './routes/_authenticated/portal.contributions'
 import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
 import { Route as AuthenticatedPortalNotificationsRouteImport } from './routes/_authenticated/portal.notifications'
@@ -238,6 +239,12 @@ const AuthenticatedPortalAdminAttendanceRoute =
     path: '/portal/admin/attendance',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalAdminErrorsRoute =
+  AuthenticatedPortalAdminErrorsRouteImport.update({
+    id: '/portal/admin/errors',
+    path: '/portal/admin/errors',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAdminAwardsRoute =
   AuthenticatedPortalAdminAwardsRouteImport.update({
     id: '/portal/admin/awards',
@@ -414,6 +421,7 @@ export interface FileRoutesByFullPath {
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/activity': typeof AuthenticatedPortalAdminActivityRoute
+  '/portal/admin/errors': typeof AuthenticatedPortalAdminErrorsRoute
   '/portal/admin/attendance': typeof AuthenticatedPortalAdminAttendanceRoute
   '/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
@@ -529,6 +537,8 @@ export interface FileRoutesById {
   '/_authenticated/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/admin/activity': typeof AuthenticatedPortalAdminActivityRoute
+  '/_authenticated/portal/admin/attendance': typeof AuthenticatedPortalAdminAttendanceRoute
+  '/_authenticated/portal/admin/errors': typeof AuthenticatedPortalAdminErrorsRoute
   '/_authenticated/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/_authenticated/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/_authenticated/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
@@ -1151,6 +1161,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalRankingsRoute: typeof AuthenticatedPortalRankingsRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
   AuthenticatedPortalAdminAttendanceRoute: typeof AuthenticatedPortalAdminAttendanceRoute
+  AuthenticatedPortalAdminErrorsRoute: typeof AuthenticatedPortalAdminErrorsRoute
   AuthenticatedPortalAdminActivityRoute: typeof AuthenticatedPortalAdminActivityRoute
   AuthenticatedPortalAdminAwardsRoute: typeof AuthenticatedPortalAdminAwardsRoute
   AuthenticatedPortalAdminBoardRoute: typeof AuthenticatedPortalAdminBoardRoute
@@ -1191,6 +1202,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalRankingsRoute: AuthenticatedPortalRankingsRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
   AuthenticatedPortalAdminAttendanceRoute: AuthenticatedPortalAdminAttendanceRoute,
+  AuthenticatedPortalAdminErrorsRoute: AuthenticatedPortalAdminErrorsRoute,
   AuthenticatedPortalAdminActivityRoute: AuthenticatedPortalAdminActivityRoute,
   AuthenticatedPortalAdminAwardsRoute: AuthenticatedPortalAdminAwardsRoute,
   AuthenticatedPortalAdminBoardRoute: AuthenticatedPortalAdminBoardRoute,
