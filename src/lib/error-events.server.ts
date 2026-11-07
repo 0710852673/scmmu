@@ -1,5 +1,3 @@
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
-
 function safeText(value: string, max: number) {
   return value
     .replace(/(password|token|secret|api[_-]?key|authorization|cookie)\s*[:=]\s*[^\s,;]+/gi, "$1=[redacted]")
@@ -22,6 +20,7 @@ export async function recordServerError(error: unknown, request: Request) {
     const route = new URL(request.url).pathname.slice(0, 240);
     const method = request.method.slice(0, 12);
     const key = await fingerprint(`${name}: ${message}`);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error: logError } = await (supabaseAdmin as any).rpc("record_error_event", {
       _fingerprint: key,
       _error_name: name,
