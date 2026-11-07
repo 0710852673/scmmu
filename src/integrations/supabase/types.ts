@@ -152,7 +152,10 @@ export type Database = {
           created_at: string
           id: string
           meeting_label: string | null
+          note: string | null
           recorded_by: string | null
+          session_id: string | null
+          status: string
           user_id: string
         }
         Insert: {
@@ -160,7 +163,10 @@ export type Database = {
           created_at?: string
           id?: string
           meeting_label?: string | null
+          note?: string | null
           recorded_by?: string | null
+          session_id?: string | null
+          status?: string
           user_id: string
         }
         Update: {
@@ -168,10 +174,20 @@ export type Database = {
           created_at?: string
           id?: string
           meeting_label?: string | null
+          note?: string | null
           recorded_by?: string | null
+          session_id?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "attendance_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "attendance_sessions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "attendance_user_id_fkey"
             columns: ["user_id"]
@@ -180,6 +196,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      attendance_sessions: {
+        Row: {
+          attended_on: string
+          created_at: string
+          created_by: string | null
+          id: string
+          meeting_label: string
+        }
+        Insert: {
+          attended_on: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          meeting_label: string
+        }
+        Update: {
+          attended_on?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          meeting_label?: string
+        }
+        Relationships: []
       }
       booking_status_history: {
         Row: {
