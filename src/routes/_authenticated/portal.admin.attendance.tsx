@@ -179,7 +179,7 @@ function AdminAttendancePage() {
       action={
         <button
           onClick={saveAttendance}
-          disabled={!selectedSession || saving || counts.marked === 0}
+          disabled={!selectedSession || saving || recordsQuery.isLoading || recordsQuery.isError || counts.marked === 0}
           className="inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground disabled:opacity-50"
         >
           <Save className="h-4 w-4" /> {saving ? "Saving…" : "Save roster"}
