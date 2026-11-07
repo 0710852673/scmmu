@@ -57,7 +57,7 @@ function HealthPage() {
       const value = String(cell ?? "");
       return `"${value.replace(/"/g, '""')}"`;
     }).join(",")).join("\r\n");
-    const blob = new Blob(["\\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+    const blob = new Blob([String.fromCharCode(0xfeff), csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -116,7 +116,7 @@ function HealthPage() {
       </div>
       {comparison && (
         <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat label={`Members · ${compareYear}`} value={comparison.totals.members} sub={`Current total in database`} />
+          <Stat label={`New members · ${compareYear}`} value={comparison.totals.newMembers} />
           <Stat label={`Events · ${compareYear}`} value={comparison.totals.events} />
           <Stat label={`Gallery · ${compareYear}`} value={comparison.totals.gallery} />
           <Stat label={`Points · ${compareYear}`} value={comparison.totals.pointsAwarded} />
