@@ -242,7 +242,7 @@ function JobDrawer({ booking, members, services, assignments, allAssignments, us
     const assignedIds = new Set(assignments.map((a) => a.user_id));
     return members
       .filter((m) => !assignedIds.has(m.id))
-      .filter((m) => divisions.length === 0 || (m.primary_division && divisions.includes(m.primary_division)))
+      .filter((m) => !!m.primary_division && divisions.includes(m.primary_division))
       .sort((a, b) => (workload[a.id] ?? 0) - (workload[b.id] ?? 0));
   }, [members, assignments, divisions, workload]);
 
