@@ -227,6 +227,11 @@ export const getSystemHealth = createServerFn({ method: "GET" })
           .filter((p) => inYear(p.created_at))
           .reduce((s, p) => s + (p.points ?? 0), 0),
       },
+      yearly: {
+        gallery: (gallery.data ?? []).filter((g) => inYear(g.created_at) && !g.deleted_at).length,
+        projects: (projects.data ?? []).filter((p) => inYear(p.created_at) && !p.deleted_at).length,
+        announcements: (announcements.data ?? []).filter((a) => inYear(a.created_at) && !a.deleted_at).length,
+      },
       health: {
         pendingContributions: (contributions.data ?? []).filter((c) => c.status === "pending").length,
         pendingReview,
