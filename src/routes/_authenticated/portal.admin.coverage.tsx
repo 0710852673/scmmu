@@ -8,7 +8,6 @@ import { notifyBookingStatus } from "@/lib/email.functions";
 import { DIVISION_LABEL } from "@/lib/site-content";
 import {
   BOOKING_STAGES, PIPELINE, PRIORITIES, PRIORITY_CLASS, STAGE_CLASS, STAGE_LABEL,
-  divisionsForServices, SERVICE_DIVISION,
 } from "@/lib/coverage";
 import {
   Search, X, UserPlus, Link2, Trash2, ChevronRight, Clock, AlertTriangle, CheckCircle2, Users,
@@ -56,6 +55,14 @@ function CoverageOps() {
     queryFn: async () => {
       const { data } = await supabase.from("coverage_assignments").select("*");
       return data ?? [];
+    },
+  });
+  const services = useQuery({
+    queryKey: ["ops-service-routing"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("services").select("key,division").eq("active", true);
+      if (error) throw error;
+      return (data ?? []) as { key: string; division: string }[];
     },
   });
 
@@ -190,6 +197,7 @@ function CoverageOps() {
         <JobDrawer
           booking={open}
           members={members.data ?? []}
+          services={services.data ?? []}
           assignments={(assignments.data ?? []).filter((a: any) => a.booking_id === open.id)}
           allAssignments={assignments.data ?? []}
           userId={user.id}
@@ -202,8 +210,8 @@ function CoverageOps() {
   );
 }
 
-function JobDrawer({ booking, members, assignments, allAssignments, userId, onClose, onStage, refresh }: {
-  booking: Booking; members: Member[]; assignments: any[]; allAssignments: any[]; userId: string;
+function JobDrawer({ booking, members, services, assignments, allAssignments, userId, onClose, onStage, refresh }: {
+  booking: Booking; members: Member[]; services: { key: string; division: string }[]; assignments: any[]; allAssignments: any[]; userId: string;
   onClose: () => void; onStage: (b: Booking, to: string, extra?: { reason?: string; note?: string }) => Promise<void>;
   refresh: () => void;
 }) {
@@ -211,7 +219,8 @@ function JobDrawer({ booking, members, assignments, allAssignments, userId, onCl
   const [note, setNote] = useState(booking.completion_note ?? "");
   const [linkLabel, setLinkLabel] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
-  const divisions = divisionsForServices(booking.services);
+  const serviceMap = useMemo(() => new Map(services.map((service) => [service.key.toLowerCase(), service.division])), [services]);
+  const divisions = Array.from(new Set((booking.services ?? []).map((service) => serviceMap.get(service.toLowerCase())).filter((division): division is string => !!division)));
 
   const history = useQuery({
     queryKey: ["booking-history", booking.id],
@@ -240,7 +249,7 @@ function JobDrawer({ booking, members, assignments, allAssignments, userId, onCl
   const mediaLinks: { label: string; url: string }[] = Array.isArray(booking.media_links) ? booking.media_links : [];
 
   async function assign(m: Member) {
-    const service = (booking.services ?? []).find((s) => SERVICE_DIVISION[s] === m.primary_division) ?? null;
+    const service = (booking.services ?? []).find((s) => serviceMap.get(s.toLowerCase()) === m.primary_division) ?? null;
     const { error } = await supabase.from("coverage_assignments").insert({
       booking_id: booking.id, user_id: m.id, division: (m.primary_division as any) ?? null,
       service, assigned_by: userId,
