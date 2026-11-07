@@ -265,6 +265,7 @@ function Home() {
           })}
         </div>
       </section>
+      )}
 
       {/* CTA */}
       <section className="relative overflow-hidden border-t border-border">
