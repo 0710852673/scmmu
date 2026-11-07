@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Stat, Empty, Card, SectionTitle, RoleBadge } from "@/components/portal/PortalUI";
 import {
-  ClipboardCheck, Calendar, Trophy, Award, Megaphone, Users,
+  ClipboardCheck, Calendar, Trophy, Award, Megaphone, Users, AlertTriangle,
   BookmarkCheck, Mail, FolderKanban, Settings, ArrowUpRight, ExternalLink,
   Wallet,
 } from "lucide-react";
@@ -149,6 +149,7 @@ function Dashboard() {
             <QuickLink to="/portal/admin/bookings" icon={BookmarkCheck} label="Bookings" sub="Approve coverage" />
             <QuickLink to="/portal/admin/messages" icon={Mail} label="Messages" sub="Reply & clear" />
             <QuickLink to="/portal/admin/attendance" icon={ClipboardCheck} label="Attendance" sub="Mark meeting roster" />
+            {isAdmin && <QuickLink to="/portal/admin/errors" icon={AlertTriangle} label="Error log" sub="Review server issues" />}
             <QuickLink to="/portal/announcements" icon={Megaphone} label="Announcements" sub="Post updates" />
           </div>
         </section>
