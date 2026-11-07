@@ -5,6 +5,8 @@ import { PortalPage, Card, Stat, Empty, SectionTitle } from "@/components/portal
 import { getSystemHealth } from "@/lib/audit.functions";
 import { getPortalAccess } from "@/lib/access";
 import { Users, Calendar, Image, Trophy, AlertCircle, Radio, Clock, Trash2, Download } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from "recharts";
@@ -66,6 +68,40 @@ function HealthPage() {
     URL.revokeObjectURL(url);
   }
 
+  function exportPdf() {
+    if (!data) return;
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text(`SCCMU Annual Analytics · ${data.year}`, 14, 18);
+    doc.setFontSize(9);
+    doc.text("Sivali Central College Media Unit", 14, 25);
+    autoTable(doc, {
+      startY: 32,
+      head: [["Month", "Contributions", "Points awarded", "Bookings"]],
+      body: data.months.map((m) => [m.month, String(m.contributions), String(m.points), String(m.bookings)]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [35, 39, 47] },
+    });
+    const finalY = (doc as any).lastAutoTable?.finalY ?? 32;
+    autoTable(doc, {
+      startY: finalY + 8,
+      head: [["Metric", "Value"]],
+      body: [
+        ["Total members", String(data.totals.members)],
+        ["New members", String(data.totals.newMembers)],
+        ["Events", String(data.totals.events)],
+        ["Gallery items", String(data.totals.gallery)],
+        ["Projects", String(data.totals.projects)],
+        ["Announcements", String(data.totals.announcements)],
+        ["Points awarded", String(data.totals.pointsAwarded)],
+      ],
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [35, 39, 47] },
+    });
+    doc.save(`SCCMU-Analytics-${data.year}.pdf`);
+  }
+
+
   if (isLoading || !data) return <PortalPage eyebrow="SYSTEM" title="Health & Analytics"><Empty>Loading…</Empty></PortalPage>;
 
   return (
@@ -80,6 +116,9 @@ function HealthPage() {
           </select>
           <button onClick={exportCsv} className="inline-flex h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold hover:bg-muted">
             <Download className="h-4 w-4" /> CSV
+          </button>
+          <button onClick={exportPdf} className="inline-flex h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold hover:bg-muted">
+            <FileDown className="h-4 w-4" /> PDF
           </button>
         </div>
       }
