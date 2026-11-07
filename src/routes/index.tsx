@@ -59,12 +59,12 @@ function Home() {
   const heroSub = settings.data?.hero_subtitle ?? "Photography, video, live broadcast and storytelling for Sivali Central College.";
 
   const liveStats = [
-    { icon: Calendar, label: "Events covered", value: s?.events_covered ?? 1000, suffix: "+" },
-    { icon: ImageIcon, label: "Photos captured", value: s?.photos_captured ?? 3000, suffix: "+" },
-    { icon: Video, label: "Videos produced", value: s?.videos_produced ?? 240, suffix: "" },
-    { icon: Tv, label: "Live streams", value: s?.live_streams ?? 50, suffix: "+" },
-    { icon: Users, label: "Members", value: s?.total_members ?? 68, suffix: "" },
-    { icon: Sparkles, label: "Active members", value: s?.active_members ?? 40, suffix: "" },
+    { icon: Calendar, label: "Events covered", value: s?.events_covered ?? 0, suffix: (s?.events_covered ?? 0) > 0 ? "+" : "" },
+    { icon: ImageIcon, label: "Photos captured", value: s?.photos_captured ?? 0, suffix: (s?.photos_captured ?? 0) > 0 ? "+" : "" },
+    { icon: Video, label: "Videos produced", value: s?.videos_produced ?? 0, suffix: "" },
+    { icon: Tv, label: "Live streams", value: s?.live_streams ?? 0, suffix: (s?.live_streams ?? 0) > 0 ? "+" : "" },
+    { icon: Users, label: "Members", value: s?.total_members ?? 0, suffix: "" },
+    { icon: Sparkles, label: "Active members", value: s?.active_members ?? 0, suffix: "" },
   ];
 
   return (
