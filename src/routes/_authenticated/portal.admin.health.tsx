@@ -50,9 +50,9 @@ function HealthPage() {
       ["Members", data.totals.members],
       ["New members", data.totals.newMembers],
       ["Events", data.totals.events],
-      ["Gallery items", data.totals.gallery],
-      ["Projects", data.totals.projects],
-      ["Announcements", data.totals.announcements],
+      ["Gallery items (year)", data.yearly.gallery],
+      ["Projects (year)", data.yearly.projects],
+      ["Announcements (year)", data.yearly.announcements],
       ["Points awarded", data.totals.pointsAwarded],
     ];
     const csv = rows.map((row) => row.map((cell) => {
@@ -90,9 +90,9 @@ function HealthPage() {
         ["Total members", String(data.totals.members)],
         ["New members", String(data.totals.newMembers)],
         ["Events", String(data.totals.events)],
-        ["Gallery items", String(data.totals.gallery)],
-        ["Projects", String(data.totals.projects)],
-        ["Announcements", String(data.totals.announcements)],
+        ["Gallery items (year)", String(data.yearly.gallery)],
+        ["Projects (year)", String(data.yearly.projects)],
+        ["Announcements (year)", String(data.yearly.announcements)],
         ["Points awarded", String(data.totals.pointsAwarded)],
       ],
       styles: { fontSize: 8 },
@@ -157,7 +157,9 @@ function HealthPage() {
         <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Stat label={`New members · ${compareYear}`} value={comparison.totals.newMembers} />
           <Stat label={`Events · ${compareYear}`} value={comparison.totals.events} />
-          <Stat label={`Gallery · ${compareYear}`} value={comparison.totals.gallery} />
+          <Stat label={`Gallery · ${compareYear}`} value={comparison.yearly.gallery} />
+          <Stat label={`Projects · ${compareYear}`} value={comparison.yearly.projects} />
+          <Stat label={`Announcements · ${compareYear}`} value={comparison.yearly.announcements} />
           <Stat label={`Points · ${compareYear}`} value={comparison.totals.pointsAwarded} />
         </div>
       )}
