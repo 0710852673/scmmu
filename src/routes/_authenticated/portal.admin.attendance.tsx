@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Card, Empty, Stat, SectionTitle } from "@/components/portal/PortalUI";
-import { ClipboardCheck, Save, Search, Users } from "lucide-react";
+import { Save, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/attendance")({
   beforeLoad: async ({ context }) => {
