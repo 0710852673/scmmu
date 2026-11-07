@@ -479,6 +479,8 @@ export interface FileRoutesByTo {
   '/portal/rankings': typeof AuthenticatedPortalRankingsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/activity': typeof AuthenticatedPortalAdminActivityRoute
+  '/portal/admin/attendance': typeof AuthenticatedPortalAdminAttendanceRoute
+  '/portal/admin/errors': typeof AuthenticatedPortalAdminErrorsRoute
   '/portal/admin/awards': typeof AuthenticatedPortalAdminAwardsRoute
   '/portal/admin/board': typeof AuthenticatedPortalAdminBoardRoute
   '/portal/admin/bookings': typeof AuthenticatedPortalAdminBookingsRoute
