@@ -1,6 +1,6 @@
 # SCCMU Website
 
-ell me whatt questions do u have before build
+Official website and member portal for the Sivali Central College Media Unit (SCCMU), built to manage members, publish media work, coordinate coverage requests and support unit administration.
 
 This project was built with [Lovable](https://lovable.dev).
 
