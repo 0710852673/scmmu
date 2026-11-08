@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalPage, Stat, Empty, Card, SectionTitle, RoleBadge } from "@/components/portal/PortalUI";
 import {
-  ClipboardCheck, Calendar, Trophy, Award, Megaphone, Users,
+  ClipboardCheck, Calendar, Trophy, Award, Megaphone, Users, AlertTriangle,
   BookmarkCheck, Mail, FolderKanban, Settings, ArrowUpRight, ExternalLink,
   Wallet,
 } from "lucide-react";
@@ -43,7 +43,7 @@ function Dashboard() {
     enabled: !isTic, // TIC doesn't compete with members
     queryFn: async () => {
       const [att, pts, events, ach] = await Promise.all([
-        supabase.from("attendance").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("attendance").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "present"),
         supabase.from("points_log").select("points").eq("user_id", user.id),
         supabase.from("event_participants").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "approved"),
         supabase.from("member_achievements").select("*", { count: "exact", head: true }).eq("user_id", user.id),
@@ -148,6 +148,8 @@ function Dashboard() {
             <QuickLink to="/portal/admin/members" icon={Users} label="Members" sub="View & manage" />
             <QuickLink to="/portal/admin/bookings" icon={BookmarkCheck} label="Bookings" sub="Approve coverage" />
             <QuickLink to="/portal/admin/messages" icon={Mail} label="Messages" sub="Reply & clear" />
+            <QuickLink to="/portal/admin/attendance" icon={ClipboardCheck} label="Attendance" sub="Mark meeting roster" />
+            {isAdmin && <QuickLink to="/portal/admin/errors" icon={AlertTriangle} label="Error log" sub="Review server issues" />}
             <QuickLink to="/portal/announcements" icon={Megaphone} label="Announcements" sub="Post updates" />
           </div>
         </section>

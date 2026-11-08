@@ -59,12 +59,12 @@ function Home() {
   const heroSub = settings.data?.hero_subtitle ?? "Photography, video, live broadcast and storytelling for Sivali Central College.";
 
   const liveStats = [
-    { icon: Calendar, label: "Events covered", value: s?.events_covered ?? 1000, suffix: "+" },
-    { icon: ImageIcon, label: "Photos captured", value: s?.photos_captured ?? 3000, suffix: "+" },
-    { icon: Video, label: "Videos produced", value: s?.videos_produced ?? 240, suffix: "" },
-    { icon: Tv, label: "Live streams", value: s?.live_streams ?? 50, suffix: "+" },
-    { icon: Users, label: "Members", value: s?.total_members ?? 68, suffix: "" },
-    { icon: Sparkles, label: "Active members", value: s?.active_members ?? 40, suffix: "" },
+    { icon: Calendar, label: "Events covered", value: s?.events_covered ?? 0, suffix: (s?.events_covered ?? 0) > 0 ? "+" : "" },
+    { icon: ImageIcon, label: "Photos captured", value: s?.photos_captured ?? 0, suffix: (s?.photos_captured ?? 0) > 0 ? "+" : "" },
+    { icon: Video, label: "Videos produced", value: s?.videos_produced ?? 0, suffix: "" },
+    { icon: Tv, label: "Live streams", value: s?.live_streams ?? 0, suffix: (s?.live_streams ?? 0) > 0 ? "+" : "" },
+    { icon: Users, label: "Members", value: s?.total_members ?? 0, suffix: "" },
+    { icon: Sparkles, label: "Active members", value: s?.active_members ?? 0, suffix: "" },
   ];
 
   return (
@@ -227,6 +227,7 @@ function Home() {
       </section>
 
       {/* UPCOMING EVENTS */}
+      {upcoming.length > 0 && (
       <section className="mx-auto max-w-7xl px-6 py-24 md:px-8">
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
           className="mb-12 flex flex-wrap items-end justify-between gap-4">
@@ -264,6 +265,7 @@ function Home() {
           })}
         </div>
       </section>
+      )}
 
       {/* CTA */}
       <section className="relative overflow-hidden border-t border-border">
