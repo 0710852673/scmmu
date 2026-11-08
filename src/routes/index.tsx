@@ -59,12 +59,12 @@ function Home() {
   const heroSub = settings.data?.hero_subtitle ?? "Photography, video, live broadcast and storytelling for Sivali Central College.";
 
   const liveStats = [
-    { icon: Calendar, label: "Events covered", value: s?.events_covered ?? 1000, suffix: "+" },
-    { icon: ImageIcon, label: "Photos captured", value: s?.photos_captured ?? 3000, suffix: "+" },
-    { icon: Video, label: "Videos produced", value: s?.videos_produced ?? 240, suffix: "" },
-    { icon: Tv, label: "Live streams", value: s?.live_streams ?? 50, suffix: "+" },
-    { icon: Users, label: "Members", value: s?.total_members ?? 68, suffix: "" },
-    { icon: Sparkles, label: "Active members", value: s?.active_members ?? 40, suffix: "" },
+    { icon: Calendar, label: "Events covered", value: s?.events_covered, suffix: "+" },
+    { icon: ImageIcon, label: "Photos captured", value: s?.photos_captured, suffix: "+" },
+    { icon: Video, label: "Videos produced", value: s?.videos_produced, suffix: "" },
+    { icon: Tv, label: "Live streams", value: s?.live_streams, suffix: "+" },
+    { icon: Users, label: "Members", value: s?.total_members, suffix: "" },
+    { icon: Sparkles, label: "Active members", value: s?.active_members, suffix: "" },
   ];
 
   return (
@@ -134,7 +134,7 @@ function Home() {
                 className="group rounded-2xl border border-border bg-card p-5 text-center transition-all hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg">
                 <st.icon className="mx-auto mb-3 h-5 w-5 text-brand transition-transform group-hover:scale-110" />
                 <div className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
-                  <AnimatedNumber value={st.value} suffix={st.suffix} />
+                  {st.value == null ? "—" : <AnimatedNumber value={st.value} suffix={st.suffix} />}
                 </div>
                 <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{st.label}</div>
               </motion.div>
