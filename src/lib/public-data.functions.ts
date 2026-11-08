@@ -79,10 +79,7 @@ export const getUpcomingEvents = createServerFn({ method: "GET" }).handler(async
 export const getSiteStats = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
   const { data } = await sb.from("site_stats").select("*").eq("id", 1).maybeSingle();
-  return data ?? {
-    total_members: 68, active_members: 40, photos_captured: 3000,
-    videos_produced: 240, live_streams: 50, events_covered: 1000, projects_published: 18,
-  };
+  return data;
 });
 
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(async () => {
