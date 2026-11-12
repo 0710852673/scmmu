@@ -147,12 +147,17 @@ export const getSystemHealth = createServerFn({ method: "GET" })
     await assertStaff(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const year = data.year ?? new Date().getFullYear();
+    const currentYear = new Date().getFullYear();
+    if (!Number.isInteger(year) || year < 2000 || year > currentYear + 1) {
+      throw new Error("Invalid reporting year");
+    }
     const from = `${year}-01-01`;
     const to = `${year + 1}-01-01`;
 
     const [
       profiles, contributions, bookings, events, gallery, projects,
-      announcements, streams, points, notifications, activity, trashCounts,
+      announcements, streams, points, notifications, activity,
+      trashGallery, trashProjects, trashAnnouncements,
     ] = await Promise.all([
       supabaseAdmin.from("profiles").select("id,created_at"),
       supabaseAdmin.from("contributions").select("status,created_at,kind"),
@@ -166,7 +171,18 @@ export const getSystemHealth = createServerFn({ method: "GET" })
       supabaseAdmin.from("notifications").select("id,read_at,created_at"),
       supabaseAdmin.from("activity_logs").select("id,created_at").order("created_at", { ascending: false }).limit(1),
       supabaseAdmin.from("gallery_items").select("id").not("deleted_at", "is", null),
+      supabaseAdmin.from("projects").select("id").not("deleted_at", "is", null),
+      supabaseAdmin.from("announcements").select("id").not("deleted_at", "is", null),
     ]);
+
+    const queryErrors = [
+      profiles.error, contributions.error, bookings.error, events.error, gallery.error,
+      projects.error, announcements.error, streams.error, points.error, notifications.error,
+      activity.error, trashGallery.error, trashProjects.error, trashAnnouncements.error,
+    ].filter(Boolean);
+    if (queryErrors.length) {
+      throw new Error("Could not load complete system health data. Please retry.");
+    }
 
     const inYear = (d?: string | null) => !!d && d >= from && d < to;
     const months = Array.from({ length: 12 }, (_, i) => ({
@@ -222,7 +238,9 @@ export const getSystemHealth = createServerFn({ method: "GET" })
           ["new", "contacted", "under_discussion"].includes(b.status),
         ).length,
         unreadNotifications: (notifications.data ?? []).filter((n) => !n.read_at).length,
-        trashed: (trashCounts.data ?? []).length,
+        trashed: (trashGallery.data ?? []).length +
+          (trashProjects.data ?? []).length +
+          (trashAnnouncements.data ?? []).length,
         lastActivityAt: (activity.data ?? [])[0]?.created_at ?? null,
         liveStreams: (streams.data ?? []).filter((s) => s.state === "live").length,
       },
