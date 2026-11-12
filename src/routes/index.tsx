@@ -227,7 +227,7 @@ function Home() {
       </section>
 
       {/* UPCOMING EVENTS */}
-      <section className="mx-auto max-w-7xl px-6 py-24 md:px-8">
+      {upcoming.length > 0 && (<section className="mx-auto max-w-7xl px-6 py-24 md:px-8">
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
           className="mb-12 flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -263,7 +263,7 @@ function Home() {
             );
           })}
         </div>
-      </section>
+      </section>)}
 
       {/* CTA */}
       <section className="relative overflow-hidden border-t border-border">
