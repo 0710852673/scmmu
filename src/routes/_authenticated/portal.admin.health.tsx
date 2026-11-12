@@ -1,12 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { FileDown, FileSpreadsheet } from "lucide-react";
+import { FileDown, FileSpreadsheet, Users, Calendar, Image, Trophy, AlertCircle, Radio, Clock, Trash2 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { PortalPage, Card, Stat, Empty, SectionTitle } from "@/components/portal/PortalUI";
 import { getSystemHealth } from "@/lib/audit.functions";
 import { getPortalAccess } from "@/lib/access";
-import { Users, Calendar, Image, Trophy, AlertCircle, Radio, Clock, Trash2 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from "recharts";
@@ -22,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/portal/admin/health")({
 
 function csvCell(value: string | number) {
   const raw = String(value ?? "");
-  const safe = /^[=+@\\-\\t\\r]/.test(raw) ? `'${raw}` : raw;
+  const safe = /^[=+@\\-\t\r]/.test(raw) ? `'${raw}` : raw;
   return `"${safe.replace(/"/g, '""')}"`;
 }
 
@@ -52,7 +51,7 @@ function exportHealthCsv(data: Awaited<ReturnType<typeof getSystemHealth>>, year
     ["Live streams", data.health.liveStreams],
   ];
   const csv = rows.map((row) => row.map(csvCell).join(",")).join("\r\n");
-  const blob = new Blob(["\\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+  const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
