@@ -5,9 +5,8 @@ import { CheckCircle2 } from "lucide-react";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyBookingSubmitted } from "@/lib/email.functions";
-import { COVERAGE_SERVICES } from "@/lib/coverage";
-
-const SERVICES = COVERAGE_SERVICES.map((s) => s.value);
+import { useQuery } from "@tanstack/react-query";
+import { getBookingServices } from "@/lib/public-data.functions";
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -24,6 +23,8 @@ export const Route = createFileRoute("/book")({
 function Book() {
   const [kind, setKind] = useState<"internal" | "inter_school">("internal");
   const [services, setServices] = useState<string[]>([]);
+  const svcQ = useQuery({ queryKey: ["booking-services"], queryFn: () => getBookingServices() });
+  const SERVICES = (svcQ.data?.data ?? []).map((s) => s.key);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [justSent, setJustSent] = useState(false);
@@ -160,6 +161,9 @@ function Book() {
             <label className="block text-[10px] font-bold uppercase tracking-widest text-foreground/60 mb-3">
               Required Services <span className="text-accent">— select all that apply</span>
             </label>
+            {svcQ.isLoading && <p className="text-sm text-foreground/60">Loading services…</p>}
+            {!svcQ.isLoading && (svcQ.data?.error || svcQ.isError) && <p role="alert" className="text-sm text-destructive">Services could not be loaded. Please refresh, or contact us on WhatsApp.</p>}
+            {!svcQ.isLoading && !svcQ.data?.error && SERVICES.length === 0 && <p className="text-sm text-foreground/60">No services are open for booking right now. Please contact us on WhatsApp.</p>}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {SERVICES.map((s) => {
                 const on = services.includes(s);

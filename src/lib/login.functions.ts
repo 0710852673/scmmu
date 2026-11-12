@@ -10,7 +10,7 @@ type Result =
 
 /**
  * Server-side sign-in with lockout: 5 failed attempts in 15 minutes locks the
- * email temporarily. Every attempt is logged. Inactive members are refused.
+ * email for that network address only, so others cannot lock a member out remotely. Every attempt is logged. Inactive members are refused.
  */
 export const secureSignIn = createServerFn({ method: "POST" })
   .inputValidator((d: { email: string; password: string }) => {
@@ -29,7 +29,7 @@ export const secureSignIn = createServerFn({ method: "POST" })
     const since = new Date(Date.now() - WINDOW_MIN * 60_000).toISOString();
     const { count, error: countError } = await supabaseAdmin
       .from("login_attempts").select("id", { count: "exact", head: true })
-      .eq("email", data.email).eq("success", false).gte("created_at", since);
+      .eq("email", data.email).eq("ip", ip).eq("success", false).gte("created_at", since);
     // Fail closed: if the limiter cannot be checked, do not bypass it.
     if (countError || count === null) {
       console.error("[Auth] Failed to check login attempts:", countError?.message);

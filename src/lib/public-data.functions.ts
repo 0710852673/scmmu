@@ -190,3 +190,11 @@ export const getEventPage = createServerFn({ method: "GET" })
     });
     return { event: ev, photos: photos ?? [], team };
   });
+
+// ── Active booking services (public, only key/label of active rows) ──
+export const getBookingServices = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const { data, error } = await sb.from("services").select("key,label").eq("active", true).order("display_order");
+  if (error) return { data: [] as { key: string; label: string }[], error: "Services could not be loaded." };
+  return { data: (data ?? []) as { key: string; label: string }[], error: null as string | null };
+});

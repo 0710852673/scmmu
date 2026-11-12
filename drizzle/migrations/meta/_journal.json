@@ -43,6 +43,13 @@
       "when": 1794456569575,
       "tag": "0005_tighten_announcement_and_participation_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794456790176,
+      "tag": "0006_gallery_create_requires_review",
+      "breakpoints": true
     }
   ]
 }

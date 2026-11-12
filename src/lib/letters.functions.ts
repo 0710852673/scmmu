@@ -89,7 +89,10 @@ export const uploadLetterTemplate = createServerFn({ method: "POST" })
     const roles = await assertStaff(context);
     if (!roles.includes("administrator")) throw new Error("Only administrators can replace the master template");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const bytes = Buffer.from(data.base64, "base64");
+    const { validateDocx } = await import("@/lib/docx-validate");
+    const bytes = Buffer.from(String(data.base64 ?? ""), "base64");
+    const check = validateDocx(new Uint8Array(bytes));
+    if (!check.ok) throw new Error(check.error);
     const path = `masters/${Date.now()}-${data.name.replace(/[^a-zA-Z0-9.-]+/g, "-")}.docx`;
     const up = await supabaseAdmin.storage.from("letter-templates").upload(path, bytes, {
       contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
