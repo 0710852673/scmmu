@@ -102,7 +102,7 @@ function EmailTemplates() {
               </div>
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 mt-6">Preview</div>
-                <div className="rounded-lg border border-border p-4 bg-white text-black" dangerouslySetInnerHTML={{ __html: body }} />
+                <iframe title="Email preview" sandbox="" srcDoc={body} className="w-full min-h-[400px] rounded-lg border border-border bg-background" />
               </div>
             </div>
           </Card>

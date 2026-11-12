@@ -39,6 +39,16 @@ export const dispatchNotification = createServerFn({ method: "POST" })
   .inputValidator((d: DispatchInput) => d)
   .handler(async ({ data }) => {
     if (!VALID.has(data.trigger)) return { delivered: 0, emails: 0, error: "Unknown trigger" };
+    const { getCaller } = await import("@/lib/caller.server");
+    const caller = await getCaller();
+    if (!caller.userId) return { delivered: 0, emails: 0, error: "Unauthorized" };
+    if (!caller.staff && data.trigger !== "content.submitted") return { delivered: 0, emails: 0, error: "Forbidden" };
+    data = {
+      ...data,
+      title: String(data.title ?? "").slice(0, 200),
+      body: data.body == null ? null : String(data.body).slice(0, 2000),
+      link: typeof data.link === "string" && /^\/(?!\/)/.test(data.link) ? data.link : null,
+    };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const ctx = data.context ?? {};
 
@@ -94,6 +104,7 @@ export const dispatchNotification = createServerFn({ method: "POST" })
         .select("id,email,full_name")
         .in("id", [...emailUsers]);
       const { sendMail, wrapHtml } = await import("@/lib/mail.server");
+      const esc = (v: unknown) => String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
       for (const p of profs ?? []) {
         if (!p.email) continue;
         try {
@@ -101,9 +112,9 @@ export const dispatchNotification = createServerFn({ method: "POST" })
             to: p.email,
             subject: data.title,
             html: wrapHtml(
-              data.title,
-              `<p>Hi ${p.full_name || "there"},</p><p>${data.body ?? ""}</p>` +
-                (data.link ? `<p><a href="${data.link}">Open in the member portal</a></p>` : ""),
+              esc(data.title),
+              `<p>Hi ${esc(p.full_name || "there")},</p><p>${esc(data.body)}</p>` +
+                (data.link ? `<p><a href="https://sccmu.lovable.app${esc(data.link)}">Open in the member portal</a></p>` : ""),
             ),
           });
           emails++;

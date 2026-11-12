@@ -155,8 +155,11 @@ export const notifyBookingSubmitted = createServerFn({ method: "POST" })
   .inputValidator((d: { bookingId: string }) => d)
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getCaller, isFresh } = await import("@/lib/caller.server");
+    const caller = await getCaller();
     const { data: b } = await supabaseAdmin.from("bookings").select("*").eq("id", data.bookingId).maybeSingle();
     if (!b) return { ok: false, reason: "not_found" as const };
+    if (!caller.staff && !(isFresh(b.created_at) && b.status === "new")) return { ok: false, reason: "forbidden" as const };
     const settings = await loadSettings(supabaseAdmin);
 
     const vars: Record<string, string> = {
@@ -243,6 +246,8 @@ export const notifyBookingStatus = createServerFn({ method: "POST" })
   .inputValidator((d: { bookingId: string; status: string; reason?: string }) => d)
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getCaller } = await import("@/lib/caller.server");
+    if (!(await getCaller()).staff) return { ok: false, error: "forbidden" };
     const { data: b } = await supabaseAdmin.from("bookings").select("*").eq("id", data.bookingId).maybeSingle();
     if (!b) return { ok: false, error: "booking_not_found" };
     if (!b.email) return { ok: false, error: "requester_has_no_email" };
@@ -291,6 +296,8 @@ export const notifyContactMessage = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: m } = await supabaseAdmin.from("contact_messages").select("*").eq("id", data.messageId).maybeSingle();
     if (!m) return { ok: false, reason: "not_found" as const };
+    const { getCaller, isFresh } = await import("@/lib/caller.server");
+    if (!(await getCaller()).staff && !isFresh(m.created_at)) return { ok: false, reason: "forbidden" as const };
     const settings = await loadSettings(supabaseAdmin);
     const results: Array<{ to: string; ok: boolean; error?: string }> = [];
 

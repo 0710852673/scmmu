@@ -113,7 +113,7 @@ export const getMemberProfile = createServerFn({ method: "GET" })
 export const searchSite = createServerFn({ method: "GET" })
   .inputValidator((d: { q: string }) => d)
   .handler(async ({ data }) => {
-    const q = data.q.trim();
+    const q = String(data.q ?? "").replace(/[,()*%\\:."'`]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
     if (q.length < 2) return { gallery: [], projects: [], announcements: [], events: [] };
     const sb = publicClient();
     const like = `%${q}%`;
