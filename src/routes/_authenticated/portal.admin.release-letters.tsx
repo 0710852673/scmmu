@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   FileText, Plus, Search, Trash2, ArrowUp, ArrowDown, Download, Eye, Pencil,
@@ -26,7 +26,14 @@ export const Route = createFileRoute("/_authenticated/portal/admin/release-lette
     if (!access.roles.some((r) => ALLOWED.includes(r))) throw redirect({ to: "/portal" });
     return { access };
   },
-  head: () => ({ meta: [{ title: "Release Letters · SCCMU Portal" }] }),
+  head: () => ({ meta: [
+    { title: "Release Letters · SCCMU Portal" },
+    { name: "description", content: "Manage SCCMU official release letters and Word templates." },
+    { property: "og:title", content: "Release Letters · SCCMU Portal" },
+    { property: "og:description", content: "Manage SCCMU official release letters and Word templates." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ReleaseLettersPage,
 });
 
@@ -60,6 +67,17 @@ function ReleaseLettersPage() {
   const letters = useQuery({ queryKey: ["release-letters"], queryFn: () => fetchLetters({} as never) });
   const members = useQuery({ queryKey: ["letter-members"], queryFn: () => fetchMembers({} as never) });
 
+  const actionLock = useRef(false);
+  const [actionBusy, setActionBusy] = useState(false);
+  async function runAction(action: () => Promise<unknown>) {
+    if (actionLock.current) return;
+    actionLock.current = true;
+    setActionBusy(true);
+    try { await action(); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Letter action failed"); }
+    finally { actionLock.current = false; setActionBusy(false); }
+  }
+
   const [mode, setMode] = useState<"history" | "builder">("history");
   const [step, setStep] = useState(1);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
@@ -77,6 +95,7 @@ function ReleaseLettersPage() {
 
   const saveMut = useMutation({
     mutationFn: async () => save({ data: { id: draft.id, letter_date: draft.letter_date, event_name: draft.event_name, body: draft.body, students: draft.students } }),
+    onError: (error) => toast.error(error.message ?? "Could not save the draft"),
     onSuccess: (row: any) => {
       setDraft((d) => ({ ...d, id: row?.id ?? d.id, ref_no: row?.ref_no ?? d.ref_no }));
       qc.invalidateQueries({ queryKey: ["release-letters"] });
@@ -87,6 +106,9 @@ function ReleaseLettersPage() {
     mutationFn: async () => {
       const row: any = await save({ data: { id: draft.id, letter_date: draft.letter_date, event_name: draft.event_name, body: draft.body, students: draft.students } });
       const id = row?.id ?? draft.id;
+      if (!id) throw new Error("Letter could not be saved");
+      // Preserve the saved draft ID even if generation fails, avoiding duplicate retry drafts.
+      setDraft((d) => ({ ...d, id, ref_no: row?.ref_no ?? d.ref_no }));
       const docx = await generate({ data: { id } });
       return { id, ref_no: row?.ref_no ?? draft.ref_no ?? "", docx };
     },
@@ -178,13 +200,13 @@ function ReleaseLettersPage() {
               draft={draft} errors={errors}
               onBack={() => setStep(2)}
               onEditField={(patch) => setDraft({ ...draft, ...patch })}
-              onGenerate={() => generateMut.mutate()}
-              generating={generateMut.isPending}
+              onGenerate={() => runAction(() => generateMut.mutateAsync())}
+              generating={generateMut.isPending || actionBusy || saveMut.isPending}
               generated={generated}
-              onDownloadDocx={() => draft.id && downloadDocxFor(draft.id, draft.ref_no ?? "letter", draft.event_name)}
+              onDownloadDocx={() => runAction(async () => { if (draft.id) await downloadDocxFor(draft.id, draft.ref_no ?? "letter", draft.event_name); })}
               onAnother={startNew}
-              saving={saveMut.isPending}
-              onSaveDraft={() => saveMut.mutate(undefined, { onSuccess: () => toast.success("Draft saved") })}
+              saving={saveMut.isPending || actionBusy || generateMut.isPending}
+              onSaveDraft={() => runAction(async () => { await saveMut.mutateAsync(); toast.success("Draft saved"); })}
             />
           )}
         </div>
@@ -224,15 +246,15 @@ function ReleaseLettersPage() {
                         <IconBtn onClick={() => downloadReleaseLetterPdf(
                           { letter_date: l.letter_date, event_name: l.event_name, body: l.body ?? "", students: l.students },
                           `${l.ref_no} - ${l.event_name}.pdf`)} icon={Download} label="PDF" />
-                        <IconBtn onClick={() => downloadDocxFor(l.id, l.ref_no, l.event_name)} icon={RefreshCw} label="Word" />
-                        <IconBtn onClick={async () => { await archive({ data: { id: l.id, archived: l.status !== "archived" } }); qc.invalidateQueries({ queryKey: ["release-letters"] }); }}
+                        <IconBtn disabled={actionBusy} onClick={() => runAction(() => downloadDocxFor(l.id, l.ref_no, l.event_name))} icon={RefreshCw} label="Word" />
+                        <IconBtn disabled={actionBusy} onClick={() => runAction(async () => { await archive({ data: { id: l.id, archived: l.status !== "archived" } }); qc.invalidateQueries({ queryKey: ["release-letters"] }); })}
                           icon={Archive} label={l.status === "archived" ? "Unarchive" : "Archive"} />
-                        <IconBtn danger onClick={async () => {
+                        <IconBtn disabled={actionBusy} danger onClick={() => runAction(async () => {
                           if (!confirm(`Delete ${l.ref_no}?`)) return;
                           await remove({ data: { id: l.id } });
                           qc.invalidateQueries({ queryKey: ["release-letters"] });
                           toast.success("Letter deleted");
-                        }} icon={Trash2} label="Delete" />
+                        })} icon={Trash2} label="Delete" />
                       </div>
                     </div>
                     {l.students.length ? (
@@ -266,9 +288,9 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function IconBtn({ icon: Icon, label, onClick, danger }: { icon: any; label: string; onClick: () => void; danger?: boolean }) {
+function IconBtn({ icon: Icon, label, onClick, danger, disabled }: { icon: any; label: string; onClick: () => void; danger?: boolean; disabled?: boolean }) {
   return (
-    <button onClick={onClick}
+    <button onClick={onClick} disabled={disabled}
       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors ${
         danger ? "border-red-500/40 text-red-600 hover:bg-red-500 hover:text-white" : "border-border hover:bg-muted"}`}>
       <Icon className="h-3.5 w-3.5" /> {label}
@@ -452,7 +474,7 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
               <IconBtn icon={Download} label="Download PDF" onClick={() => downloadReleaseLetterPdf(
                 { letter_date: draft.letter_date, event_name: draft.event_name, body: draft.body, students: draft.students },
                 `${generated.ref_no} - ${draft.event_name}.pdf`)} />
-              <IconBtn icon={Download} label="Download Word" onClick={onDownloadDocx} />
+              <IconBtn disabled={generating || saving} icon={Download} label="Download Word" onClick={onDownloadDocx} />
               <IconBtn icon={Plus} label="Create another" onClick={onAnother} />
             </div>
           </div>
@@ -488,19 +510,35 @@ function TemplateCard() {
   const activate = useServerFn(setActiveTemplate);
   const templates = useQuery({ queryKey: ["letter-templates"], queryFn: () => list({} as never) });
   const [busy, setBusy] = useState(false);
+  const busyLock = useRef(false);
 
-  async function onFile(file: File) {
+  async function onActivate(id: string) {
+    if (busyLock.current) return;
+    busyLock.current = true;
     setBusy(true);
     try {
+      await activate({ data: { id } });
+      qc.invalidateQueries({ queryKey: ["letter-templates"] });
+      toast.success("Master template activated");
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Activation failed"); }
+    finally { busyLock.current = false; setBusy(false); }
+  }
+
+  async function onFile(file: File) {
+    if (busyLock.current) return;
+    busyLock.current = true;
+    setBusy(true);
+    try {
+      if (!file.size || file.size > 10 * 1024 * 1024) throw new Error("Template must be a non-empty Word file no larger than 10 MB");
       const buf = new Uint8Array(await file.arrayBuffer());
       let bin = "";
-      for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]!);
+      for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i] ?? 0);
       await upload({ data: { name: file.name.replace(/\.docx$/i, ""), base64: btoa(bin) } });
       qc.invalidateQueries({ queryKey: ["letter-templates"] });
       toast.success("New master template is now active");
     } catch (e: any) {
       toast.error(e?.message ?? "Upload failed");
-    } finally { setBusy(false); }
+    } finally { busyLock.current = false; setBusy(false); }
   }
 
   return (
@@ -513,7 +551,7 @@ function TemplateCard() {
             {t.active ? (
               <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400">Active</span>
             ) : (
-              <IconBtn icon={CheckCircle2} label="Make active" onClick={async () => { await activate({ data: { id: t.id } }); qc.invalidateQueries({ queryKey: ["letter-templates"] }); }} />
+              <IconBtn disabled={busy} icon={CheckCircle2} label="Make active" onClick={() => onActivate(t.id)} />
             )}
           </div>
         ))}
@@ -521,7 +559,7 @@ function TemplateCard() {
       <label className="mt-4 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-border py-3 text-xs font-semibold hover:bg-muted">
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
         Replace master .docx
-        <input type="file" accept=".docx" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
+        <input type="file" accept=".docx" disabled={busy} hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
       </label>
     </Card>
   );

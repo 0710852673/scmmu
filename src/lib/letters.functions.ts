@@ -69,15 +69,56 @@ export const listLetterTemplates = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
+/** Best-effort compensation, not a transaction. Concurrent administrator changes can still race. */
+async function activateTemplate(client: any, id: string) {
+  const { data: target, error: lookupError } = await client.from("letter_templates").select("id,active").eq("id", id).single();
+  if (lookupError) throw new Error(lookupError.message);
+  if (!target) throw new Error("Template not found");
+  const { data: previous, error: previousError } = await client.from("letter_templates").select("id").eq("active", true).neq("id", id);
+  if (previousError) throw new Error(previousError.message);
+  const previousIds = (previous ?? []).map((row: { id: string }) => row.id);
+  // Activate first: a failed request must not leave the current master deactivated.
+  const { data: activated, error: activateError } = await client.from("letter_templates").update({ active: true }).eq("id", id).select("id").single();
+  if (activateError) throw new Error(activateError.message);
+  if (!activated) throw new Error("Template was not activated");
+  if (!previousIds.length) return;
+  const { data: cleared, error: clearError } = await client.from("letter_templates").update({ active: false }).in("id", previousIds).select("id");
+  if (!clearError && cleared?.length === previousIds.length) return;
+  const original = clearError?.message ?? "Not all previous templates were deactivated";
+  const failures: string[] = [];
+  // Restore previous masters before undoing the new activation.
+  try {
+    const restored = await client.from("letter_templates").update({ active: true }).in("id", previousIds).select("id");
+    if (restored.error || restored.data?.length !== previousIds.length) {
+      failures.push(restored.error?.message ?? "Previous masters were not all restored");
+    } else if (!target.active) {
+      const undone = await client.from("letter_templates").update({ active: false }).eq("id", id).select("id").single();
+      if (undone.error || !undone.data) failures.push(undone.error?.message ?? "New activation could not be undone");
+    }
+  } catch (error) { failures.push(error instanceof Error ? error.message : "Rollback request failed"); }
+  throw new Error(`${original}${failures.length ? `; rollback failed: ${failures.join("; ")}. Check active templates before retrying.` : "; previous activation restored"}`);
+}
+
+async function removeUploadedFile(client: any, path: string) {
+  try {
+    const { error } = await client.storage.from("letter-templates").remove([path]);
+    return error ? `; uploaded file cleanup failed: ${error.message}` : "";
+  } catch (error) {
+    return `; uploaded file cleanup failed: ${error instanceof Error ? error.message : "request failed"}`;
+  }
+}
+
 export const setActiveTemplate = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i: { id: string }) => i)
+  .inputValidator((i: { id: string }) => {
+    if (!i?.id?.trim()) throw new Error("Template ID is required");
+    return i;
+  })
   .handler(async ({ context, data }) => {
     const roles = await assertStaff(context);
     if (!roles.includes("administrator")) throw new Error("Only administrators can change the master template");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("letter_templates").update({ active: false }).neq("id", data.id);
-    await supabaseAdmin.from("letter_templates").update({ active: true }).eq("id", data.id);
+    await activateTemplate(supabaseAdmin, data.id);
     return { ok: true };
   });
 
@@ -90,28 +131,39 @@ export const uploadLetterTemplate = createServerFn({ method: "POST" })
     if (!roles.includes("administrator")) throw new Error("Only administrators can replace the master template");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { validateDocx } = await import("@/lib/docx-validate");
-    const bytes = Buffer.from(String(data.base64 ?? ""), "base64");
+    const name = String(data.name ?? "").trim();
+    if (!name || name.length > 150) throw new Error("Template name must contain 1–150 characters");
+    if (typeof data.base64 !== "string" || !data.base64.length || data.base64.length > 4 * Math.ceil(10 * 1024 * 1024 / 3)) {
+      throw new Error("Template must be a non-empty Word file no larger than 10 MB");
+    }
+    const bytes = Buffer.from(data.base64, "base64");
     const check = validateDocx(new Uint8Array(bytes));
     if (!check.ok) throw new Error(check.error);
-    const path = `masters/${Date.now()}-${data.name.replace(/[^a-zA-Z0-9.-]+/g, "-")}.docx`;
+    const path = `masters/${crypto.randomUUID()}-${name.replace(/[^a-zA-Z0-9.-]+/g, "-")}.docx`;
     const up = await supabaseAdmin.storage.from("letter-templates").upload(path, bytes, {
       contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     });
     if (up.error) throw new Error(up.error.message);
-    await supabaseAdmin.from("letter_templates").update({ active: false }).neq("id", "00000000-0000-0000-0000-000000000000");
     const { data: row, error } = await supabaseAdmin
       .from("letter_templates")
       .insert({
-        name: data.name,
+        name,
         storage_path: path,
         letterhead_image_url: data.letterhead_image_url ?? null,
-        active: true,
+        active: false,
         uploaded_by: context.userId,
       })
       .select()
       .single();
-    if (error) throw new Error(error.message);
-    return row;
+    if (error || !row) {
+      const cleanup = await removeUploadedFile(supabaseAdmin, path);
+      throw new Error((error?.message ?? "Template row was not inserted") + cleanup);
+    }
+    try { await activateTemplate(supabaseAdmin, row.id); }
+    catch (error) {
+      throw new Error(`Template saved but activation failed: ${error instanceof Error ? error.message : "request failed"}`);
+    }
+    return { ...row, active: true };
   });
 
 /* ───────────────── letters ───────────────── */
@@ -229,10 +281,12 @@ export const archiveReleaseLetter = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     await assertStaff(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin
+    const { data: updated, error } = await supabaseAdmin
       .from("release_letters")
       .update({ status: data.archived ? "archived" : "generated" })
-      .eq("id", data.id);
+      .eq("id", data.id).select("id").single();
+    if (error) throw new Error(error.message);
+    if (!updated) throw new Error("Letter was not updated");
     return { ok: true };
   });
 
@@ -253,26 +307,33 @@ export const generateReleaseLetterDocx = createServerFn({ method: "POST" })
       .select("*")
       .eq("id", data.id)
       .single();
-    if (error || !letter) throw new Error("Letter not found");
+    if (error) throw new Error(error.message);
+    if (!letter) throw new Error("Letter not found");
 
-    const { data: students } = await supabaseAdmin
+    const { data: students, error: studentsError } = await supabaseAdmin
       .from("release_letter_members")
       .select("*")
       .eq("letter_id", letter.id)
       .order("position");
 
+    if (studentsError) throw new Error(studentsError.message);
+
     const templateId = letter.template_id;
-    const { data: template } = templateId
+    const { data: template, error: templateError } = templateId
       ? await supabaseAdmin.from("letter_templates").select("*").eq("id", templateId).single()
       : await supabaseAdmin.from("letter_templates").select("*").eq("active", true).single();
+    if (templateError) throw new Error(templateError.message);
     if (!template) throw new Error("No master template configured");
 
     const dl = await supabaseAdmin.storage.from("letter-templates").download(template.storage_path);
-    if (dl.error || !dl.data) throw new Error("Could not read the master template");
+    if (dl.error) throw new Error(dl.error.message);
+    if (!dl.data) throw new Error("Could not read the master template");
     const master = new Uint8Array(await dl.data.arrayBuffer());
 
     const files = unzipSync(master);
-    const docXml = strFromU8(files["word/document.xml"]!);
+    const documentXml = files["word/document.xml"];
+    if (!documentXml) throw new Error("Master template has no Word document");
+    const docXml = strFromU8(documentXml);
     files["word/document.xml"] = strToU8(
       fillDocumentXml(docXml, {
         ref_no: letter.ref_no,
@@ -284,15 +345,23 @@ export const generateReleaseLetterDocx = createServerFn({ method: "POST" })
     );
     const out = zipSync(files, { level: 6 });
 
-    const path = `generated/${letter.ref_no}.docx`;
-    await supabaseAdmin.storage.from("letter-templates").upload(path, Buffer.from(out), {
+    // Never overwrite an earlier generated file: compensation may remove only this attempt.
+    const path = `generated/${letter.id}/${crypto.randomUUID()}.docx`;
+    const upload = await supabaseAdmin.storage.from("letter-templates").upload(path, Buffer.from(out), {
       contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      upsert: true,
     });
-    await supabaseAdmin
-      .from("release_letters")
-      .update({ status: "generated", docx_path: path, generated_at: new Date().toISOString(), template_id: template.id })
-      .eq("id", letter.id);
+    if (upload.error) throw new Error(upload.error.message);
+    try {
+      const updated = await supabaseAdmin
+        .from("release_letters")
+        .update({ status: "generated", docx_path: path, generated_at: new Date().toISOString(), template_id: template.id })
+        .eq("id", letter.id).select("id").single();
+      if (updated.error) throw new Error(updated.error.message);
+      if (!updated.data) throw new Error("Generated letter record was not updated");
+    } catch (error) {
+      const cleanup = await removeUploadedFile(supabaseAdmin, path);
+      throw new Error((error instanceof Error ? error.message : "Could not update generated letter") + cleanup);
+    }
 
     return {
       filename: `${letter.ref_no} - ${letter.event_name}.docx`,

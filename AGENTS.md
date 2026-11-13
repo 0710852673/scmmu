@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Release-letter storage writes use unique object paths and checked row updates with best-effort compensation; template activation is explicitly nontransactional to avoid destroying earlier outputs or falsely reporting success.
