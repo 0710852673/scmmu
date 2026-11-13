@@ -62,3 +62,10 @@ Keep the missing attendance/error/export work and confirmed service/URL/statisti
 
 ## Report after each priority
 Provide a completion summary, modified-file list, database changes, tests and automatic build results, remaining issues and manual configuration requirements. Do not advance to the next priority while the current one is blocked or its central workflow is unverified.
+
+## 2026-11-13 progress update
+- The GitHub Actions run for commit `81d76af6a0e456189134a62ca163ab044feb11e1` completed successfully: dependency install, lint step (configured non-blocking because the existing repository-wide lint baseline is not clean), and production build all completed. This does not mean the lint backlog is fixed.
+- A read-only security/integrity review is documented in `docs/security-review-2026-11-13.md`. Confirmed findings: the authenticated `content.submitted` notification exception is forgeable; release-letter member replacement is non-atomic and ignores errors; master-template activation/upload can leave no active template; archive and DOCX generation ignore persistence errors.
+- Live Supabase RLS metadata was inspected read-only. The connected Lovable project's database is enabled and is the live backend, not an isolated test database. Do not apply migrations or test writes there.
+- PDF designer, leadership handover, and content versioning remain unimplemented. They require an isolated development database and verified transaction/permission tests. Do not use localStorage as a substitute for durable version history or handover records.
+- Google Drive backup remains deferred. Attendance/fingerprint remains excluded.

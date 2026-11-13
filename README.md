@@ -1,6 +1,8 @@
 # SCCMU Website
 
-ell me whatt questions do u have before build
+# SCCMU Website
+
+Official website and member portal for the Sivali Central College Media Unit.
 
 This project was built with [Lovable](https://lovable.dev).
 

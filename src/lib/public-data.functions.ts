@@ -71,6 +71,7 @@ export const getUpcomingEvents = createServerFn({ method: "GET" }).handler(async
   const { data, error } = await sb
     .from("events")
     .select("id,name,event_date,location,description,category")
+    .gte("event_date", new Date().toISOString().slice(0, 10))
     .order("event_date", { ascending: true });
   if (error) return { data: [], error: error.message };
   return { data: data ?? [], error: null as string | null };
@@ -79,10 +80,7 @@ export const getUpcomingEvents = createServerFn({ method: "GET" }).handler(async
 export const getSiteStats = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
   const { data } = await sb.from("site_stats").select("*").eq("id", 1).maybeSingle();
-  return data ?? {
-    total_members: 68, active_members: 40, photos_captured: 3000,
-    videos_produced: 240, live_streams: 50, events_covered: 1000, projects_published: 18,
-  };
+  return data ?? null;
 });
 
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(async () => {
@@ -119,7 +117,7 @@ export const searchSite = createServerFn({ method: "GET" })
     const like = `%${q}%`;
     const [g, p, a, e] = await Promise.all([
       sb.from("gallery_items").select("id,title,image_url,category,media_type").eq("review_status", "approved").is("deleted_at", null).ilike("title", like).limit(20),
-      sb.from("projects").select("id,slug,title,summary,cover_image").eq("published", true).is("deleted_at", null).or(`title.ilike.${like},summary.ilike.${like}`).limit(20),
+      sb.from("projects").select("id,slug,title,summary,cover_image").eq("published", true).eq("review_status", "approved").is("deleted_at", null).or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`).or(`title.ilike.${like},summary.ilike.${like}`).limit(20),
       sb.from("announcements").select("id,title,body,created_at").eq("review_status", "approved").is("deleted_at", null).or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`).or(`title.ilike.${like},body.ilike.${like}`).limit(20),
       sb.from("events").select("id,name,event_date,location").or(`name.ilike.${like},description.ilike.${like}`).limit(20),
     ]);
@@ -141,7 +139,8 @@ export const getYearlyRecap = createServerFn({ method: "GET" })
     const [g, p, e, s] = await Promise.all([
       sb.from("gallery_items").select("id,title,image_url,category,media_type,video_url,event_date,created_at").eq("review_status", "approved").is("deleted_at", null)
         .gte("created_at", start).lte("created_at", `${end}T23:59:59`).order("created_at", { ascending: false }).limit(24),
-      sb.from("projects").select("id,slug,title,summary,cover_image,event_date").eq("published", true).is("deleted_at", null)
+      sb.from("projects").select("id,slug,title,summary,cover_image,event_date").eq("published", true).eq("review_status", "approved").is("deleted_at", null)
+        .or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`)
         .gte("event_date", start).lte("event_date", end).order("event_date", { ascending: false }).limit(20),
       sb.from("events").select("id,name,event_date,location,category")
         .gte("event_date", start).lte("event_date", end).order("event_date", { ascending: true }),

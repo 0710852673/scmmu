@@ -1,10 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { FileDown, FileSpreadsheet, Users, Calendar, Image, Trophy, AlertCircle, Radio, Clock, Trash2 } from "lucide-react";
+import { jsPDF } from "jspdf";
 import { PortalPage, Card, Stat, Empty, SectionTitle } from "@/components/portal/PortalUI";
 import { getSystemHealth } from "@/lib/audit.functions";
 import { getPortalAccess } from "@/lib/access";
-import { Users, Calendar, Image, Trophy, AlertCircle, Radio, Clock, Trash2 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from "recharts";
@@ -17,6 +18,121 @@ export const Route = createFileRoute("/_authenticated/portal/admin/health")({
   },
   component: HealthPage,
 });
+
+function csvCell(value: string | number) {
+  const raw = String(value ?? "");
+  const safe = /^[=+@\\-\t\r]/.test(raw) ? `'${raw}` : raw;
+  return `"${safe.replace(/"/g, '""')}"`;
+}
+
+function exportHealthCsv(data: Awaited<ReturnType<typeof getSystemHealth>>, year: number) {
+  const rows: Array<Array<string | number>> = [
+    ["SCCMU System Health & Analytics", year],
+    [],
+    ["Metric", "Value"],
+    ["Total members", data.totals.members],
+    ["New members", data.totals.newMembers],
+    ["Events", data.totals.events],
+    ["Gallery items", data.totals.gallery],
+    ["Projects", data.totals.projects],
+    ["Announcements", data.totals.announcements],
+    ["Streams", data.totals.streams],
+    ["Points awarded", data.totals.pointsAwarded],
+    [],
+    ["Monthly activity", "Contributions", "Points", "Bookings"],
+    ...data.months.map((m) => [m.month, m.contributions, m.points, m.bookings]),
+    [],
+    ["Attention needed", "Count"],
+    ["Pending contributions", data.health.pendingContributions],
+    ["Awaiting review", data.health.pendingReview],
+    ["Open bookings", data.health.openBookings],
+    ["Unread notifications", data.health.unreadNotifications],
+    ["Items in bin", data.health.trashed],
+    ["Live streams", data.health.liveStreams],
+  ];
+  const csv = rows.map((row) => row.map(csvCell).join(",")).join("\r\n");
+  const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `sccmu-health-${year}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportHealthPdf(data: Awaited<ReturnType<typeof getSystemHealth>>, year: number) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const left = 16;
+  let y = 18;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.text("SCCMU System Health & Analytics", left, y);
+  y += 8;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text(`Annual report: ${year}  |  Generated: ${new Date().toLocaleString()}`, left, y);
+  y += 12;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("Annual totals", left, y);
+  y += 7;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  const totals = [
+    ["Members", data.totals.members], ["New members", data.totals.newMembers],
+    ["Events", data.totals.events], ["Gallery items", data.totals.gallery],
+    ["Projects", data.totals.projects], ["Announcements", data.totals.announcements],
+    ["Streams", data.totals.streams], ["Points awarded", data.totals.pointsAwarded],
+  ];
+  for (const [label, value] of totals) {
+    doc.text(String(label), left, y);
+    doc.text(String(value), 100, y);
+    y += 6;
+  }
+  y += 5;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("Monthly activity", left, y);
+  y += 7;
+  doc.setFontSize(9);
+  doc.text("Month", left, y);
+  doc.text("Contributions", 75, y);
+  doc.text("Points", 125, y);
+  doc.text("Bookings", 165, y);
+  y += 2;
+  doc.line(left, y, 194, y);
+  y += 6;
+  doc.setFont("helvetica", "normal");
+  for (const m of data.months) {
+    doc.text(m.month, left, y);
+    doc.text(String(m.contributions), 75, y);
+    doc.text(String(m.points), 125, y);
+    doc.text(String(m.bookings), 165, y);
+    y += 6;
+  }
+  y += 5;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("Attention needed", left, y);
+  y += 7;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  const attention = [
+    ["Pending contributions", data.health.pendingContributions],
+    ["Awaiting review", data.health.pendingReview],
+    ["Open bookings", data.health.openBookings],
+    ["Unread notifications", data.health.unreadNotifications],
+    ["Items in bin", data.health.trashed],
+    ["Live streams", data.health.liveStreams],
+  ];
+  for (const [label, value] of attention) {
+    if (y > 275) { doc.addPage(); y = 20; }
+    doc.text(String(label), left, y);
+    doc.text(String(value), 100, y);
+    y += 6;
+  }
+  doc.save(`sccmu-health-${year}.pdf`);
+}
 
 function HealthPage() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -32,10 +148,20 @@ function HealthPage() {
       eyebrow="SYSTEM"
       title="Health & Analytics"
       action={
-        <select value={year} onChange={(e) => setYear(Number(e.target.value))}
-          className="h-10 rounded-lg border border-border bg-background px-3 text-sm">
-          {data.years.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div className="flex flex-wrap items-center gap-2">
+          <select value={year} onChange={(e) => setYear(Number(e.target.value))}
+            className="h-10 rounded-lg border border-border bg-background px-3 text-sm">
+            {data.years.map((y) => <option key={y} value={y}>{y}</option>)}
+          </select>
+          <button type="button" onClick={() => exportHealthCsv(data, year)}
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border px-3 text-xs font-semibold hover:bg-muted">
+            <FileSpreadsheet className="h-4 w-4" /> CSV
+          </button>
+          <button type="button" onClick={() => exportHealthPdf(data, year)}
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border px-3 text-xs font-semibold hover:bg-muted">
+            <FileDown className="h-4 w-4" /> PDF
+          </button>
+        </div>
       }
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -58,14 +58,14 @@ function Home() {
   const heroTitle = settings.data?.hero_title ?? "Every frame of school life — told by students.";
   const heroSub = settings.data?.hero_subtitle ?? "Photography, video, live broadcast and storytelling for Sivali Central College.";
 
-  const liveStats = [
-    { icon: Calendar, label: "Events covered", value: s?.events_covered ?? 1000, suffix: "+" },
-    { icon: ImageIcon, label: "Photos captured", value: s?.photos_captured ?? 3000, suffix: "+" },
-    { icon: Video, label: "Videos produced", value: s?.videos_produced ?? 240, suffix: "" },
-    { icon: Tv, label: "Live streams", value: s?.live_streams ?? 50, suffix: "+" },
-    { icon: Users, label: "Members", value: s?.total_members ?? 68, suffix: "" },
-    { icon: Sparkles, label: "Active members", value: s?.active_members ?? 40, suffix: "" },
-  ];
+  const liveStats = s ? [
+    { icon: Calendar, label: "Events covered", value: s.events_covered ?? 0, suffix: "+" },
+    { icon: ImageIcon, label: "Photos captured", value: s.photos_captured ?? 0, suffix: "+" },
+    { icon: Video, label: "Videos produced", value: s.videos_produced ?? 0, suffix: "" },
+    { icon: Tv, label: "Live streams", value: s.live_streams ?? 0, suffix: "+" },
+    { icon: Users, label: "Members", value: s.total_members ?? 0, suffix: "" },
+    { icon: Sparkles, label: "Active members", value: s.active_members ?? 0, suffix: "" },
+  ] : [];
 
   return (
     <SiteShell>
@@ -119,8 +119,8 @@ function Home() {
         </div>
       </section>
 
-      {/* LIVE STATS */}
-      <section className="border-b border-border bg-surface">
+      {/* LIVE STATS: only show verified values from site_stats; never invent figures. */}
+      {s && <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-7xl px-6 py-16 md:px-8 md:py-20">
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
             className="mb-10 text-center">
@@ -141,7 +141,7 @@ function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* FEATURED PROJECTS */}
       <section className="mx-auto max-w-7xl px-6 py-24 md:px-8">
