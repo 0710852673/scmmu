@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/portal/admin/health")({
 
 function csvCell(value: string | number) {
   const raw = String(value ?? "");
-  const safe = /^[=+@\\-\t\r]/.test(raw) ? `'${raw}` : raw;
+  const safe = /^[=+@\t\r-]/.test(raw) ? `'${raw}` : raw;
   return `"${safe.replace(/"/g, '""')}"`;
 }
 
