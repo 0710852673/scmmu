@@ -23,6 +23,8 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Unit tests
         run: bun run test
+      - name: Unit tests
+        run: bun run test
       - name: Lint (existing repository-wide baseline is not clean)
         run: bun run lint
         continue-on-error: true
