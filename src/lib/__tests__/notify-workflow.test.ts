@@ -163,6 +163,33 @@ describe("content-submission notification authorization", () => {
     expect(app.calls[0].name).toBe("claim_content_submission_notification");
   });
 
+  it("resolves every recipient set before inserting portal notifications", async () => {
+    const app = setup({
+      claim: { claim_token: "claim-roles", title: "Verified title" },
+      readResults: {
+        notification_rules: {
+          data: [{
+            conditions: {},
+            recipient_user_ids: [],
+            recipient_roles: ["section_head"],
+            deliver_portal: true,
+            deliver_email: false,
+            priority: "normal",
+          }],
+          error: null,
+        },
+        user_roles: { data: null, error: { message: "roles unavailable" } },
+      },
+    });
+    await expect(app.invoke("notifyContentSubmission", { table: "projects", id: contentId }))
+      .rejects.toThrow("roles unavailable");
+    expect(app.calls.some((call) => call.type === "insert" && call.table === "notifications")).toBe(false);
+    const finish = app.calls.find((call) =>
+      call.type === "rpc" && call.name === "finish_content_submission_notification",
+    );
+    expect(finish?.args).toMatchObject({ p_succeeded: false, p_claim_token: "claim-roles" });
+  });
+
   it("marks a claim failed when portal delivery fails so a later retry can recover", async () => {
     const app = setup({
       claim: { claim_token: "claim-2", title: "Verified title" },
@@ -201,6 +228,7 @@ describe("content-submission notification migration contract", () => {
     expect(sql).toContain("review_status = 'pending'");
     expect(sql).toContain("created_at >= now() - interval '10 minutes'");
     expect(sql).toContain("deleted_at IS NULL");
+    expect(sql).toContain("existing.claimed_at < now() - interval '10 minutes'");
   });
 
   it("uses a unique event key and service-role-only database functions", () => {
