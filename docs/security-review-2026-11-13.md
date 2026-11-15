@@ -64,3 +64,10 @@ Check and surface every storage/database error. Keep the downloaded document dis
 ## Explicit exclusions
 
 No production database writes or schema changes. No production emails, role/permission edits, merge, deployment, or changes to attendance/fingerprint systems. Google Drive backup remains deferred.
+
+
+## Implementation update — 2026-11-15
+
+The release-letter replacement path has been changed on the GitHub feature branch `fix/release-letter-atomic-save-20261115` to call a single transactional database function. The matching migration is `drizzle/migrations/0007_release_letter_atomic_save.sql`; it validates the full student payload, updates/inserts the letter, replaces its member rows, and returns the saved letter as one transaction. The server action now checks inputs and surfaces RPC failures rather than reporting partial success.
+
+**Not active yet:** this migration has not been applied to any database, and the connected Supabase instance remains production. Merge/deployment must wait for review and a genuinely isolated database test. The existing master DOCX and generated-file workflow are unchanged.

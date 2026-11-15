@@ -1716,6 +1716,18 @@ export type Database = {
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       next_mu_number: { Args: never; Returns: string }
       next_release_letter_ref: { Args: never; Returns: string }
+      save_release_letter_with_members: {
+        Args: {
+          p_body: string
+          p_created_by: string | null
+          p_event_name: string
+          p_letter_date: string
+          p_letter_id: string | null
+          p_students: Json
+          p_template_id: string | null
+        }
+        Returns: Json
+      }
       renumber_member_numbers: { Args: never; Returns: undefined }
       take_member_id: { Args: { _prefix: string }; Returns: string }
     }
