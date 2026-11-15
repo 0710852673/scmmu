@@ -86,6 +86,16 @@ async function deliverNotification(supabaseAdmin: any, input: DispatchInput) {
     }
   }
 
+  let profiles: any[] = [];
+  if (emailUsers.size) {
+    const { data, error } = await supabaseAdmin
+      .from("profiles")
+      .select("id,email,full_name")
+      .in("id", [...emailUsers]);
+    if (error) throw new Error("Could not resolve notification email recipients: " + error.message);
+    profiles = data ?? [];
+  }
+
   let delivered = 0;
   if (portalUsers.size) {
     const rows = [...portalUsers.entries()].map(([user_id, priority]) => ({
@@ -103,12 +113,6 @@ async function deliverNotification(supabaseAdmin: any, input: DispatchInput) {
 
   let emails = 0;
   if (emailUsers.size) {
-    const { data: profiles, error: profilesError } = await supabaseAdmin
-      .from("profiles")
-      .select("id,email,full_name")
-      .in("id", [...emailUsers]);
-    if (profilesError) throw new Error("Could not resolve notification email recipients: " + profilesError.message);
-
     const { sendMail, wrapHtml } = await import("@/lib/mail.server");
     const esc = (value: unknown) =>
       String(value ?? "")
@@ -116,7 +120,7 @@ async function deliverNotification(supabaseAdmin: any, input: DispatchInput) {
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
-    for (const profile of profiles ?? []) {
+    for (const profile of profiles) {
       if (!profile.email) continue;
       try {
         await sendMail({
