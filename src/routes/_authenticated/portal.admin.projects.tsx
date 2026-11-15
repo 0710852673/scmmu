@@ -64,6 +64,7 @@ function AdminProjects() {
         onUpdate={async (id, patch) => {
           const { error } = await supabase.from("projects")
             .update({ ...(patch as any), ...(canPublish ? {} : { published: false }), ...reviewFields(canPublish, user.id) } as any).eq("id", id as string);
+          if (!error && !canPublish) await notifySubmitted("projects", id as string);
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {
