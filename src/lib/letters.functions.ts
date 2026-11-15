@@ -205,63 +205,78 @@ export const saveReleaseLetter = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }) => {
     await assertStaff(context);
-    if (!data.event_name.trim()) throw new Error("Event name is required");
-    if (!data.students.length) throw new Error("At least one student is required");
-    for (const s of data.students) {
-      if (!s.full_name.trim() || !s.class_name.trim()) throw new Error("Every student needs a name and a class");
+
+    if (!data || typeof data !== "object") throw new Error("Invalid release letter");
+    if (typeof data.letter_date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(data.letter_date)) {
+      throw new Error("A valid letter date is required");
+    }
+    if (typeof data.event_name !== "string" || !data.event_name.trim()) {
+      throw new Error("Event name is required");
+    }
+    if (data.event_name.trim().length > 200) throw new Error("Event name must be 200 characters or fewer");
+    if (typeof data.body !== "string" || data.body.length > 10000) {
+      throw new Error("Letter body must be 10,000 characters or fewer");
+    }
+    if (!Array.isArray(data.students) || data.students.length < 1 || data.students.length > 100) {
+      throw new Error("Add between 1 and 100 students");
+    }
+
+    const students = data.students.map((student, index) => {
+      if (
+        !student ||
+        typeof student.full_name !== "string" ||
+        !student.full_name.trim() ||
+        student.full_name.trim().length > 200 ||
+        typeof student.class_name !== "string" ||
+        !student.class_name.trim() ||
+        student.class_name.trim().length > 80
+      ) {
+        throw new Error(`Student ${index + 1} needs a valid name and class`);
+      }
+      if (student.member_user_id != null && typeof student.member_user_id !== "string") {
+        throw new Error(`Student ${index + 1} has an invalid member reference`);
+      }
+      return {
+        member_user_id: student.member_user_id ?? null,
+        full_name: student.full_name.trim(),
+        class_name: student.class_name.trim(),
+      };
+    });
+
+    const seen = new Set<string>();
+    for (const student of students) {
+      const key = student.member_user_id ?? student.full_name.toLowerCase();
+      if (seen.has(key)) throw new Error(`${student.full_name} is listed more than once`);
+      seen.add(key);
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: template } = await supabaseAdmin
-      .from("letter_templates")
-      .select("id")
-      .eq("active", true)
-      .maybeSingle();
-
-    let letterId = data.id ?? null;
-    if (letterId) {
-      const { error } = await supabaseAdmin
-        .from("release_letters")
-        .update({
-          letter_date: data.letter_date,
-          event_name: data.event_name.trim(),
-          body: data.body,
-        })
-        .eq("id", letterId);
-      if (error) throw new Error(error.message);
-    } else {
-      const { data: ref, error: refErr } = await supabaseAdmin.rpc("next_release_letter_ref");
-      if (refErr) throw new Error(refErr.message);
-      const { data: row, error } = await supabaseAdmin
-        .from("release_letters")
-        .insert({
-          ref_no: ref as unknown as string,
-          letter_date: data.letter_date,
-          event_name: data.event_name.trim(),
-          body: data.body,
-          status: "draft",
-          template_id: template?.id ?? null,
-          created_by: context.userId,
-        })
+    let templateId: string | null = null;
+    if (!data.id) {
+      const { data: template, error: templateError } = await supabaseAdmin
+        .from("letter_templates")
         .select("id")
-        .single();
-      if (error) throw new Error(error.message);
-      letterId = row.id;
+        .eq("active", true)
+        .maybeSingle();
+      if (templateError) throw new Error(templateError.message);
+      templateId = template?.id ?? null;
     }
 
-    await supabaseAdmin.from("release_letter_members").delete().eq("letter_id", letterId);
-    await supabaseAdmin.from("release_letter_members").insert(
-      data.students.map((s, i) => ({
-        letter_id: letterId,
-        member_user_id: s.member_user_id ?? null,
-        full_name: s.full_name.trim(),
-        class_name: s.class_name.trim(),
-        position: i,
-      })),
-    );
-
-    const { data: saved } = await supabaseAdmin.from("release_letters").select("*").eq("id", letterId).single();
-    return saved;
+    // The database function replaces the letter and its student rows in one transaction.
+    const { data: saved, error } = await supabaseAdmin.rpc("save_release_letter_with_members", {
+      p_letter_id: data.id ?? null,
+      p_letter_date: data.letter_date,
+      p_event_name: data.event_name.trim(),
+      p_body: data.body,
+      p_students: students,
+      p_template_id: templateId,
+      p_created_by: context.userId,
+    });
+    if (error) throw new Error(error.message);
+    if (!saved || typeof saved !== "object" || Array.isArray(saved)) {
+      throw new Error("The release letter was not saved");
+    }
+    return saved as unknown as Omit<LetterRecord, "students">;
   });
 
 export const deleteReleaseLetter = createServerFn({ method: "POST" })
