@@ -41,7 +41,7 @@ export function reviewFields(canPublish: boolean, userId: string) {
       };
 }
 
-/** Tell reviewers about a newly created submission after server-side verification. */
+/** Tell reviewers about a pending submission after server-side verification. */
 export async function notifySubmitted(table: ContentSubmissionTable, id: string) {
   await notifyContentSubmission({ data: { table, id } }).catch(() => null);
 }
