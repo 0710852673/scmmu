@@ -19,5 +19,6 @@ Production database changes, merging, publishing, and deployment require explici
 - GitHub repository 0710852673/scmmu is confirmed as the Lovable-connected repository: the Lovable project's latest commit matches GitHub main at 4ad3132f38b65156f395b70cd68398b2722315f4.
 - Release-letter member replacement is prepared in PR #5. Its GitHub Actions CI passed, but its migration is not applied and the PR remains unmerged.
 - Content-submission notification hardening is prepared in the dependent feature branch. It verifies ownership, pending status and record age in the database, and uses a unique claim to prevent repeated delivery. Its migration still requires isolated-database verification before rollout.
+- The notification claim currently covers one initial/recent pending event per content item. Older resubmissions after changes are requested need a versioned submission event and are not yet separately notified.
 - Do not treat either change as production-complete until the migration and workflow are verified in an isolated database and reviewed.
 - Attendance/fingerprint and Google Drive remain deferred.
