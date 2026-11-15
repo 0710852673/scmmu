@@ -20,5 +20,6 @@ Production database changes, merging, publishing, and deployment require explici
 - Release-letter member replacement is prepared in PR #5. Its GitHub Actions CI passed, but its migration is not applied and the PR remains unmerged.
 - Content-submission notification hardening is prepared in the dependent feature branch. It verifies ownership, pending status and record age in the database, and uses a unique claim to prevent repeated delivery. Its migration still requires isolated-database verification before rollout.
 - The notification claim currently covers one initial/recent pending event per content item. Older resubmissions after changes are requested need a versioned submission event and are not yet separately notified.
+- Portal-event claims are deduplicated, but email delivery remains best-effort. Strict exactly-once email delivery is not guaranteed if a provider accepts a message and the request then times out before the claim is finalized.
 - Do not treat either change as production-complete until the migration and workflow are verified in an isolated database and reviewed.
 - Attendance/fingerprint and Google Drive remain deferred.
