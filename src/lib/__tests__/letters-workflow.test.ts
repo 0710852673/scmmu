@@ -10,7 +10,11 @@ const source = readFileSync(new URL("../letters.functions.ts", import.meta.url),
   .replace(/await import\("fflate"\)/g, "codec");
 const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 
-function setup(results: Record<string, unknown>, storageErrors: Record<string, unknown> = {}, rpcResults: Record<string, unknown> = {}) {
+function setup(
+  results: Record<string, unknown>,
+  storageErrors: Record<string, unknown> = {},
+  rpcResults: Record<string, unknown> = {},
+) {
   const calls: string[] = [];
   const rpcCalls: { name: string; args: unknown }[] = [];
   const client = {
@@ -22,10 +26,28 @@ function setup(results: Record<string, unknown>, storageErrors: Record<string, u
     from(table: string) {
       let operation = "read";
       const query: Record<string, unknown> = {};
-      for (const method of ["select", "eq", "neq", "in", "order", "single", "maybeSingle", "insert", "update", "delete"]) {
+      for (const method of [
+        "select",
+        "eq",
+        "neq",
+        "in",
+        "order",
+        "single",
+        "maybeSingle",
+        "insert",
+        "update",
+        "delete",
+      ]) {
         query[method] = (...args: unknown[]) => {
           if (["insert", "update", "delete"].includes(method)) operation = method;
-          if (method === "update") operation += (args[0] as { active?: boolean }).active === true ? ":on" : (args[0] as { active?: boolean }).active === false ? ":off" : "";
+          if (method === "update") {
+            operation +=
+              (args[0] as { active?: boolean }).active === true
+                ? ":on"
+                : (args[0] as { active?: boolean }).active === false
+                  ? ":off"
+                  : "";
+          }
           return query;
         };
       }
@@ -33,44 +55,102 @@ function setup(results: Record<string, unknown>, storageErrors: Record<string, u
         const key = `${table}:${operation}`;
         calls.push(key);
         const value = results[key];
-        return Promise.resolve(resolve(Array.isArray(value) ? value.shift() : value ?? { data: { id: "target" }, error: null }));
+        return Promise.resolve(
+          resolve(
+            Array.isArray(value)
+              ? value.shift()
+              : (value ?? { data: { id: "target" }, error: null }),
+          ),
+        );
       };
       return query;
     },
-    storage: { from: () => ({
-      upload: vi.fn(async (path: string) => { calls.push(`upload:${path}`); return { error: storageErrors.upload ?? null }; }),
-      remove: vi.fn(async (paths: string[]) => { calls.push(`remove:${paths[0]}`); return { error: storageErrors.remove ?? null }; }),
-      download: vi.fn(async () => ({ data: new Blob(["master"]), error: storageErrors.download ?? null })),
-    }) },
+    storage: {
+      from: () => ({
+        upload: vi.fn(async (path: string) => {
+          calls.push(`upload:${path}`);
+          return { error: storageErrors.upload ?? null };
+        }),
+        remove: vi.fn(async (paths: string[]) => {
+          calls.push(`remove:${paths[0]}`);
+          return { error: storageErrors.remove ?? null };
+        }),
+        download: vi.fn(async () => ({
+          data: new Blob(["master"]),
+          error: storageErrors.download ?? null,
+        })),
+      }),
+    },
   };
   const builder = () => {
-    const chain = { middleware: () => chain, inputValidator: () => chain, handler: (fn: unknown) => fn };
+    const chain = {
+      middleware: () => chain,
+      inputValidator: () => chain,
+      handler: (fn: unknown) => fn,
+    };
     return chain;
   };
   const exports: Record<string, (input: unknown) => Promise<unknown>> = {};
-  new Function("exports", "client", "createServerFn", "requireSupabaseAuth", "fillDocumentXml", "codec", compiled)(
-    exports, client, builder, {}, () => "filled", {
+  new Function(
+    "exports",
+    "client",
+    "createServerFn",
+    "requireSupabaseAuth",
+    "fillDocumentXml",
+    "codec",
+    compiled,
+  )(
+    exports,
+    client,
+    builder,
+    {},
+    () => "filled",
+    {
       unzipSync: () => ({ "word/document.xml": new Uint8Array([1]) }),
-      strFromU8: () => "xml", strToU8: () => new Uint8Array([1]), zipSync: () => new Uint8Array([1]),
+      strFromU8: () => "xml",
+      strToU8: () => new Uint8Array([1]),
+      zipSync: () => new Uint8Array([1]),
     },
   );
-  const context = { userId: "staff", supabase: { from: () => ({ select: () => ({ eq: async () => ({ data: [{ role: "administrator" }] }) }) }) } };
-  return { calls, rpcCalls, invoke: (name: string, data: unknown) => exports[name]({ context, data }) };
+  const context = {
+    userId: "staff",
+    supabase: {
+      from: () => ({
+        select: () => ({
+          eq: async () => ({ data: [{ role: "administrator" }] }),
+        }),
+      }),
+    },
+  };
+  return {
+    calls,
+    rpcCalls,
+    invoke: (name: string, data: unknown) => exports[name]({ context, data }),
+  };
 }
 
 describe("release-letter failure handling (mocked storage/database)", () => {
   it("replaces a letter and its members through one atomic database function", async () => {
     const memberId = "11111111-1111-4111-8111-111111111111";
-    const app = setup({}, {}, {
-      save_release_letter_with_members: { data: { id: "letter", ref_no: "RL-2026-0001" }, error: null },
-    });
-    await expect(app.invoke("saveReleaseLetter", {
-      id: "letter",
-      letter_date: "2026-11-15",
-      event_name: "SCCMU AGM",
-      body: "Media coverage",
-      students: [{ member_user_id: memberId, full_name: "Member One", class_name: "12-A" }],
-    })).resolves.toMatchObject({ id: "letter" });
+    const app = setup(
+      {},
+      {},
+      {
+        save_release_letter_with_members: {
+          data: { id: "letter", ref_no: "RL-2026-0001" },
+          error: null,
+        },
+      },
+    );
+    await expect(
+      app.invoke("saveReleaseLetter", {
+        id: "letter",
+        letter_date: "2026-11-15",
+        event_name: "SCCMU AGM",
+        body: "Media coverage",
+        students: [{ member_user_id: memberId, full_name: "Member One", class_name: "12-A" }],
+      }),
+    ).resolves.toMatchObject({ id: "letter" });
     expect(app.rpcCalls).toHaveLength(1);
     expect(app.rpcCalls[0].name).toBe("save_release_letter_with_members");
     expect(app.rpcCalls[0].args).toMatchObject({
@@ -78,36 +158,51 @@ describe("release-letter failure handling (mocked storage/database)", () => {
       p_event_name: "SCCMU AGM",
       p_students: [{ member_user_id: memberId, full_name: "Member One", class_name: "12-A" }],
     });
-    expect(app.calls.some((call) => call.startsWith("release_letter_members:delete"))).toBe(false);
-    expect(app.calls.some((call) => call.startsWith("release_letter_members:insert"))).toBe(false);
+    expect(
+      app.calls.some((call) => call.startsWith("release_letter_members:delete")),
+    ).toBe(false);
+    expect(
+      app.calls.some((call) => call.startsWith("release_letter_members:insert")),
+    ).toBe(false);
   });
 
   it("surfaces transaction failures and never reports a partial save as success", async () => {
-    const app = setup({}, {}, {
-      save_release_letter_with_members: { data: null, error: { message: "member replacement failed" } },
-    });
-    await expect(app.invoke("saveReleaseLetter", {
-      id: "letter",
-      letter_date: "2026-11-15",
-      event_name: "SCCMU AGM",
-      body: "",
-      students: [{ full_name: "Member One", class_name: "12-A" }],
-    })).rejects.toThrow("member replacement failed");
+    const app = setup(
+      {},
+      {},
+      {
+        save_release_letter_with_members: {
+          data: null,
+          error: { message: "member replacement failed" },
+        },
+      },
+    );
+    await expect(
+      app.invoke("saveReleaseLetter", {
+        id: "letter",
+        letter_date: "2026-11-15",
+        event_name: "SCCMU AGM",
+        body: "",
+        students: [{ full_name: "Member One", class_name: "12-A" }],
+      }),
+    ).rejects.toThrow("member replacement failed");
   });
 
   it("rejects duplicate students before calling the database", async () => {
     const memberId = "11111111-1111-4111-8111-111111111111";
     const app = setup({});
-    await expect(app.invoke("saveReleaseLetter", {
-      id: "letter",
-      letter_date: "2026-11-15",
-      event_name: "SCCMU AGM",
-      body: "",
-      students: [
-        { member_user_id: memberId, full_name: "Member One", class_name: "12-A" },
-        { member_user_id: memberId, full_name: "Member One", class_name: "12-A" },
-      ],
-    })).rejects.toThrow("listed more than once");
+    await expect(
+      app.invoke("saveReleaseLetter", {
+        id: "letter",
+        letter_date: "2026-11-15",
+        event_name: "SCCMU AGM",
+        body: "",
+        students: [
+          { member_user_id: memberId, full_name: "Member One", class_name: "12-A" },
+          { member_user_id: memberId, full_name: "Member One", class_name: "12-A" },
+        ],
+      }),
+    ).rejects.toThrow("listed more than once");
     expect(app.rpcCalls).toHaveLength(0);
   });
 
