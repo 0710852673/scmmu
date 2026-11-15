@@ -1,5 +1,6 @@
 -- Server-verified, one-time notifications for newly created pending content.
 -- This migration is additive and must be tested on an isolated database before rollout.
+-- Failed claims can be retried; abandoned processing claims expire after ten minutes.
 
 CREATE TABLE IF NOT EXISTS public.content_submission_notification_events (
   content_table text NOT NULL CHECK (content_table IN ('projects', 'gallery_items', 'announcements')),
