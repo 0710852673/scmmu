@@ -100,13 +100,13 @@ function NewModal({ onClose, authorId, canPublish }: { onClose: () => void; auth
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const { error } = await supabase.from("announcements").insert({
+    const { data: created, error } = await supabase.from("announcements").insert({
       title, body, pinned, author_id: authorId, ...reviewFields(canPublish, authorId),
-    });
+    }).select("id").single();
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error || !created?.id) return toast.error(error?.message ?? "Announcement could not be confirmed.");
     if (canPublish) toast.success("Announcement published");
-    else { toast.success("Sent for review"); await notifySubmitted("Announcement", title); }
+    else { toast.success("Sent for review"); await notifySubmitted("announcements", created.id); }
     qc.invalidateQueries({ queryKey: ["all-announcements"] });
     qc.invalidateQueries({ queryKey: ["recent-announcements"] });
     onClose();
