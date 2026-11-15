@@ -77,15 +77,16 @@ function AdminGallery() {
         canEdit={isStaff || permissions.includes("gallery.edit")}
         canDelete={isStaff || permissions.includes("gallery.delete")}
         onCreate={async (row) => {
-          const { error } = await supabase.from("gallery_items")
-            .insert({ ...(row as any), event_id: (row as any).event_id || null, ...reviewFields(canPublish, user.id) } as any);
-          if (!error && !canPublish) await notifySubmitted("Gallery media", (row as any).title || "Untitled media");
+          const { data: created, error } = await supabase.from("gallery_items")
+            .insert({ ...(row as any), event_id: (row as any).event_id || null, ...reviewFields(canPublish, user.id) } as any)
+            .select("id")
+            .single();
+          if (!error && created?.id && !canPublish) await notifySubmitted("gallery_items", created.id);
           return { error: error?.message ?? null };
         }}
         onUpdate={async (id, patch) => {
           const { error } = await supabase.from("gallery_items")
             .update({ ...(patch as any), ...("event_id" in (patch as any) ? { event_id: (patch as any).event_id || null } : {}), ...reviewFields(canPublish, user.id) } as any).eq("id", id as string);
-          if (!error && !canPublish) await notifySubmitted("Gallery media", (patch as any).title || "Untitled media");
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {
