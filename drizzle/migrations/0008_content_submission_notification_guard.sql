@@ -30,7 +30,7 @@ DECLARE
   v_title text;
   v_claim_token uuid;
 BEGIN
-  IF p_content_table NOT IN ('projects', 'gallery_items', 'announcements') THEN
+  IF p_content_table IS NULL OR p_content_table NOT IN ('projects', 'gallery_items', 'announcements') THEN
     RAISE EXCEPTION 'Unsupported content table';
   END IF;
   IF p_content_id IS NULL OR p_submitted_by IS NULL THEN
@@ -100,7 +100,7 @@ BEGIN
     claimed_at = now(),
     completed_at = NULL
   WHERE existing.status = 'failed'
-     OR (existing.status = 'processing' AND existing.claimed_at < now() - interval '5 minutes')
+     OR (existing.status = 'processing' AND existing.claimed_at < now() - interval '10 minutes')
   RETURNING claim_token INTO v_claim_token;
 
   IF v_claim_token IS NULL THEN
