@@ -87,6 +87,7 @@ function AdminGallery() {
         onUpdate={async (id, patch) => {
           const { error } = await supabase.from("gallery_items")
             .update({ ...(patch as any), ...("event_id" in (patch as any) ? { event_id: (patch as any).event_id || null } : {}), ...reviewFields(canPublish, user.id) } as any).eq("id", id as string);
+          if (!error && !canPublish) await notifySubmitted("gallery_items", id as string);
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {
