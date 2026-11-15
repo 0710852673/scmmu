@@ -207,7 +207,7 @@ export const saveReleaseLetter = createServerFn({ method: "POST" })
     await assertStaff(context);
 
     if (!data || typeof data !== "object") throw new Error("Invalid release letter");
-    if (typeof data.letter_date !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(data.letter_date)) {
+    if (typeof data.letter_date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(data.letter_date)) {
       throw new Error("A valid letter date is required");
     }
     if (typeof data.event_name !== "string" || !data.event_name.trim()) {
