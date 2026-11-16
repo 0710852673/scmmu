@@ -17,6 +17,7 @@ import {
 } from "@/lib/letters.functions";
 import { DEFAULT_LETTER_BODY, validateLetter, type LetterStudent } from "@/lib/letter-doc";
 import { releaseLetterPdfObjectUrl, downloadReleaseLetterPdf } from "@/lib/release-letter-pdf";
+import { DEFAULT_LETTER_PDF_LAYOUT, LETTER_PDF_LAYOUT_STORAGE_KEY, normalizeLetterPdfLayout, type LetterPdfLayout } from "@/lib/letter-pdf-layout";
 
 const ALLOWED = ["administrator", "tic", "section_head", "executive_board"];
 
@@ -82,6 +83,27 @@ function ReleaseLettersPage() {
   const [step, setStep] = useState(1);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [generated, setGenerated] = useState<{ ref_no: string; event: string } | null>(null);
+  const [pdfLayout, setPdfLayout] = useState<LetterPdfLayout>(DEFAULT_LETTER_PDF_LAYOUT);
+  const [layoutReady, setLayoutReady] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LETTER_PDF_LAYOUT_STORAGE_KEY);
+      if (saved) setPdfLayout(normalizeLetterPdfLayout(JSON.parse(saved)));
+    } catch {
+      // Ignore invalid or unavailable browser storage and keep the official defaults.
+    }
+    setLayoutReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!layoutReady) return;
+    try {
+      localStorage.setItem(LETTER_PDF_LAYOUT_STORAGE_KEY, JSON.stringify(pdfLayout));
+    } catch {
+      // PDF generation still works when browser storage is disabled or full.
+    }
+  }, [layoutReady, pdfLayout]);
 
   const startNew = () => { setDraft(emptyDraft()); setStep(1); setGenerated(null); setMode("builder"); };
   const editLetter = (l: LetterRecord) => {
@@ -198,6 +220,8 @@ function ReleaseLettersPage() {
           {step === 3 && (
             <PreviewStep
               draft={draft} errors={errors}
+              layout={pdfLayout}
+              onLayoutChange={(patch) => setPdfLayout((current) => normalizeLetterPdfLayout({ ...current, ...patch }))}
               onBack={() => setStep(2)}
               onEditField={(patch) => setDraft({ ...draft, ...patch })}
               onGenerate={() => runAction(() => generateMut.mutateAsync())}
@@ -240,12 +264,12 @@ function ReleaseLettersPage() {
                       <div className="flex flex-wrap gap-2">
                         <IconBtn onClick={() => editLetter(l)} icon={Pencil} label="Edit" />
                         <IconBtn onClick={async () => {
-                          const url = await releaseLetterPdfObjectUrl({ letter_date: l.letter_date, event_name: l.event_name, body: l.body ?? "", students: l.students });
+                          const url = await releaseLetterPdfObjectUrl({ letter_date: l.letter_date, event_name: l.event_name, body: l.body ?? "", students: l.students }, pdfLayout);
                           window.open(url, "_blank");
                         }} icon={Eye} label="View PDF" />
                         <IconBtn onClick={() => downloadReleaseLetterPdf(
                           { letter_date: l.letter_date, event_name: l.event_name, body: l.body ?? "", students: l.students },
-                          `${l.ref_no} - ${l.event_name}.pdf`)} icon={Download} label="PDF" />
+                          `${l.ref_no} - ${l.event_name}.pdf`, pdfLayout)} icon={Download} label="PDF" />
                         <IconBtn disabled={actionBusy} onClick={() => runAction(() => downloadDocxFor(l.id, l.ref_no, l.event_name))} icon={RefreshCw} label="Word" />
                         <IconBtn disabled={actionBusy} onClick={() => runAction(async () => { await archive({ data: { id: l.id, archived: l.status !== "archived" } }); qc.invalidateQueries({ queryKey: ["release-letters"] }); })}
                           icon={Archive} label={l.status === "archived" ? "Unarchive" : "Archive"} />
@@ -401,7 +425,7 @@ function StudentStep({ members, students, setStudents, onBack, onNext }: {
   );
 }
 
-function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generating, generated, onDownloadDocx, onAnother, onSaveDraft, saving }: {
+function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generating, generated, onDownloadDocx, onAnother, onSaveDraft, saving, layout, onLayoutChange }: {
   draft: Draft; errors: string[];
   onBack: () => void;
   onEditField: (p: Partial<Draft>) => void;
@@ -409,6 +433,8 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
   generated: { ref_no: string; event: string } | null;
   onDownloadDocx: () => void; onAnother: () => void;
   onSaveDraft: () => void; saving: boolean;
+  layout: LetterPdfLayout;
+  onLayoutChange: (patch: Partial<LetterPdfLayout>) => void;
 }) {
   const [url, setUrl] = useState<string | null>(null);
   const [building, setBuilding] = useState(true);
@@ -417,17 +443,50 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
     let dead = false;
     let made: string | null = null;
     setBuilding(true);
-    releaseLetterPdfObjectUrl({ letter_date: draft.letter_date, event_name: draft.event_name, body: draft.body, students: draft.students })
+    releaseLetterPdfObjectUrl({ letter_date: draft.letter_date, event_name: draft.event_name, body: draft.body, students: draft.students }, layout)
       .then((u) => { if (dead) { URL.revokeObjectURL(u); return; } made = u; setUrl(u); })
       .catch(() => toast.error("Could not build the preview"))
       .finally(() => !dead && setBuilding(false));
     return () => { dead = true; if (made) URL.revokeObjectURL(made); };
-  }, [draft.letter_date, draft.event_name, draft.body, JSON.stringify(draft.students)]);
+  }, [draft.letter_date, draft.event_name, draft.body, JSON.stringify(draft.students), layout]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.15fr]">
       <Card>
         <SectionTitle sub="Any last correction only affects this letter — never the master template.">Final edits</SectionTitle>
+        <div className="mb-5 rounded-xl border border-border bg-muted/20 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em]">PDF layout designer</div>
+              <p className="mt-1 text-xs text-muted-foreground">Adjust the printed PDF and watch the preview update.</p>
+            </div>
+            <button type="button" onClick={() => onLayoutChange(DEFAULT_LETTER_PDF_LAYOUT)}
+              className="rounded-full border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-widest">
+              Reset layout
+            </button>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <LayoutRange label="Left margin" unit="mm" value={layout.left} min={55} max={85} step={1}
+              onChange={(value) => onLayoutChange({ left: value })} />
+            <LayoutRange label="Right edge" unit="mm" value={layout.right} min={175} max={202} step={1}
+              onChange={(value) => onLayoutChange({ right: value })} />
+            <LayoutRange label="Top start" unit="mm" value={layout.top} min={42} max={90} step={1}
+              onChange={(value) => onLayoutChange({ top: value })} />
+            <LayoutRange label="Bottom limit" unit="mm" value={layout.bottom} min={220} max={280} step={1}
+              onChange={(value) => onLayoutChange({ bottom: value })} />
+            <LayoutRange label="Font size" unit="pt" value={layout.fontSize} min={9} max={14} step={0.5}
+              onChange={(value) => onLayoutChange({ fontSize: value })} />
+            <LayoutRange label="Line spacing" unit="mm" value={layout.lineSpacing} min={4.2} max={8} step={0.1}
+              onChange={(value) => onLayoutChange({ lineSpacing: value })} />
+            <LayoutRange label="Paragraph gap" unit="mm" value={layout.paragraphSpacing} min={0} max={8} step={0.5}
+              onChange={(value) => onLayoutChange({ paragraphSpacing: value })} />
+            <LayoutRange label="Signature gap" unit="mm" value={layout.signatureSpacing} min={8} max={20} step={0.5}
+              onChange={(value) => onLayoutChange({ signatureSpacing: value })} />
+          </div>
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            Layout settings are saved on this device only. The official letterhead artwork and Word master remain unchanged.
+          </p>
+        </div>
         <div className="space-y-4">
           <Field label="Date"><input type="date" value={draft.letter_date} onChange={(e) => onEditField({ letter_date: e.target.value })} className={inputCls} /></Field>
           <Field label="Event name"><input value={draft.event_name} onChange={(e) => onEditField({ event_name: e.target.value })} className={inputCls} /></Field>
@@ -473,7 +532,7 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
             <div className="mt-3 flex flex-wrap gap-2">
               <IconBtn icon={Download} label="Download PDF" onClick={() => downloadReleaseLetterPdf(
                 { letter_date: draft.letter_date, event_name: draft.event_name, body: draft.body, students: draft.students },
-                `${generated.ref_no} - ${draft.event_name}.pdf`)} />
+                `${generated.ref_no} - ${draft.event_name}.pdf`, layout)} />
               <IconBtn disabled={generating || saving} icon={Download} label="Download Word" onClick={onDownloadDocx} />
               <IconBtn icon={Plus} label="Create another" onClick={onAnother} />
             </div>
@@ -503,6 +562,23 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
   );
 }
 
+function LayoutRange({ label, unit, value, min, max, step, onChange }: {
+  label: string; unit: string; value: number; min: number; max: number; step: number;
+  onChange: (value: number) => void;
+}) {
+  const display = Number.isInteger(value) ? String(value) : value.toFixed(1);
+  return (
+    <label className="block min-w-0">
+      <span className="flex items-center justify-between gap-2 text-xs">
+        <span className="font-medium">{label}</span>
+        <span className="tabular-nums text-muted-foreground">{display} {unit}</span>
+      </span>
+      <input type="range" min={min} max={max} step={step} value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="mt-2 w-full accent-brand" />
+    </label>
+  );
+}
 function TemplateCard() {
   const qc = useQueryClient();
   const list = useServerFn(listLetterTemplates);
