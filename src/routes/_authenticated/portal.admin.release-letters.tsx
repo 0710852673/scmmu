@@ -466,11 +466,11 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
             </button>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <LayoutRange label="Left margin" unit="mm" value={layout.left} min={55} max={85} step={1}
+            <LayoutRange label="Left margin" unit="mm" value={layout.left} min={60} max={85} step={1}
               onChange={(value) => onLayoutChange({ left: value })} />
             <LayoutRange label="Right edge" unit="mm" value={layout.right} min={175} max={202} step={1}
               onChange={(value) => onLayoutChange({ right: value })} />
-            <LayoutRange label="Top start" unit="mm" value={layout.top} min={42} max={90} step={1}
+            <LayoutRange label="Top start" unit="mm" value={layout.top} min={48} max={90} step={1}
               onChange={(value) => onLayoutChange({ top: value })} />
             <LayoutRange label="Bottom limit" unit="mm" value={layout.bottom} min={220} max={280} step={1}
               onChange={(value) => onLayoutChange({ bottom: value })} />

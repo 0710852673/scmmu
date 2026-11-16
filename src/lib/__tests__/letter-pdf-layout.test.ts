@@ -16,6 +16,10 @@ describe("release-letter PDF layout", () => {
     });
   });
 
+  it("keeps content clear of the letterhead sidebar and header", () => {
+    expect(normalizeLetterPdfLayout({ left: -10, top: 0 })).toMatchObject({ left: 60, top: 48 });
+  });
+
   it("falls back to defaults for non-finite values", () => {
     expect(normalizeLetterPdfLayout({
       left: Number.NaN, right: Number.POSITIVE_INFINITY, top: Number.NaN,

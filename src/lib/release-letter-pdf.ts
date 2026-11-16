@@ -115,7 +115,7 @@ export async function renderReleaseLetterPdf(data: LetterPdfInput, layoutOptions
   doc.setFontSize(layout.fontSize);
   doc.text("……………………………..", X, y);
   doc.text("……………………………..", RIGHT, y, { align: "right" });
-  y += 5.6;
+  y += layout.lineSpacing;
   doc.text("Teacher-in-Charge", X, y);
   doc.text("Principal", RIGHT, y, { align: "right" });
 

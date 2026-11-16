@@ -1,7 +1,7 @@
 # SCCMU 2.0 delivery tracker
 
 ## Feature delivery
-- [x] First PDF layout-designer increment: live preview controls for margins, font size, line spacing, paragraph spacing and signature spacing. Settings are saved in the current browser only; the official 2026 letterhead and Word master remain unchanged.
+- [ ] First PDF layout-designer increment: live preview controls for margins, font size, line spacing, paragraph spacing and signature spacing. Implemented in draft PR #7; settings are browser-local and preview verification is pending.
 - [ ] Complete the shared PDF template designer: reusable layouts, shared presets, server-side persistence and reliable printable output.
 - [ ] Annual leadership terms, position assignments, board history and handover records.
 - [ ] Content versioning and revision history across projects, gallery items and announcements.

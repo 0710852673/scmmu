@@ -29,9 +29,9 @@ function clamp(value: unknown, fallback: number, min: number, max: number): numb
 
 /** Keep browser-saved layout settings inside safe A4 coordinates and readable ranges. */
 export function normalizeLetterPdfLayout(input?: Partial<LetterPdfLayout> | null): LetterPdfLayout {
-  const left = clamp(input?.left, DEFAULT_LETTER_PDF_LAYOUT.left, 55, 85);
+  const left = clamp(input?.left, DEFAULT_LETTER_PDF_LAYOUT.left, 60, 85);
   const right = clamp(input?.right, DEFAULT_LETTER_PDF_LAYOUT.right, left + 60, 202);
-  const top = clamp(input?.top, DEFAULT_LETTER_PDF_LAYOUT.top, 42, 90);
+  const top = clamp(input?.top, DEFAULT_LETTER_PDF_LAYOUT.top, 48, 90);
   const bottom = clamp(input?.bottom, DEFAULT_LETTER_PDF_LAYOUT.bottom, top + 100, 280);
 
   return {
