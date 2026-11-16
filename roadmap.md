@@ -6,7 +6,8 @@
 - [ ] Annual leadership terms, position assignments, board history and handover records.
 - [ ] Content versioning and revision history across projects, gallery items and announcements.
 - [ ] Role-based permission hardening with one user-controlled Super Admin and scoped regular Admin roles.
-- [x] Existing admin activity/error monitoring and yearly analytics exports are present in the current codebase.
+- [ ] Error/incident dashboard with actionable diagnostics.
+- [x] Existing admin activity log, system-health metrics and yearly analytics exports are present in the current codebase.
 - [ ] AI coordination assistant using an existing model; Telegram first, WhatsApp later.
 
 ## Reliability work in review
