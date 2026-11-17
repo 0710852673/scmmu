@@ -31,6 +31,7 @@ export function reviewFields(canPublish: boolean, userId: string) {
         reviewed_by: userId,
         reviewed_at: new Date().toISOString(),
         review_note: null,
+        updated_at: new Date().toISOString(),
       }
     : {
         review_status: "pending",
@@ -38,6 +39,7 @@ export function reviewFields(canPublish: boolean, userId: string) {
         reviewed_by: null,
         reviewed_at: null,
         review_note: null,
+        updated_at: new Date().toISOString(),
       };
 }
 

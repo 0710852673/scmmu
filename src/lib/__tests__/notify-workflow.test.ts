@@ -222,19 +222,28 @@ describe("content-submission notification migration contract", () => {
     new URL("../../../drizzle/migrations/0008_content_submission_notification_guard.sql", import.meta.url),
     "utf8",
   );
+  const reviewSource = readFileSync(new URL("../review.ts", import.meta.url), "utf8");
 
   it("restricts claims to owned, pending, recently created, non-deleted content", () => {
     expect(sql).toContain("submitted_by = p_submitted_by");
     expect(sql).toContain("review_status = 'pending'");
-    expect(sql).toContain("created_at >= now() - interval '10 minutes'");
+    expect(sql).toContain("updated_at >= now() - interval '10 minutes'");
+    expect(sql).toContain("updated_at <= now() + interval '1 minute'");
+    expect(sql).not.toContain("created_at >= now() - interval '10 minutes'");
     expect(sql).toContain("deleted_at IS NULL");
     expect(sql).toContain("existing.claimed_at < now() - interval '10 minutes'");
   });
 
-  it("uses a unique event key and service-role-only database functions", () => {
-    expect(sql).toContain("PRIMARY KEY (content_table, content_id)");
+  it("uses a versioned event key and service-role-only database functions", () => {
+    expect(sql).toContain("submission_version timestamptz NOT NULL");
+    expect(sql).toContain("PRIMARY KEY (content_table, content_id, submission_version)");
+    expect(sql).toContain("ON CONFLICT (content_table, content_id, submission_version)");
     expect(sql).toContain("FROM PUBLIC, anon, authenticated");
     expect(sql).toContain("TO service_role");
     expect(sql).toContain("claim_token");
+  });
+
+  it("stamps a new version when content is created or resubmitted", () => {
+    expect(reviewSource.match(/updated_at: new Date\(\)\.toISOString\(\)/g)).toHaveLength(2);
   });
 });

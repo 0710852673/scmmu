@@ -5,12 +5,13 @@
 CREATE TABLE IF NOT EXISTS public.content_submission_notification_events (
   content_table text NOT NULL CHECK (content_table IN ('projects', 'gallery_items', 'announcements')),
   content_id uuid NOT NULL,
+  submission_version timestamptz NOT NULL,
   submitted_by uuid NOT NULL,
   status text NOT NULL DEFAULT 'processing' CHECK (status IN ('processing', 'delivered', 'failed')),
   claim_token uuid NOT NULL DEFAULT gen_random_uuid(),
   claimed_at timestamptz NOT NULL DEFAULT now(),
   completed_at timestamptz,
-  PRIMARY KEY (content_table, content_id)
+  PRIMARY KEY (content_table, content_id, submission_version)
 );
 
 ALTER TABLE public.content_submission_notification_events ENABLE ROW LEVEL SECURITY;
@@ -29,6 +30,7 @@ SET search_path = public, pg_temp
 AS $function$
 DECLARE
   v_title text;
+  v_submission_version timestamptz;
   v_claim_token uuid;
 BEGIN
   IF p_content_table IS NULL OR p_content_table NOT IN ('projects', 'gallery_items', 'announcements') THEN
@@ -40,35 +42,35 @@ BEGIN
 
   CASE p_content_table
     WHEN 'projects' THEN
-      SELECT COALESCE(NULLIF(btrim(title), ''), 'Untitled project')
-      INTO v_title
+      SELECT COALESCE(NULLIF(btrim(title), ''), 'Untitled project'), updated_at
+      INTO v_title, v_submission_version
       FROM public.projects
       WHERE id = p_content_id
         AND submitted_by = p_submitted_by
         AND review_status = 'pending'
         AND deleted_at IS NULL
-        AND created_at >= now() - interval '10 minutes'
-        AND created_at <= now() + interval '1 minute';
+        AND updated_at >= now() - interval '10 minutes'
+        AND updated_at <= now() + interval '1 minute';
     WHEN 'gallery_items' THEN
-      SELECT COALESCE(NULLIF(btrim(title), ''), 'Untitled media')
-      INTO v_title
+      SELECT COALESCE(NULLIF(btrim(title), ''), 'Untitled media'), updated_at
+      INTO v_title, v_submission_version
       FROM public.gallery_items
       WHERE id = p_content_id
         AND submitted_by = p_submitted_by
         AND review_status = 'pending'
         AND deleted_at IS NULL
-        AND created_at >= now() - interval '10 minutes'
-        AND created_at <= now() + interval '1 minute';
+        AND updated_at >= now() - interval '10 minutes'
+        AND updated_at <= now() + interval '1 minute';
     WHEN 'announcements' THEN
-      SELECT COALESCE(NULLIF(btrim(title), ''), 'Untitled announcement')
-      INTO v_title
+      SELECT COALESCE(NULLIF(btrim(title), ''), 'Untitled announcement'), updated_at
+      INTO v_title, v_submission_version
       FROM public.announcements
       WHERE id = p_content_id
         AND submitted_by = p_submitted_by
         AND review_status = 'pending'
         AND deleted_at IS NULL
-        AND created_at >= now() - interval '10 minutes'
-        AND created_at <= now() + interval '1 minute';
+        AND updated_at >= now() - interval '10 minutes'
+        AND updated_at <= now() + interval '1 minute';
   END CASE;
 
   IF NOT FOUND THEN
@@ -78,6 +80,7 @@ BEGIN
   INSERT INTO public.content_submission_notification_events AS existing (
     content_table,
     content_id,
+    submission_version,
     submitted_by,
     status,
     claim_token,
@@ -87,13 +90,14 @@ BEGIN
   VALUES (
     p_content_table,
     p_content_id,
+    v_submission_version,
     p_submitted_by,
     'processing',
     gen_random_uuid(),
     now(),
     NULL
   )
-  ON CONFLICT (content_table, content_id) DO UPDATE
+  ON CONFLICT (content_table, content_id, submission_version) DO UPDATE
   SET
     submitted_by = EXCLUDED.submitted_by,
     status = 'processing',
