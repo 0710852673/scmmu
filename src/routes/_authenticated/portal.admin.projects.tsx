@@ -54,15 +54,17 @@ function AdminProjects() {
         canEdit={isStaff || permissions.includes("projects.edit")}
         canDelete={isStaff || permissions.includes("projects.delete")}
         onCreate={async (row) => {
-          const { error } = await supabase.from("projects")
-            .insert({ ...(row as any), published: canPublish ? (row as any).published ?? true : false, ...reviewFields(canPublish, user.id) } as any);
-          if (!error && !canPublish) await notifySubmitted("Project", (row as any).title || "Untitled project");
+          const { data: created, error } = await supabase.from("projects")
+            .insert({ ...(row as any), published: canPublish ? (row as any).published ?? true : false, ...reviewFields(canPublish, user.id) } as any)
+            .select("id")
+            .single();
+          if (!error && created?.id && !canPublish) await notifySubmitted("projects", created.id);
           return { error: error?.message ?? null };
         }}
         onUpdate={async (id, patch) => {
           const { error } = await supabase.from("projects")
             .update({ ...(patch as any), ...(canPublish ? {} : { published: false }), ...reviewFields(canPublish, user.id) } as any).eq("id", id as string);
-          if (!error && !canPublish) await notifySubmitted("Project", (patch as any).title || "Untitled project");
+          if (!error && !canPublish) await notifySubmitted("projects", id as string);
           return { error: error?.message ?? null };
         }}
         onDelete={async (id) => {

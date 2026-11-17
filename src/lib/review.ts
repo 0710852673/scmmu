@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { dispatchNotification } from "@/lib/notify.functions";
+import { notifyContentSubmission, type ContentSubmissionTable } from "@/lib/notify.functions";
 import { getPortalAccess } from "@/lib/access";
 
 /** Roles allowed to publish straight to the public site without review. */
@@ -31,6 +31,7 @@ export function reviewFields(canPublish: boolean, userId: string) {
         reviewed_by: userId,
         reviewed_at: new Date().toISOString(),
         review_note: null,
+        updated_at: new Date().toISOString(),
       }
     : {
         review_status: "pending",
@@ -38,18 +39,11 @@ export function reviewFields(canPublish: boolean, userId: string) {
         reviewed_by: null,
         reviewed_at: null,
         review_note: null,
+        updated_at: new Date().toISOString(),
       };
 }
 
-/** Tell reviewers something is waiting in the queue. Never throws. */
-export async function notifySubmitted(label: string, title: string) {
-  await dispatchNotification({
-    data: {
-      trigger: "content.submitted",
-      title: `${label} submitted for review: ${title}`,
-      body: "A new item is waiting in the content review queue.",
-      link: "/portal/admin/review-queue",
-      context: {},
-    },
-  }).catch(() => null);
+/** Tell reviewers about a pending submission after server-side verification. */
+export async function notifySubmitted(table: ContentSubmissionTable, id: string) {
+  await notifyContentSubmission({ data: { table, id } }).catch(() => null);
 }
