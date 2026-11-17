@@ -1,13 +1,23 @@
-# SCCMU remaining development
+# SCCMU 2.0 delivery tracker
 
-- [x] Inspect existing source, routes, permissions, live schema, local repository changes, and release-letter foundations without changing production data.
-- [ ] Priority 1: PDF template designer, reusable layouts, live preview, printable server-generated PDFs; preserve the Word master.
-- [ ] Priority 2: annual leadership periods, position assignments, historical boards, responsibility checklist, authorized finalization without administrator role changes.
-- [ ] Priority 3: review deep security results, fix confirmed authorization/exposure issues, test access boundaries, document manual review.
-- [ ] Priority 4: private drafts, review/publish/archive workflow and revision history, extending existing content review.
-- [ ] Priority 5: real Google Drive connection, scheduled/manual backups, history and verified safe restore.
-- [x] Welcome URL fixed; booking/notification authorization fixed; empty homepage events hidden.
-- [ ] Follow-ups: error dashboard, yearly CSV/PDF exports, dynamic public booking services, GitHub CI status. (Attendance out of scope.)
+## Feature delivery
+- [x] First PDF layout-designer increment in draft PR #7: live preview controls for margins, font size, line spacing, paragraph spacing and signature spacing; up to 10 named browser-local presets with validated JSON import/export. The official 2026 letterhead and Word master remain unchanged.
+- [ ] Complete the shared PDF template designer: shared presets, server-side persistence and reliable printable output.
+- [ ] Annual leadership terms, position assignments, board history and handover records.
+- [ ] Content versioning and revision history across projects, gallery items and announcements.
+- [ ] Role-based permission hardening with one user-controlled Super Admin and scoped regular Admin roles.
+- [ ] Error/incident dashboard with actionable diagnostics.
+- [x] Existing admin activity log, system-health metrics and yearly analytics exports are present in the current codebase.
+- [ ] AI coordination assistant using an existing model; Telegram first, WhatsApp later.
 
-## Authorization boundary
-Production database changes, merging, publishing, and deployment require explicit user authorization. Implement schema-dependent work in an isolated development draft only after its separate test database is verified. GitHub provider connection/status cannot be established from local Git remotes alone.
+## Reliability work in review
+- [ ] PR #5: atomic release-letter/member replacement and checked release-letter storage/update failures. Draft; CI passed. Migration is prepared but has not been tested against an isolated development database or applied.
+- [ ] PR #6: server-verified content-submission notifications. Draft stacked on PR #5; latest CI passed. Claims are versioned by content updated_at so each fresh pending resubmission can notify once. Migration remains untested against an isolated development database and unapplied.
+- [x] Existing public booking, member, review, points and admin workflows are retained; do not redesign working dashboard areas without a verified reason.
+
+## Explicitly deferred
+- Google Drive backup and restore.
+- Attendance and fingerprint-machine integration.
+
+## Safety boundary
+The connected Supabase database is production and must remain untouched. Do not apply migrations, write test data, change roles, send emails, merge pull requests, publish or deploy without explicit authorization. Validate database-dependent changes against a genuinely isolated development database first.

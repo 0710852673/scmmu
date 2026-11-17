@@ -5,16 +5,10 @@
 import jsPDF from "jspdf";
 import letterhead from "@/assets/letterhead-2026.png.asset.json";
 import { formatLetterDate, studentLines, type LetterStudent } from "@/lib/letter-doc";
+import { normalizeLetterPdfLayout, type LetterPdfLayout } from "@/lib/letter-pdf-layout";
 
 const PAGE_W = 210;
 const PAGE_H = 297;
-
-// Content column, measured from the master template (left sidebar ends ~57mm).
-const X = 63;
-const RIGHT = 198;
-const WIDTH = RIGHT - X;
-const TOP = 56;
-const BOTTOM = 262;
 
 let cached: string | null = null;
 async function letterheadDataUrl() {
@@ -37,7 +31,13 @@ export type LetterPdfInput = {
   students: LetterStudent[];
 };
 
-export async function renderReleaseLetterPdf(data: LetterPdfInput) {
+export async function renderReleaseLetterPdf(data: LetterPdfInput, layoutOptions?: Partial<LetterPdfLayout>) {
+  const layout = normalizeLetterPdfLayout(layoutOptions);
+  const X = layout.left;
+  const RIGHT = layout.right;
+  const WIDTH = RIGHT - X;
+  const TOP = layout.top;
+  const BOTTOM = layout.bottom;
   const bg = await letterheadDataUrl();
   const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
 
@@ -46,7 +46,7 @@ export async function renderReleaseLetterPdf(data: LetterPdfInput) {
     doc.addImage(bg, "PNG", 0, 0, PAGE_W, PAGE_H, undefined, "FAST");
     doc.setTextColor(17, 19, 24);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
+    doc.setFontSize(layout.fontSize);
   };
 
   newPage(true);
@@ -59,7 +59,7 @@ export async function renderReleaseLetterPdf(data: LetterPdfInput) {
 
   const line = (text: string, opts: { bold?: boolean; underline?: boolean; size?: number } = {}) => {
     doc.setFont("helvetica", opts.bold ? "bold" : "normal");
-    doc.setFontSize(opts.size ?? 11);
+    doc.setFontSize(opts.size ?? layout.fontSize);
     if (y > BOTTOM) { newPage(); y = TOP; }
     doc.text(text, X, y);
     if (opts.underline && text.trim()) {
@@ -67,18 +67,18 @@ export async function renderReleaseLetterPdf(data: LetterPdfInput) {
       doc.setLineWidth(0.3);
       doc.line(X, y + 1.1, X + w, y + 1.1);
     }
-    y += 5.6;
+    y += layout.lineSpacing;
   };
 
   const paragraph = (text: string, opts: { bold?: boolean } = {}) => {
     doc.setFont("helvetica", opts.bold ? "bold" : "normal");
-    doc.setFontSize(11);
+    doc.setFontSize(layout.fontSize);
     for (const l of doc.splitTextToSize(text, WIDTH) as string[]) line(l, opts);
   };
 
   // Date (right aligned within the content column, as in the template)
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
+  doc.setFontSize(layout.fontSize);
   doc.text(formatLetterDate(data.letter_date), RIGHT, y, { align: "right" });
   y += 10;
 
@@ -92,13 +92,13 @@ export async function renderReleaseLetterPdf(data: LetterPdfInput) {
   space(4);
 
   line("Dear Sir,");
-  space(3);
+  space(layout.paragraphSpacing);
 
   const body = (data.body || "").trim();
   if (body) {
     for (const para of body.split(/\n{2,}/)) {
       paragraph(para.replace(/\n/g, " "));
-      space(3);
+      space(layout.paragraphSpacing);
     }
   }
 
@@ -109,25 +109,25 @@ export async function renderReleaseLetterPdf(data: LetterPdfInput) {
   line("Thank you.");
   space(4);
   line("Yours faithfully,");
-  space(12);
+  space(layout.signatureSpacing);
 
   if (y > BOTTOM - 16) { newPage(); y = TOP + 20; }
-  doc.setFontSize(11);
+  doc.setFontSize(layout.fontSize);
   doc.text("……………………………..", X, y);
   doc.text("……………………………..", RIGHT, y, { align: "right" });
-  y += 5.6;
+  y += layout.lineSpacing;
   doc.text("Teacher-in-Charge", X, y);
   doc.text("Principal", RIGHT, y, { align: "right" });
 
   return doc;
 }
 
-export async function downloadReleaseLetterPdf(data: LetterPdfInput, filename: string) {
-  const doc = await renderReleaseLetterPdf(data);
+export async function downloadReleaseLetterPdf(data: LetterPdfInput, filename: string, layout?: Partial<LetterPdfLayout>) {
+  const doc = await renderReleaseLetterPdf(data, layout);
   doc.save(filename);
 }
 
-export async function releaseLetterPdfObjectUrl(data: LetterPdfInput) {
-  const doc = await renderReleaseLetterPdf(data);
+export async function releaseLetterPdfObjectUrl(data: LetterPdfInput, layout?: Partial<LetterPdfLayout>) {
+  const doc = await renderReleaseLetterPdf(data, layout);
   return URL.createObjectURL(doc.output("blob"));
 }
