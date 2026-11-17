@@ -1,8 +1,8 @@
 # SCCMU 2.0 delivery tracker
 
 ## Feature delivery
-- [ ] First PDF layout-designer increment: live preview controls for margins, font size, line spacing, paragraph spacing and signature spacing. Implemented in draft PR #7; settings are browser-local and preview verification is pending.
-- [ ] Complete the shared PDF template designer: reusable layouts, shared presets, server-side persistence and reliable printable output.
+- [x] First PDF layout-designer increment in draft PR #7: live preview controls for margins, font size, line spacing, paragraph spacing and signature spacing; up to 10 named browser-local presets with validated JSON import/export. The official 2026 letterhead and Word master remain unchanged.
+- [ ] Complete the shared PDF template designer: shared presets, server-side persistence and reliable printable output.
 - [ ] Annual leadership terms, position assignments, board history and handover records.
 - [ ] Content versioning and revision history across projects, gallery items and announcements.
 - [ ] Role-based permission hardening with one user-controlled Super Admin and scoped regular Admin roles.
@@ -11,8 +11,8 @@
 - [ ] AI coordination assistant using an existing model; Telegram first, WhatsApp later.
 
 ## Reliability work in review
-- [ ] PR #5: atomic release-letter/member replacement. Draft; CI passed. Migration is prepared but has not been tested against an isolated development database or applied.
-- [ ] PR #6: server-verified content-submission notifications. Draft stacked on PR #5; CI passed. Initial pending submissions are covered; later resubmissions still need versioned submission events.
+- [ ] PR #5: atomic release-letter/member replacement and checked release-letter storage/update failures. Draft; CI passed. Migration is prepared but has not been tested against an isolated development database or applied.
+- [ ] PR #6: server-verified content-submission notifications. Draft stacked on PR #5; latest CI passed. Claims are versioned by content updated_at so each fresh pending resubmission can notify once. Migration remains untested against an isolated development database and unapplied.
 - [x] Existing public booking, member, review, points and admin workflows are retained; do not redesign working dashboard areas without a verified reason.
 
 ## Explicitly deferred
