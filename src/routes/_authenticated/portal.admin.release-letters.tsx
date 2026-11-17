@@ -17,7 +17,7 @@ import {
 } from "@/lib/letters.functions";
 import { DEFAULT_LETTER_BODY, validateLetter, type LetterStudent } from "@/lib/letter-doc";
 import { releaseLetterPdfObjectUrl, downloadReleaseLetterPdf } from "@/lib/release-letter-pdf";
-import { DEFAULT_LETTER_PDF_LAYOUT, LETTER_PDF_LAYOUT_STORAGE_KEY, normalizeLetterPdfLayout, type LetterPdfLayout } from "@/lib/letter-pdf-layout";
+import { DEFAULT_LETTER_PDF_LAYOUT, LETTER_PDF_LAYOUT_PRESETS_STORAGE_KEY, LETTER_PDF_LAYOUT_STORAGE_KEY, normalizeLetterPdfLayout, normalizeLetterPdfLayoutPreset, normalizeLetterPdfLayoutPresets, type LetterPdfLayout, type LetterPdfLayoutPreset } from "@/lib/letter-pdf-layout";
 
 const ALLOWED = ["administrator", "tic", "section_head", "executive_board"];
 
@@ -438,6 +438,29 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
 }) {
   const [url, setUrl] = useState<string | null>(null);
   const [building, setBuilding] = useState(true);
+  const [presets, setPresets] = useState<LetterPdfLayoutPreset[]>([]);
+  const [presetName, setPresetName] = useState("");
+  const [selectedPreset, setSelectedPreset] = useState("");
+  const [presetsReady, setPresetsReady] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LETTER_PDF_LAYOUT_PRESETS_STORAGE_KEY);
+      if (saved) setPresets(normalizeLetterPdfLayoutPresets(JSON.parse(saved)));
+    } catch {
+      // Ignore invalid or unavailable browser storage.
+    }
+    setPresetsReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!presetsReady) return;
+    try {
+      localStorage.setItem(LETTER_PDF_LAYOUT_PRESETS_STORAGE_KEY, JSON.stringify(presets));
+    } catch {
+      // Presets remain usable for the current page when storage is unavailable.
+    }
+  }, [presetsReady, presets]);
 
   useEffect(() => {
     let dead = false;
@@ -449,6 +472,87 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
       .finally(() => !dead && setBuilding(false));
     return () => { dead = true; if (made) URL.revokeObjectURL(made); };
   }, [draft.letter_date, draft.event_name, draft.body, JSON.stringify(draft.students), layout]);
+
+  function savePreset() {
+    const name = presetName.trim().slice(0, 40);
+    if (!name) {
+      toast.error("Enter a name for this layout preset");
+      return;
+    }
+    const preset: LetterPdfLayoutPreset = {
+      format: "sccmu-release-letter-pdf-layout",
+      version: 1,
+      name,
+      layout: normalizeLetterPdfLayout(layout),
+    };
+    setPresets((current) =>
+      normalizeLetterPdfLayoutPresets([
+        preset,
+        ...current.filter((item) => item.name.toLocaleLowerCase() !== name.toLocaleLowerCase()),
+      ]),
+    );
+    setSelectedPreset(name);
+    toast.success("Layout preset saved");
+  }
+
+  function loadPreset() {
+    const preset = presets.find((item) => item.name === selectedPreset);
+    if (!preset) {
+      toast.error("Choose a saved preset first");
+      return;
+    }
+    onLayoutChange(preset.layout);
+    setPresetName(preset.name);
+    toast.success("Layout preset applied");
+  }
+
+  function removePreset() {
+    if (!selectedPreset) return;
+    setPresets((current) => current.filter((item) => item.name !== selectedPreset));
+    setSelectedPreset("");
+    toast.success("Layout preset removed");
+  }
+
+  function exportPreset() {
+    const preset = presets.find((item) => item.name === selectedPreset);
+    if (!preset) {
+      toast.error("Choose a saved preset first");
+      return;
+    }
+    const blob = new Blob([JSON.stringify(preset, null, 2)], { type: "application/json" });
+    const downloadUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    const safeName = preset.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "layout";
+    anchor.href = downloadUrl;
+    anchor.download = `sccmu-pdf-layout-${safeName}.json`;
+    anchor.click();
+    URL.revokeObjectURL(downloadUrl);
+  }
+
+  async function importPreset(file: File | undefined) {
+    if (!file) return;
+    if (file.size > 32 * 1024) {
+      toast.error("Preset files must be 32 KB or smaller");
+      return;
+    }
+    try {
+      const parsed: unknown = JSON.parse(await file.text());
+      const preset = normalizeLetterPdfLayoutPreset(parsed);
+      if (!preset) throw new Error("This is not a valid SCCMU PDF layout preset");
+      setPresets((current) =>
+        normalizeLetterPdfLayoutPresets([
+          preset,
+          ...current.filter((item) => item.name.toLocaleLowerCase() !== preset.name.toLocaleLowerCase()),
+        ]),
+      );
+      setSelectedPreset(preset.name);
+      setPresetName(preset.name);
+      onLayoutChange(preset.layout);
+      toast.success("Preset imported and applied");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not import this preset");
+    }
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.15fr]">
@@ -482,6 +586,40 @@ function PreviewStep({ draft, errors, onBack, onEditField, onGenerate, generatin
               onChange={(value) => onLayoutChange({ paragraphSpacing: value })} />
             <LayoutRange label="Signature gap" unit="mm" value={layout.signatureSpacing} min={8} max={20} step={0.5}
               onChange={(value) => onLayoutChange({ signatureSpacing: value })} />
+          </div>
+          <div className="mt-4 rounded-lg border border-border bg-background/60 p-3">
+            <div className="text-[10px] font-bold uppercase tracking-[0.16em]">Saved layout presets</div>
+            <div className="mt-2 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
+              <select value={selectedPreset} onChange={(event) => setSelectedPreset(event.target.value)}
+                disabled={!presets.length} className={inputCls}>
+                <option value="">Choose a preset</option>
+                {presets.map((preset) => <option key={preset.name} value={preset.name}>{preset.name}</option>)}
+              </select>
+              <button type="button" onClick={loadPreset} disabled={!selectedPreset}
+                className="rounded-full border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-widest disabled:opacity-40">Load</button>
+              <button type="button" onClick={exportPreset} disabled={!selectedPreset}
+                className="rounded-full border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-widest disabled:opacity-40">Export</button>
+              <button type="button" onClick={removePreset} disabled={!selectedPreset}
+                className="rounded-full border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-widest disabled:opacity-40">Delete</button>
+            </div>
+            <div className="mt-2 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+              <input value={presetName} maxLength={40} onChange={(event) => setPresetName(event.target.value)}
+                placeholder="Name this layout" className={inputCls} />
+              <button type="button" onClick={savePreset}
+                className="rounded-full border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-widest">Save current</button>
+              <label className="inline-flex cursor-pointer items-center justify-center rounded-full border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-widest">
+                Import JSON
+                <input type="file" accept="application/json,.json" className="sr-only"
+                  onChange={(event) => {
+                    const file = event.currentTarget.files?.[0];
+                    if (file) void importPreset(file);
+                    event.currentTarget.value = "";
+                  }} />
+              </label>
+            </div>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Keep up to 10 presets in this browser. Export a JSON file to move a layout to another device.
+            </p>
           </div>
           <p className="mt-3 text-[11px] text-muted-foreground">
             Layout settings are saved on this device only. The official letterhead artwork and Word master remain unchanged.

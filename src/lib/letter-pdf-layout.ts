@@ -45,3 +45,57 @@ export function normalizeLetterPdfLayout(input?: Partial<LetterPdfLayout> | null
     signatureSpacing: clamp(input?.signatureSpacing, DEFAULT_LETTER_PDF_LAYOUT.signatureSpacing, 8, 20),
   };
 }
+
+
+export const LETTER_PDF_LAYOUT_PRESETS_STORAGE_KEY = "sccmu.release-letter.pdf-layout-presets.v1";
+export type LetterPdfLayoutPreset = {
+  format: "sccmu-release-letter-pdf-layout";
+  version: 1;
+  name: string;
+  layout: LetterPdfLayout;
+};
+
+const MAX_LETTER_PDF_LAYOUT_PRESETS = 10;
+
+export function normalizeLetterPdfLayoutPreset(input: unknown): LetterPdfLayoutPreset | null {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null;
+  const candidate = input as {
+    format?: unknown;
+    version?: unknown;
+    name?: unknown;
+    layout?: unknown;
+  };
+  if (
+    candidate.format !== "sccmu-release-letter-pdf-layout" ||
+    candidate.version !== 1 ||
+    typeof candidate.name !== "string" ||
+    !candidate.name.trim() ||
+    !candidate.layout ||
+    typeof candidate.layout !== "object" ||
+    Array.isArray(candidate.layout)
+  ) {
+    return null;
+  }
+  return {
+    format: "sccmu-release-letter-pdf-layout",
+    version: 1,
+    name: candidate.name.trim().slice(0, 40),
+    layout: normalizeLetterPdfLayout(candidate.layout as Partial<LetterPdfLayout>),
+  };
+}
+
+export function normalizeLetterPdfLayoutPresets(input: unknown): LetterPdfLayoutPreset[] {
+  if (!Array.isArray(input)) return [];
+  const names = new Set<string>();
+  const presets: LetterPdfLayoutPreset[] = [];
+  for (const item of input) {
+    const preset = normalizeLetterPdfLayoutPreset(item);
+    if (!preset) continue;
+    const key = preset.name.toLocaleLowerCase();
+    if (names.has(key)) continue;
+    names.add(key);
+    presets.push(preset);
+    if (presets.length >= MAX_LETTER_PDF_LAYOUT_PRESETS) break;
+  }
+  return presets;
+}
