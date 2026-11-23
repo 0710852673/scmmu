@@ -6,6 +6,9 @@ This checklist is intentionally implementation-focused. It excludes attendance/f
 - [x] Privacy-safe assistant request contract and context sanitization
 - [x] Privacy-safe diagnostics metadata normalization
 - [x] Diagnostics redaction tests
+- [x] Structured diagnostic incident model with safe metadata
+- [x] Centralized coordination approval boundary
+- [x] Scoped authorization helper and permission normalization tests
 - [ ] Wire diagnostics into the existing error ingestion/dashboard route
 - [ ] Route-level permission tests for Super Admin, administrator, and non-staff boundaries
 - [ ] Finish and integrate PDF designer workflow
