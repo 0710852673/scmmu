@@ -4,6 +4,7 @@ import {
   type CoordinationProvider,
   type CoordinationRequest,
 } from "./coordination-contract";
+import { requiresHumanApproval } from "./coordination-approval";
 
 export type CoordinationExecution = {
   text: string;
@@ -29,7 +30,7 @@ export async function executeCoordinationRequest(
     text: result.text,
     model: result.model,
     requestedAction: request.requestedAction,
-    requiresApproval: request.requestedAction !== "answer",
+    requiresApproval: requiresHumanApproval(request),
   };
 }
 
