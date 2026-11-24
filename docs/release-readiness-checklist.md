@@ -13,8 +13,8 @@ This checklist is intentionally implementation-focused. It excludes attendance/f
 - [ ] Route-level permission tests for Super Admin, administrator, and non-staff boundaries
 - [ ] Finish and integrate PDF designer workflow
 - [ ] Annual leadership/handover workflow
-- [ ] Content revision history and restore controls
-- [ ] Reports and role-protected exports
+- [x] Revision history utility, comparison, restore-as-draft behavior, and tests (UI/database wiring pending)
+- [x] CSV export utility with escaping/formatting tests (role-protected route wiring pending)
 - [ ] Dynamic public booking services
 - [ ] Final regression/build validation
 
