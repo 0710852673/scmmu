@@ -18,7 +18,6 @@ export const TRIGGER_LABEL: Record<string, string> = Object.fromEntries(
   NOTIFICATION_TRIGGERS.map((t) => [t.key, t.label]),
 );
 
-/** Triggers that may be fired by unauthenticated public forms. */
 export const PUBLIC_TRIGGERS = NOTIFICATION_TRIGGERS.filter((t) => t.scope === "public").map((t) => t.key) as string[];
 
 export const APP_ROLES = [
@@ -31,7 +30,6 @@ export const APP_ROLES = [
 
 export const RULE_PRIORITIES = ["low", "normal", "high", "critical"] as const;
 
-/** Fine-grained abilities an admin can bundle into a custom permission role. */
 export const PERMISSION_GROUPS: { group: string; items: { key: string; label: string }[] }[] = [
   {
     group: "Gallery",
@@ -65,6 +63,8 @@ export const PERMISSION_GROUPS: { group: string; items: { key: string; label: st
       { key: "coverage.assign", label: "Assign crew" },
       { key: "events.manage", label: "Manage events" },
       { key: "members.view", label: "View member records" },
+      { key: "leadership.manage", label: "Manage leadership terms and handovers" },
+      { key: "reports.export", label: "Export operational reports" },
     ],
   },
   {
@@ -72,6 +72,7 @@ export const PERMISSION_GROUPS: { group: string; items: { key: string; label: st
     items: [
       { key: "content.submit_review", label: "Submit content for review" },
       { key: "content.review", label: "Approve / reject submitted content" },
+      { key: "content.restore_revision", label: "Restore a prior content revision" },
     ],
   },
 ];
@@ -82,7 +83,6 @@ export const PERMISSION_LABEL: Record<string, string> = Object.fromEntries(
   PERMISSION_GROUPS.flatMap((g) => g.items.map((i) => [i.key, i.label])),
 );
 
-/** Content approval workflow states. */
 export const REVIEW_STATES = [
   { value: "draft", label: "Draft", class: "bg-muted text-muted-foreground" },
   { value: "pending", label: "Pending review", class: "bg-amber-500/15 text-amber-700 dark:text-amber-300" },
