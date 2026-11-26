@@ -14,6 +14,12 @@ export interface LeadershipAssignment {
   endsOn?: string | null;
 }
 
+function overlaps(startA: string, endA: string | null | undefined, startB: string, endB: string | null | undefined): boolean {
+  const effectiveEndA = endA ?? "9999-12-31";
+  const effectiveEndB = endB ?? "9999-12-31";
+  return startA <= effectiveEndB && startB <= effectiveEndA;
+}
+
 export function validateLeadershipTerm(term: LeadershipTerm): string[] {
   const errors: string[] = [];
   if (!term.label.trim()) errors.push("Term label is required.");
@@ -30,16 +36,19 @@ export function validateAssignments(
   assignments: LeadershipAssignment[],
 ): string[] {
   const errors = validateLeadershipTerm(term);
-  const seen = new Set<string>();
+  const seen = new Map<string, LeadershipAssignment>();
   for (const assignment of assignments) {
     const key = assignment.position.trim().toLowerCase();
     if (!key) errors.push("Every assignment needs a position.");
-    if (seen.has(key)) errors.push(`Duplicate position: ${assignment.position}`);
-    seen.add(key);
     if (!assignment.memberId) errors.push(`Missing member for ${assignment.position}.`);
     if (assignment.startsOn < term.startsOn || assignment.startsOn > term.endsOn) {
       errors.push(`Assignment outside term: ${assignment.position}`);
     }
+    const previous = seen.get(key);
+    if (previous && overlaps(previous.startsOn, previous.endsOn, assignment.startsOn, assignment.endsOn)) {
+      errors.push(`Overlapping assignment for position: ${assignment.position}`);
+    }
+    seen.set(key, assignment);
   }
   return errors;
 }
